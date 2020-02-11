@@ -1,0 +1,3 @@
+[submodule "micro-manager"]
+	path = micro-manager
+	url = https://github.com/micro-manager/micro-manager.git
