@@ -42,8 +42,10 @@ class build_ext(distutils.command.build_ext.build_ext):
 
 is_windows = distutils.util.get_platform().startswith('win')
 
-# These would not be necessary if _WIN32 or _MSC_VER were used correctly.
 windows_defines = [
+    ('_CRT_SECURE_NO_WARNINGS', None),
+
+    # These would not be necessary if _WIN32 or _MSC_VER were used correctly.
     ('WIN32', None),
     ('_WINDOWS', None),
 ]
