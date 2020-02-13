@@ -1,0 +1,8 @@
+*~
+.*.swp
+
+build/
+dist/
+
+mmcore.py
+pymmcore.egg-info
