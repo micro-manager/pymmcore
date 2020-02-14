@@ -24,6 +24,9 @@ import glob
 import numpy
 import setuptools
 
+py_mod_name = 'pymmcore'
+ext_mod_name = '_' + py_mod_name
+
 
 # We build MMCore from sources, into the Python extension. MMCore depends on
 # MMDevice. However, we need to build MMDevice separately from MMCore, because
@@ -36,8 +39,9 @@ class build_ext(distutils.command.build_ext.build_ext):
     def run(self):
         self.run_command('build_clib')
         distutils.command.build_ext.build_ext.run(self)
-        distutils.file_util.copy_file('micro-manager/MMCorePy_wrap/mmcore.py',
-            'mmcore.py')
+        distutils.file_util.copy_file(
+            'micro-manager/MMCorePy_wrap/' + py_mod_name + '.py',
+            py_mod_name + '.py')
 
 
 is_windows = distutils.util.get_platform().startswith('win')
@@ -95,13 +99,13 @@ if is_windows:
     mmcore_defines.extend(windows_defines)
 
 mmcore_extension = setuptools.Extension(
-    '_mmcore',
+    ext_mod_name,
     sources=mmcore_sources + [
         'micro-manager/MMCorePy_wrap/MMCorePy.i',
     ],
     swig_opts=[
         '-c++',
-        '-module', 'mmcore',
+        '-module', py_mod_name,
         '-I./micro-manager/MMDevice',
         '-I./micro-manager/MMCore',
     ],
@@ -119,7 +123,7 @@ numpy_req = '>=1.10.4'
         
 
 setuptools.setup(
-    py_modules=['mmcore'],
+    py_modules=[py_mod_name],
     ext_modules=[mmcore_extension],
     libraries=[
         ('MMDevice', mmdevice_build_info),

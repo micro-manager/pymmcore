@@ -5,5 +5,5 @@ build/
 dist/
 *.pdb
 
-mmcore.py
+pymmcore.py
 pymmcore.egg-info

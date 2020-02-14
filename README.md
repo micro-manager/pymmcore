@@ -8,7 +8,7 @@ Micro-Manager's MMCore (the low-level device control/acquisition interface).
 
 Note: pymmcore is very similar to the legacy MMCorePy module, distributed with
 the Micro-Manager application. However, the Python package for pymmcore is
-named `mmcore` instead of `MMCorePy`. This is to avoid importing the wrong
+named `pymmcore` instead of `MMCorePy`. This is to avoid importing the wrong
 package on systems where pymmcore (installed via `pip`) and `MMCorePy`
 (installed with the Micro-Manager app or built by the user) both exist.
 
