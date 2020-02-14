@@ -3,6 +3,7 @@
 
 build/
 dist/
+*.pdb
 
 mmcore.py
 pymmcore.egg-info

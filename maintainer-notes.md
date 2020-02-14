@@ -66,6 +66,19 @@ b2 --with-system --with-thread --with-date_time link=static runtime-link=shared
   - `-LC:/local/boost_1_72_0/stage/lib`
 
 
+Building with debug symbols on Windows
+--------------------------------------
+
+Since there is no easy way to pass compile and linker options to `build_clib`,
+the easiest hack is to edit the local Python installation's
+`Lib/distutils/_msvccompiler.py` to add the compiler flag `/Zi` and linker flag
+`/DEBUG:FULL` (see the method `initialize`). This produces `vc140.pdb`.
+
+(The "normal" method would be to run `setup.py build_clib` and `setup.py
+build_ext` with the `--debug` option, and run with `python_d.exe`. But then we
+would need a debug build of NumPy, which is hard to build on Windows.)
+
+
 Resources
 ---------
 
