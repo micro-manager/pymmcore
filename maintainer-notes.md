@@ -19,6 +19,40 @@ Maintainer Notes
   reasonably old version of NumPy when packaging for public distribution (cf.
   https://github.com/numpy/numpy/issues/5888).
 
+- MSVC version. Python 3.5-3.8 are built with MSVC 14.x (i.e. Visual Studio
+  2015 to 2019). _However,_ the official Python installer ships with its own
+  copy of the VC runtime. This means that our extension module must be built
+  with an MSVC version that is not newer than the runtime shipped with Python.
+  Getting this wrong results in crashes that are very confusing to diagnose.
+
+  Python prints the MSVC version used to build itself when started:
+  - Python 3.5.4 (64-bit): MSC v.1900 = VS2015 (14.0)
+  - Python 3.6.8 (64-bit): MSC v.1916 = VS2017 (14.1)
+  - Python 3.7.6 (64-bit): MSC v.1916
+  - Python 3.8.1 (64-bit): MSC v.1916
+
+  In general, it is probably safest to **always build with VS2015** (older
+  minor versions of Python `>=3.6` may be built with VS2015). This can be done
+  by running `setup.py` inside the VS2015 Native Tools Command Prompt (this
+  works because we use `setuptools`; with `distutils` extra environment
+  variables are needed).
+
+  It should also be noted that some Python package wheels (e.g. SciPy) ship a
+  copy of `msvcp140.dll` (the C++ runtime) and other "140" DLLs. If they are
+  loaded first, the version is fixed.
+
+  If/when Micro-Manager starts shipping with device adapters built with newer
+  MSVC versions **in the future, this is going to become a problem**.
+
+  One workaround will be to have the user delete all copies of the VC runtime
+  within the Python installation, so that the system copy is used. But we would
+  like to avoid this except perhaps as a way to diagnose issues. It is fragile
+  because a subsequent package installation via `pip` could introduce an older
+  copy.
+
+- Should we ship `msvcp140.dll` as part of the wheel? Perhaps technically we
+  should.
+
 - The Python and NumPy version requirements in `setup.py` should be set so that
   `pip` just works.
   - NumPy wheels for the Python-NumPy version combination should be available
@@ -41,21 +75,24 @@ Maintainer Notes
   - Future versions of MMCore (once Visual Studio 2010 support is dropped) will
     drop the Boost requirement.
 
-- Swig 2.x should be used for now and must be on the path when running
-  `setup.py`.
+- Swig.
+  - Swig 1.x generates code that is no longer compatible with Python 3.x.
+  - Swig 4.x should be used.
 
 
 Building Boost on Windows
 -------------------------
 
-For the libraries we need, the build is extremely quick.
+For the few libraries we need, the build is extremely quick.
 
 - Download Boost 1.72.0 source code
-- Run the following in _x64 Native Tools Command Prompt for VS 2019_:
+- Run the following in _VS2015 x64 Native Tools Command Prompt_ (but note that
+  even then `b2` will use the newest MSVC by default, so `toolset` must be
+  specified explicitly if multiple VS versions are installed):
 ```
 cd C:\local\boost_1_72_0
 bootstrap
-b2 --with-system --with-thread --with-date_time link=static runtime-link=shared
+b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-14.0
 ```
 - The above command builds both 32- and 64-bit versions, against both the Debug
   and Release MSVC runtimes.
@@ -83,5 +120,6 @@ Resources
 ---------
 
 - [Windows compiler versions for Python](https://wiki.python.org/moin/WindowsCompilers)
+- [Building extensions for Python 3.5 part two](http://stevedower.id.au/blog/building-for-python-3-5-part-two/)
 - [macOS compiler information](https://github.com/MacPython/wiki/wiki/Spinning-wheels)
 - [manylinux build environment](https://github.com/pypa/manylinux)
