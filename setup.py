@@ -105,6 +105,8 @@ mmcore_extension = setuptools.Extension(
     ],
     swig_opts=[
         '-c++',
+        '-py3',
+        '-builtin',
         '-module', py_mod_name,
         '-I./micro-manager/MMDevice',
         '-I./micro-manager/MMCore',
