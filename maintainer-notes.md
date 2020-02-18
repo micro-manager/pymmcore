@@ -1,19 +1,19 @@
-TODOs
------
+Versioning scheme
+-----------------
 
-- Determine versioning scheme. In terms of API, the MMCore version (which
-  follows Semantic Versioning) is good, although pymmcore may add a few
-  functions that are not in MMCore. For this reason we should probably add a
-  suffix to the MMCore version. We should make sure to conform to **PEP 440**.
-  Note that the device interface version should _not_ be used, because that is
-  not what projects depending on pymmcore should care about in their
-  `requirements.txt`.
+Until we make wheels available for all platforms, use `0.0.M.devN`.
+
+Once official, use MMCore version (not device interface version) with extra
+pymmcore-specific suffix.
+
+Cf. PEP 440.
 
 
-Maintainer Notes
+Maintainer notes
 ----------------
 
 - The Python platform and ABI compatibility is all handled by the Wheel system.
+  (But see below re MSVC versions.)
 
 - NumPy ABI compatibility needs to be maintained by building against a
   reasonably old version of NumPy when packaging for public distribution (cf.
@@ -21,9 +21,10 @@ Maintainer Notes
 
 - MSVC version. Python 3.5-3.8 are built with MSVC 14.x (i.e. Visual Studio
   2015 to 2019). _However,_ the official Python installer ships with its own
-  copy of the VC runtime. This means that our extension module must be built
-  with an MSVC version that is not newer than the runtime shipped with Python.
-  Getting this wrong results in crashes that are very confusing to diagnose.
+  copy of the VC runtime (in particular, `vcruntime140.dll`). This means that
+  our extension module must be built with an MSVC version that is not newer
+  than the runtime shipped with Python. Getting this wrong results in crashes
+  that are very confusing to diagnose.
 
   Python prints the MSVC version used to build itself when started:
   - Python 3.5.4 (64-bit): MSC v.1900 = VS2015 (14.0)
@@ -79,6 +80,14 @@ Maintainer Notes
   - Swig 1.x generates code that is no longer compatible with Python 3.x.
   - Swig 4.x should be used.
 
+- Python version support
+  - Python 3.5 and 3.6 have, in their Windows `pyconfig.h`, the macro
+    definition `#define timezone _timezone`. This breaks `DeviceUtils.h`, which
+    defines a fake-POSIX `struct timezone` (bad idea, but used by multiple
+    device adapters so not easy to remove).
+  - Until a workaround is implemented (should not be hard because MMCore does
+    not use `timezone`), Windows wheels can only be built for 3.7 and 3.8.
+
 
 Building Boost on Windows
 -------------------------
@@ -123,3 +132,5 @@ Resources
 - [Building extensions for Python 3.5 part two](http://stevedower.id.au/blog/building-for-python-3-5-part-two/)
 - [macOS compiler information](https://github.com/MacPython/wiki/wiki/Spinning-wheels)
 - [manylinux build environment](https://github.com/pypa/manylinux)
+
+- [DLL search order on Windows](https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order)
