@@ -52,6 +52,9 @@ windows_defines = [
     # These would not be necessary if _WIN32 or _MSC_VER were used correctly.
     ('WIN32', None),
     ('_WINDOWS', None),
+
+    # See DeviceUtils.h
+    ('MMDEVICE_NO_GETTIMEOFDAY', None),
 ]
 
 

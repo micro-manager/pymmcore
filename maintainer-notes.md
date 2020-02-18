@@ -19,6 +19,13 @@ Maintainer notes
   reasonably old version of NumPy when packaging for public distribution (cf.
   https://github.com/numpy/numpy/issues/5888).
 
+  In practice, we should use the oldest NumPy for which wheels are available on
+  PyPI for the given Python version (and all 3 platforms):
+  - Python 3.5 - NumPy 1.10.4
+  - Python 3.6 - NumPy 1.12.0
+  - Python 3.7 - NumPy 1.14.5
+  - Python 3.8 - NumPy 1.17.3
+
 - MSVC version. Python 3.5-3.8 are built with MSVC 14.x (i.e. Visual Studio
   2015 to 2019). _However,_ the official Python installer ships with its own
   copy of the VC runtime (in particular, `vcruntime140.dll`). This means that
@@ -79,14 +86,6 @@ Maintainer notes
 - Swig.
   - Swig 1.x generates code that is no longer compatible with Python 3.x.
   - Swig 4.x should be used.
-
-- Python version support
-  - Python 3.5 and 3.6 have, in their Windows `pyconfig.h`, the macro
-    definition `#define timezone _timezone`. This breaks `DeviceUtils.h`, which
-    defines a fake-POSIX `struct timezone` (bad idea, but used by multiple
-    device adapters so not easy to remove).
-  - Until a workaround is implemented (should not be hard because MMCore does
-    not use `timezone`), Windows wheels can only be built for 3.7 and 3.8.
 
 
 Building Boost on Windows
