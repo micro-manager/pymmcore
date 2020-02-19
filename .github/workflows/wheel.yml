@@ -1,0 +1,90 @@
+name: Build Wheel
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [windows-latest]
+        python-version: [3.8] #[3.5, 3.6, 3.7, 3.8]
+        python-arch: [x64] #[x64, x86]
+        boost-version: [1_72_0]
+        include:
+          - python-version: 3.5
+            numpy-version: 1.10.4
+          - python-version: 3.6
+            numpy-version: 1.12.0
+          - python-version: 3.7
+            numpy-version: 1.14.5
+          - python-version: 3.8
+            numpy-version: 1.17.3
+          - python-arch: x64
+            msvc-arch: amd64
+          - python-arch: x86
+            msvc-arch: x86
+
+    name: ${{ matrix.os }} Python ${{ matrix.python-version }} ${{ matrix.python-arch }}
+
+    env:
+      VCVARSALL_DIR: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --force --recursive --depth=1
+
+      - uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.python-arch }}
+
+      - name: Install tools
+        if: matrix.os == 'windows-latest'
+        run: |
+          choco install -y swig --version 4.0.1
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade setuptools wheel
+          python -m pip install numpy==${{ matrix.numpy-version }}
+
+      - name: Build Boost
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        # At least some versions of vcvarsall.bat fail when run with the
+        # current drive other than C:
+        run: |
+          cd /d "%VCVARSALL_DIR%"
+          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=14.0
+          cd /d %BOOST_ROOT_${{ matrix.boost-version }}%
+          call bootstrap.bat
+          b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-14.0
+
+      - name: Build wheel
+        if: matrix.os == 'windows-latest'
+        shell: cmd
+        env:
+          MSSdk: 1
+          DISTUTILS_USE_SDK: 1
+          PY_VCRUNTIME_REDIST: 1
+        run: |
+          pushd "%VCVARSALL_DIR%"
+          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=14.0
+          popd
+          python setup.py build_ext -I%BOOST_ROOT_${{ matrix.boost-version }}% -L%BOOST_ROOT_${{ matrix.boost-version }}%/stage/lib
+          python setup.py build
+          python setup.py bdist_wheel
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: wheel
+          path: dist
