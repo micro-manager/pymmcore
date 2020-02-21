@@ -1,15 +1,14 @@
-name: Build Wheel
+name: Build Windows wheels
 
 on: [push]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
 
     strategy:
       fail-fast: true
       matrix:
-        os: [windows-latest]
         python-version: [3.5, 3.6, 3.7, 3.8]
         python-arch: [x64, x86]
         boost-version: [1_72_0]
@@ -27,7 +26,7 @@ jobs:
           - python-arch: x86
             msvc-arch: x86
 
-    name: ${{ matrix.os }} Python ${{ matrix.python-version }} ${{ matrix.python-arch }}
+    name: Windows Python ${{ matrix.python-version }} ${{ matrix.python-arch }}
 
     env:
       VCVARSALL_DIR: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build
@@ -47,7 +46,6 @@ jobs:
           architecture: ${{ matrix.python-arch }}
 
       - name: Install tools
-        if: matrix.os == 'windows-latest'
         run: |
           choco install -y swig --version 4.0.1
 
@@ -58,7 +56,6 @@ jobs:
           python -m pip install numpy==${{ matrix.numpy-version }}
 
       - name: Build Boost
-        if: matrix.os == 'windows-latest'
         shell: cmd
         # At least some versions of vcvarsall.bat fail when run with the
         # current drive other than C:
@@ -70,7 +67,6 @@ jobs:
           b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-14.0
 
       - name: Build wheel
-        if: matrix.os == 'windows-latest'
         shell: cmd
         env:
           MSSdk: 1
