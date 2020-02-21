@@ -1,0 +1,19 @@
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+[*.yml]
+indent_size = 2
+
+[*.md]
+indent_size = 2
+
+[*.py]
+indent_size = 4
+
+[*.cfg]
+indent_size = 4
