@@ -17,10 +17,11 @@ jobs:
       env: NUMPY_VERSION=1.17.3
 
 env:
-  - MACOSX_DEPLOYMENT_TARGET=10.9
-  - SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
-  - BOOST_VERSION=1_72_0
-  - BOOST_VERSION_DOTS=1.72.0
+  global:
+    - MACOSX_DEPLOYMENT_TARGET=10.9
+    - SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
+    - BOOST_VERSION=1_72_0
+    - BOOST_VERSION_DOTS=1.72.0
 
 addons:
   homebrew:
