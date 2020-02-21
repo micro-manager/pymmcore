@@ -11,7 +11,7 @@ jobs:
       matrix:
         os: [windows-latest]
         python-version: [3.8] #[3.5, 3.6, 3.7, 3.8]
-        python-arch: [x64] #[x64, x86]
+        python-arch: [x64, x86]
         boost-version: [1_72_0]
         include:
           - python-version: 3.5
