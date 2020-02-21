@@ -23,14 +23,18 @@ addons:
 install:
   - curl -L -o python.pkg https://www.python.org/ftp/python/$PYTHON_VERSION/python-$PYTHON_VERSION-macosx$PY_MACOS_VERSION.pkg
   - sudo installer -pkg python.pkg -target /
+  - python3 --version
 
-  - python3 -m pip install --upgrade pip
-  - python3 -m pip install --upgrade setuptools wheel
-  - python3 -m pip install numpy==$NUMPY_VERSION
+  - python3 -m pip install --index-url=https://pypi.python.org/simple/ --upgrade pip
+  - python3 -m pip install --index-url=https://pypi.python.org/simple/ --upgrade setuptools wheel
+  - python3 -m pip install --index-url=https://pypi.python.org/simple/ numpy==$NUMPY_VERSION
 
   - curl -LO https://dl.bintray.com/boostorg/release/$BOOST_VERSION_DOTS/source/boost_$BOOST_VERSION.tar.gz
   - tar xzf boost_$BOOST_VERSION.tar.gz
-  - cd boost_$BOOST_VERSION && ./bootstrap.sh && ./b2 --with-system --with-thread --with-date_time link=static threading=multi architecture=x86 address-model=64
+  - pushd boost_$BOOST_VERSION
+  - ./bootstrap.sh
+  - ./b2 --with-system --with-thread --with-date_time link=static threading=multi architecture=x86 address-model=64
+  - popd
 
 script:
   - python3 setup.py build_ext -I./boost_$BOOST_VERSION -L./boost_$BOOST_VERSION/stage/lib
