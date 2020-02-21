@@ -1,0 +1,41 @@
+language: python
+os: osx
+osx_image: xcode6.4
+
+git:
+  depth: 1
+
+jobs:
+  include:
+    - python: "3.5"
+      env: NUMPY_VERSION=1.10.4
+    - python: "3.6"
+      env: NUMPY_VERSION=1.12.0
+    - python: "3.7"
+      env: NUMPY_VERSION=1.14.5
+    - python: "3.8"
+      env: NUMPY_VERSION=1.17.3
+
+env:
+  - MACOSX_DEPLOYMENT_TARGET=10.9
+  - SDKROOT=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk
+  - BOOST_VERSION=1_72_0
+  - BOOST_VERSION_DOTS=1.72.0
+
+addons:
+  homebrew:
+    packages:
+      - swig
+
+install:
+  - python -m pip install --upgrade pip
+  - python -m pip install --upgrade setuptools wheel
+  - python -m pip install numpy==$NUMPY_VERSION
+  - curl -LO https://dl.bintray.com/boostorg/release/$BOOST_VERSION_DOTS/source/boost_$BOOST_VERSION.tar.gz
+  - tar xzf boost_$BOOST_VERSION.tar.gz
+  - cd boost_$BOOST_VERSION && ./bootstrap.sh && ./b2 --with-system --with-thread --with-date_time link=static threading=multi architecture=x86 address-model=32_64
+
+script:
+  - python setup.py build_ext -I./boost_$BOOST_VERSION -L./boost_$BOOST_VERSION/stage/lib
+  - python setup.py build
+  - python setup.py bdist_wheel
