@@ -10,24 +10,23 @@ env:
     - BOOST_VERSION_DOTS=1.72.0
 
   jobs:
-    - PYTHON_VERSION=3.5.4 PY_MACOS_VERSION=10.6 NUMPY_VERSION=1.10.4
-    - PYTHON_VERSION=3.6.8 PY_MACOS_VERSION=10.6 NUMPY_VERSION=1.12.0
-    - PYTHON_VERSION=3.7.6 PY_MACOS_VERSION=10.9 NUMPY_VERSION=1.14.5
     - PYTHON_VERSION=3.8.1 PY_MACOS_VERSION=10.9 NUMPY_VERSION=1.17.3
-
-addons:
-  homebrew:
-    packages:
-      - swig
+    - PYTHON_VERSION=3.7.6 PY_MACOS_VERSION=10.9 NUMPY_VERSION=1.14.5
+    - PYTHON_VERSION=3.6.8 PY_MACOS_VERSION=10.6 NUMPY_VERSION=1.12.0
+    - PYTHON_VERSION=3.5.4 PY_MACOS_VERSION=10.6 NUMPY_VERSION=1.10.4
 
 install:
+  # The Homebrew addon does not appear to work on osx_image = xcode8.3.
+  - brew update
+  - brew install swig
+
   - curl -L -o python.pkg https://www.python.org/ftp/python/$PYTHON_VERSION/python-$PYTHON_VERSION-macosx$PY_MACOS_VERSION.pkg
   - sudo installer -pkg python.pkg -target /
   - python3 --version
 
-  - python3 -m pip install --index-url=https://pypi.org/simple/ --upgrade pip
-  - python3 -m pip install --index-url=https://pypi.org/simple/ --upgrade setuptools wheel
-  - python3 -m pip install --index-url=https://pypi.org/simple/ numpy==$NUMPY_VERSION
+  - python3 -m pip install --upgrade pip
+  - python3 -m pip install --upgrade setuptools wheel
+  - python3 -m pip install numpy==$NUMPY_VERSION
 
   - curl -LO https://dl.bintray.com/boostorg/release/$BOOST_VERSION_DOTS/source/boost_$BOOST_VERSION.tar.gz
   - tar xzf boost_$BOOST_VERSION.tar.gz
