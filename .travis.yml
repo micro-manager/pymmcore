@@ -1,3 +1,5 @@
+# Currently Travis-CI is used for macOS builds only
+
 os: osx
 osx_image: xcode8.3
 
@@ -6,6 +8,7 @@ git:
 
 env:
   global:
+    - MACOSX_DEPLOYMENT_TARGET=10.12
     - BOOST_VERSION=1_72_0
     - BOOST_VERSION_DOTS=1.72.0
 
@@ -13,7 +16,7 @@ env:
     - PYTHON_VERSION=3.8.1 PY_MACOS_VERSION=10.9 NUMPY_VERSION=1.17.3
     - PYTHON_VERSION=3.7.6 PY_MACOS_VERSION=10.9 NUMPY_VERSION=1.14.5
     - PYTHON_VERSION=3.6.8 PY_MACOS_VERSION=10.6 NUMPY_VERSION=1.12.0
-    - PYTHON_VERSION=3.5.4 PY_MACOS_VERSION=10.6 NUMPY_VERSION=1.10.4
+    # Python 3.5.4 omitted because pip fails
 
 install:
   # The Homebrew addon does not appear to work on osx_image = xcode8.3.
