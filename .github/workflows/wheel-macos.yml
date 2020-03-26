@@ -7,22 +7,24 @@ jobs:
   build:
     runs-on: macos-latest
 
-    env:
-      # OS X 10.9 is the oldest version with libc++.
-      # See https://github.com/MacPython/wiki/wiki/Spinning-wheels#changing-your-wheel-compatibility
-      MACOSX_DEPLOYMENT_TARGET: 10.9
-
     strategy:
       fail-fast: true
       matrix:
-        python-version: [3.8]
-        python-arch: [x64]
+        python-version: [3.8.2, 3.7.7, 3.6.7]
         boost-version: [1_72_0]
+        macos-version: [10.9]
         include:
-          - python-version: 3.8
+          - python-version: 3.8.2
             numpy-version: 1.17.3
+          - python-version: 3.7.7
+            numpy-version: 1.14.5
+          - python-version: 3.6.7
+            numpy-version: 1.12.0
 
-    name: macOS Python ${{ matrix.python-version }} ${{ matrix.python-arch }}
+    env:
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-version }}
+
+    name: macOS Python ${{ matrix.python-version }} x64
 
     steps:
 
@@ -33,10 +35,12 @@ jobs:
           git submodule sync --recursive
           git submodule update --init --force --recursive --depth=1
 
-      - uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: ${{ matrix.python-arch }}
+      - name: Install Python
+        run: |
+          curl -LO https://www.python.org/ftp/python/${{ matrix.python-version }}/python-${{ matrix.python-version }}-macosx${{ matrix.macos-version }}.pkg
+          sudo installer -pkg python-${{ matrix.python-version }}-macosx10.9.pkg -target /
+          PYTHON_VERSION=${{ matrix.python-version }}
+          /Library/Frameworks/Python.framework/Versions/${PYTHON_VERSION%.*}/bin/python3 -m venv venv
 
       - name: Install tools
         run: |
@@ -44,6 +48,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          source venv/bin/activate
           python -m pip install --upgrade pip
           python -m pip install --upgrade setuptools wheel
           python -m pip install numpy==${{ matrix.numpy-version }}
@@ -60,6 +65,7 @@ jobs:
 
       - name: Build wheel
         run: |
+          source venv/bin/activate
           BOOST_ROOT=./boost_${{ matrix.boost-version }}
           export CC=clang
           export CXX=clang++
