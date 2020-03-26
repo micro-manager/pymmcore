@@ -7,6 +7,11 @@ jobs:
   build:
     runs-on: macos-latest
 
+    env:
+      # OS X 10.9 is the oldest version with libc++.
+      # See https://github.com/MacPython/wiki/wiki/Spinning-wheels#changing-your-wheel-compatibility
+      MACOSX_DEPLOYMENT_TARGET: 10.9
+
     strategy:
       fail-fast: true
       matrix:
