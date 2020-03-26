@@ -22,6 +22,7 @@ import distutils.file_util
 import distutils.util
 import glob
 import numpy
+import os
 import setuptools
 
 py_mod_name = 'pymmcore'
@@ -45,6 +46,7 @@ class build_ext(distutils.command.build_ext.build_ext):
 
 
 is_windows = distutils.util.get_platform().startswith('win')
+is_macos = distutils.util.get_platform().startswith('macosx')
 
 windows_defines = [
     ('_CRT_SECURE_NO_WARNINGS', None),
@@ -88,6 +90,7 @@ if is_windows:
 else:
     mmcore_sources = [f for f in mmcore_sources if 'Windows' not in f]
 
+
 mmcore_libraries = [
     'MMDevice',
 ]
@@ -96,10 +99,33 @@ if is_windows:
         'Iphlpapi',
         'Advapi32',
     ])
+else:
+    # On Windows, Boost headers automatically configure these
+    mmcore_libraries.extend([
+        'dl',
+        'boost_date_time',
+        'boost_system',
+        'boost_thread',
+    ])
+
+
+# MMCore on macOS currently requires these frameworks (for a feature that
+# should be deprecated). Frameworks need to appear on the linker command line
+# before the object files, so extra_link_args doesn't work.
+if is_macos:
+    ldflags = [
+        '-framework', 'CoreFoundation',
+        '-framework', 'IOKit',
+    ]
+    if 'LDFLAGS' in os.environ:
+        ldflags = [os.environ['LDFLAGS']] + ldflags
+    os.environ['LDFLAGS'] = ' '.join(ldflags)
+
 
 mmcore_defines = []
 if is_windows:
     mmcore_defines.extend(windows_defines)
+
 
 mmcore_extension = setuptools.Extension(
     ext_mod_name,
