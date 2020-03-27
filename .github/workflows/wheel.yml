@@ -161,6 +161,21 @@ jobs:
           ! nm -mu $PYMOD |c++filt |grep 'dynamically looked up' |grep -v _Py
           echo '-- end of non-Py dynamically looked up symbols --'
 
+      - name: Sanity check (Windows)
+        if: matrix.os == 'Windows'
+        run: |
+          cd .. # Avoid picking up pymmcore.py from cwd
+          python -m pip install (Get-Item pymmcore/dist/pymmcore-*.whl).FullName
+          python -m pymmcore
+
+      - name: Sanity check (Unix)
+        if: matrix.os != 'Windows'
+        run: |
+          source venv/bin/activate
+          cd .. # Avoid picking up pymmcore.py from cwd
+          python -m pip install pymmcore/dist/pymmcore-*.whl
+          python -m pymmcore
+
       - uses: actions/upload-artifact@v1
         with:
           name: wheel
