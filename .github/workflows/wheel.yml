@@ -79,7 +79,7 @@ jobs:
         run: |
           # Install Python.org Python
           curl -LO https://www.python.org/ftp/python/${{ matrix.mac-python-version }}/python-${{ matrix.mac-python-version }}-macosx${{ matrix.macos-version }}.pkg
-          sudo installer -pkg python-${{ matrix.python-version }}-macosx${{ matrix-macos-version }}.pkg -target /
+          sudo installer -pkg python-${{ matrix.python-version }}-macosx${{ matrix.macos-version }}.pkg -target /
           /Library/Frameworks/Python.framework/Versions/${{ matrix.python-version }}/bin/python3 -m venv venv
 
       - name: Install tools
