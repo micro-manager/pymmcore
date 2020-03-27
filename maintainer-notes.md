@@ -61,6 +61,28 @@ Maintainer notes
 - Should we ship `msvcp140.dll` as part of the wheel? Perhaps technically we
   should.
 
+- MacOS ABI versioning. `MACOSX_DEPLOYMENT_TARGET` should be set to match the
+  Python.org Python we are building for, as much as reasonably possible.
+  Currently, `10.9` is the best value for Python 3.5-3.8.
+  - Python up to 3.7 also provide a `10.6`-compatible installer (which also
+    includes 32-bit binaries). However, it is not feasible to set up a new
+    build environment that can (correctly) build for `<10.9`; even if we did,
+    it would not be compatible with newer versions of macOS.
+  - `10.9` is the oldest version that links with `libc++`; older deployment
+    targets would link with `libstdc++`.
+  - Our extension will still work if our deployment target is newer than
+    Python's, so long as it is not newer than the host macOS version.
+  - We can build `pymmcore` with `libc++` and it works fine with device
+    adapters built with `libstdc++`.
+  - In the not-so-likely event that our extension uses symbols only available
+    in macOS SDKs newer than the deployment target, those symbols will appear
+    as 'weak' in `nm -mu`.
+    - Not all weak symbols are a problem. There will always be a few from the
+      C++ standard library that are harmless.
+  - The built extension should be checked for undefined symbols (`nm -mu`) that
+    are "dynamically looked up", other than those starting with `_Py` or
+    `__Py`. There should be none if the build is correct.
+
 - The Python and NumPy version requirements in `setup.py` should be set so that
   `pip` just works.
   - NumPy wheels for the Python-NumPy version combination should be available
@@ -78,6 +100,10 @@ Maintainer notes
   - We need to choose a version of Boost that is (1) new enough to build with
     the compiler required by the target Python version and (2) old enough for
     MMCore to build. Probably (1) is a more stringent requirement.
+    - 1.72.0 appears to work well.
+  - On macOS, Boost builds its static libraries with `-fvisibility=hidden`. We
+    need to match this in our extension module to prevent linker warnings.
+    Default hidden visibility makes sense anyway.
   - Local or user builds can of course just use the Boost shared libraries on
     their system, if compatible.
   - Future versions of MMCore (once Visual Studio 2010 support is dropped) will
