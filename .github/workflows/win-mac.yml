@@ -1,4 +1,4 @@
-name: Build wheels
+name: Build Windows and macOS wheels
 
 on: [push]
 
@@ -178,5 +178,5 @@ jobs:
 
       - uses: actions/upload-artifact@v1
         with:
-          name: wheel
+          name: pymmcore-wheels-win-mac
           path: dist
