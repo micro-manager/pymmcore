@@ -44,6 +44,7 @@ done
 
 cd /io
 export CFLAGS="-Wno-deprecated -Wno-unused-variable"
+export LDFLAGS="-Wl,--strip-debug" # Sane file size
 for abitag in ${abitags[@]}; do
     numpy_version=${numpy_version_map[$abitag]}
 
