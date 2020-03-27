@@ -15,7 +15,7 @@ jobs:
         include:
           - os: Windows
             runner: windows-latest
-            os: macOS
+          - os: macOS
             runner: macOS-latest
           - python-version: 3.5
             numpy-version: 1.10.4
