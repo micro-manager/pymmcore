@@ -19,6 +19,7 @@ jobs:
       AUDITWHEEL_PLAT: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
       DOCKER_IMAGE: quay.io/pypa/manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
       BOOST_VERSION: ${{ matrix.boost-version }}
+      NUMPY_VERSIONS: cp35-cp35m 1.10.4 cp36-cp36m 1.12.0 cp37-cp37m 1.14.5 cp38-cp38 1.17.3
 
     steps:
 
@@ -35,7 +36,7 @@ jobs:
 
       - name: Build
         run: |
-          docker run -e BOOST_VERSION -e AUDITWHEEL_PLAT -v $(pwd):/io $DOCKER_IMAGE /io/manylinux/build.sh
+          docker run -e NUMPY_VERSIONS -e BOOST_VERSION -e AUDITWHEEL_PLAT -v $(pwd):/io $DOCKER_IMAGE /io/manylinux/build.sh
 
       - uses: actions/upload-artifact@v1
         with:

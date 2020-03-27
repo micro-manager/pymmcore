@@ -28,30 +28,50 @@ make install
 popd
 
 
+# NUMPY_VERSIONS contains alternating ABI tags and NumPy versions.
+# Convert it to an associative array.
+numpy_versions=($NUMPY_VERSIONS)
+declare -A numpy_version_map
+abitags=() # To preserve ordering
+for ((i=0; i<${#numpy_versions[@]}; i+=2)); do
+    abitag=${numpy_versions[i]}
+    numpy_version=${numpy_versions[i+1]}
+
+    abitags+=($abitag)
+    numpy_version_map[$abitag]=$numpy_version
+done
+
+
 cd /io
 export CFLAGS="-Wno-deprecated -Wno-unused-variable"
-for PYBIN in /opt/python/cp3*/bin; do
-    $PYBIN/pip install --upgrade pip
-    $PYBIN/pip install --upgrade setuptools wheel numpy
+for abitag in ${abitags[@]}; do
+    numpy_version=${numpy_version_map[$abitag]}
+
+    pybin=/opt/python/$abitag/bin
+    $pybin/pip install --upgrade pip
+    $pybin/pip install --upgrade setuptools wheel numpy==${numpy_version}
+
     rm -rf build
-    $PYBIN/python setup.py build_ext -I/boost_$BOOST_VERSION -L/boost_$BOOST_VERSION/stage/lib $PARALLEL
-    $PYBIN/python setup.py build
-    $PYBIN/python setup.py bdist_wheel
+    $pybin/python setup.py build_ext -I/boost_$BOOST_VERSION -L/boost_$BOOST_VERSION/stage/lib $PARALLEL
+    $pybin/python setup.py build
+    $pybin/python setup.py bdist_wheel
 done
 
 
 # Update ABI tag
 cd /io
+compgen -G "dist/*.whl" # Fail if none built
 mkdir -p wheelhouse
-for WHL in dist/*.whl; do
-    auditwheel show $WHL
-    auditwheel repair $WHL -w wheelhouse
+for wheel in dist/*.whl; do
+    auditwheel show $wheel
+    auditwheel repair $wheel -w wheelhouse
 done
 
 
 # Sanity check
 cd /
-for PYBIN in /opt/python/cp3*/bin; do
-    $PYBIN/pip install pymmcore --no-index -f /io/wheelhouse
-    $PYBIN/python -m pymmcore
+for abitag in ${abitags[@]}; do
+    pybin=/opt/python/$abitag/bin
+    $pybin/pip install pymmcore --no-index -f /io/wheelhouse
+    $pybin/python -m pymmcore
 done
