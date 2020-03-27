@@ -40,5 +40,5 @@ jobs:
 
       - uses: actions/upload-artifact@v1
         with:
-          name: wheels
+          name: pymmcore-wheels-manylinux
           path: wheelhouse
