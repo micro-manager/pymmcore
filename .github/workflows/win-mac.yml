@@ -178,5 +178,5 @@ jobs:
 
       - uses: actions/upload-artifact@v1
         with:
-          name: wheel
+          name: wheels
           path: dist

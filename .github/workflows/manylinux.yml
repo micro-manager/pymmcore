@@ -1,0 +1,43 @@
+name: Build manylinux wheels
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: true
+      matrix:
+        manylinux-version: [2010] # 2014 should be added when auditwheel fixed
+        arch: [i686, x86_64]
+        boost-version: [1_72_0]
+
+    name: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
+
+    runs-on: ubuntu-latest
+
+    env:
+      AUDITWHEEL_PLAT: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
+      DOCKER_IMAGE: quay.io/pypa/manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
+      BOOST_VERSION: ${{ matrix.boost-version }}
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --force --recursive --depth=1
+
+      - name: Pull image
+        run: |
+          docker pull $DOCKER_IMAGE
+
+      - name: Build
+        run: |
+          docker run -e BOOST_VERSION -e AUDITWHEEL_PLAT -v $(pwd):/io $DOCKER_IMAGE /io/manylinux/build.sh
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: wheels
+          path: wheelhouse

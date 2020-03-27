@@ -7,5 +7,7 @@ build/
 dist/
 *.pdb
 
+wheelhouse/
+
 pymmcore.py
 pymmcore.egg-info
