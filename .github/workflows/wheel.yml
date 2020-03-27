@@ -1,34 +1,49 @@
-name: Build Windows wheels
+name: Build wheels
 
 on: [push]
 
 jobs:
   build:
-    runs-on: windows-latest
-
     strategy:
       fail-fast: true
       matrix:
+        os: [Windows, macOS]
         python-version: [3.5, 3.6, 3.7, 3.8]
         python-arch: [x64, x86]
         boost-version: [1_72_0]
+        macos-version: [10.9]
         include:
+          - os: Windows
+            runner: windows-latest
+            os: macOS
+            runner: macOS-latest
           - python-version: 3.5
             numpy-version: 1.10.4
           - python-version: 3.6
+            mac-python-version: 3.6.7
             numpy-version: 1.12.0
           - python-version: 3.7
+            mac-python-version: 3.7.7
             numpy-version: 1.14.5
           - python-version: 3.8
+            mac-python-version: 3.8.2
             numpy-version: 1.17.3
           - python-arch: x64
             msvc-arch: amd64
           - python-arch: x86
             msvc-arch: x86
+        exclude:
+          - os: macOS
+            python-arch: x86
+          - os: macOS
+            python-version: 3.5
 
-    name: Windows Python ${{ matrix.python-version }} ${{ matrix.python-arch }}
+    name: ${{ matrix.os }} Python ${{ matrix.python-version }} ${{ matrix.python-arch }}
+
+    runs-on: ${{ matrix.runner }}
 
     env:
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-version }}
       VCVARSALL_DIR: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build
 
     steps:
@@ -40,22 +55,52 @@ jobs:
           git submodule sync --recursive
           git submodule update --init --force --recursive --depth=1
 
-      - uses: actions/setup-python@v1
+      - name: Install Python
+        uses: actions/setup-python@v1
+        if: matrix.os != 'macOS'
         with:
           python-version: ${{ matrix.python-version }}
           architecture: ${{ matrix.python-arch }}
 
+      - name: Set up dummy venv
+        if: matrix.os == 'Windows'
+        # Turn 'source' into a no-op.
+        # This is a hack so that we can source the venv activate script without
+        # special-casing Windows. In our Windows setup it is safe to build
+        # without using a venv.
+        shell: cmd
+        run: |
+          echo @echo off >source.bat
+
+      # Note: We would need to set up a venv if we add Linux
+
+      - name: Install Python
+        if: matrix.os == 'macOS'
+        run: |
+          # Install Python.org Python
+          curl -LO https://www.python.org/ftp/python/${{ matrix.mac-python-version }}/python-${{ matrix.mac-python-version }}-macosx${{ matrix.macos-version }}.pkg
+          sudo installer -pkg python-${{ matrix.python-version }}-macosx${{ matrix-macos-version }}.pkg -target /
+          /Library/Frameworks/Python.framework/Versions/${{ matrix.python-version }}/bin/python3 -m venv venv
+
       - name: Install tools
+        if: matrix.os == 'Windows'
         run: |
           choco install -y swig --version 4.0.1
 
+      - name: Install tools
+        if: matrix.os == 'macOS'
+        run: |
+          brew install swig
+
       - name: Install dependencies
         run: |
+          source venv/bin/activate
           python -m pip install --upgrade pip
           python -m pip install --upgrade setuptools wheel
           python -m pip install numpy==${{ matrix.numpy-version }}
 
       - name: Build Boost
+        if: matrix.os == 'Windows'
         shell: cmd
         # At least some versions of vcvarsall.bat fail when run with the
         # current drive other than C:
@@ -66,7 +111,19 @@ jobs:
           call bootstrap.bat
           b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-14.0
 
+      - name: Build Boost
+        if: matrix.os == 'macOS'
+        run: |
+          BOOST_VER=${{ matrix.boost-version }}
+          BOOST_TGZ=boost_$BOOST_VER.tar.gz
+          curl -LO https://dl.bintray.com/boostorg/release/${BOOST_VER//_/.}/source/$BOOST_TGZ
+          tar xzf $BOOST_TGZ
+          cd boost_$BOOST_VER
+          ./bootstrap.sh
+          ./b2 --with-system --with-thread --with-date_time link=static architecture=x86 address-model=64
+
       - name: Build wheel
+        if: matrix.os == 'Windows'
         shell: cmd
         env:
           MSSdk: 1
@@ -76,9 +133,38 @@ jobs:
           pushd "%VCVARSALL_DIR%"
           call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=14.0
           popd
+          source venv/bin/activate
           python setup.py build_ext -I%BOOST_ROOT_${{ matrix.boost-version }}% -L%BOOST_ROOT_${{ matrix.boost-version }}%/stage/lib
           python setup.py build
           python setup.py bdist_wheel
+
+      - name: Build wheel
+        if: matrix.os == 'macOS'
+        env:
+          BOOST_ROOT: ./boost_${{ matrix.boost-version }}
+          CC: clang
+          CXX: clang++
+          CFLAGS: -fvisibility=hidden -Wno-unused-variable
+        run: |
+          source venv/bin/activate
+          python setup.py build_ext -I$BOOST_ROOT -L$BOOST_ROOT/stage/lib -j2
+          python setup.py build
+          python setup.py bdist_wheel
+
+      - name: Log undefined symbols
+        if: matrix.os == 'macOS'
+        run: |
+          PYMOD=$(echo build/lib.*/_pymmcore.*.so)
+
+          echo "$PYMOD:"
+          echo 'Weak symbols:'
+          nm -mu $PYMOD |c++filt |grep ' weak ' # This is never empty
+          echo '-- end of weak symbols --'
+
+          echo 'Undefined symbols not containing Py:'
+          # We have bash's -o pipefail set; make empty grep result mean success
+          ! nm -mu $PYMOD |c++filt |grep 'dynamically looked up' |grep -v _Py
+          echo '-- end of non-Py dynamically looked up symbols --'
 
       - uses: actions/upload-artifact@v1
         with:
