@@ -102,6 +102,12 @@ Please report any cases where the Micro-Manager application can load a
 configuration but pymmcore cannot, even when using the above methods.
 
 
+Building on Linux
+-----------------
+
+See `.github/workflows/build-ubuntu.yml` as a starting point.
+
+
 License
 -------
 

@@ -1,0 +1,57 @@
+name: Check build on Ubuntu
+
+# This workflow checks that our setup.py script works on Ubuntu, using
+# system-provided dependencies. The binaries are not expected to work on any
+# other Linux distribution.
+
+on: [push]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        runner: [ubuntu-16.04, ubuntu-18.04]
+
+    name: ${{ matrix.runner }} build check
+
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --force --recursive --depth=1
+
+      - name: Install tools and dependencies
+        run: |
+          sudo apt-get install -y python3-dev python3-pip python3-venv
+          sudo apt-get install -y build-essential swig
+          sudo apt-get install -y libboost-system-dev libboost-thread-dev libboost-date-time-dev
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install --upgrade setuptools numpy
+
+      - name: Build wheel
+        env:
+          CFLAGS: -Wno-deprecated
+        run: |
+          source venv/bin/activate
+          python setup.py build_ext -j2
+          python setup.py build
+          python setup.py install
+
+      - name: Check for undefined symbols
+        run: |
+          echo 'Missing symbols:'
+          # Fail unless empty
+          ! ldd -r build/lib.*/_pymmcore.*.so |grep '^undefined symbol:' |grep -v Py
+          echo '-- end of missing symbols --'
+
+      - name: Sanity check
+        run: |
+          source venv/bin/activate
+          python -m pymmcore
