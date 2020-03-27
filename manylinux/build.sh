@@ -12,7 +12,7 @@ curl -LO https://dl.bintray.com/boostorg/release/${BOOST_VERSION//_/.}/source/bo
 tar xzf boost_$BOOST_VERSION.tar.gz
 pushd boost_$BOOST_VERSION
 ./bootstrap.sh
-./b2 --with-system --with-thread --with-date_time link=static runtime-link=shared cxxflags=-fPIC
+./b2 --with-system --with-thread --with-date_time link=static runtime-link=shared cxxflags="-fPIC -fvisibility=hidden"
 popd
 
 
@@ -43,16 +43,19 @@ done
 
 
 cd /io
-export CFLAGS="-Wno-deprecated -Wno-unused-variable"
-export LDFLAGS="-Wl,--strip-debug" # Sane file size
 for abitag in ${abitags[@]}; do
     numpy_version=${numpy_version_map[$abitag]}
-
     pybin=/opt/python/$abitag/bin
+
+    # Avoid altering NumPy compile+link (-fvisibility=hidden will break it)
+    export CFLAGS=
+    export LDFLAGS=
     $pybin/pip install --upgrade pip
     $pybin/pip install --upgrade setuptools wheel numpy==${numpy_version}
 
     rm -rf build
+    export CFLAGS="-fvisibility=hidden -Wno-deprecated -Wno-unused-variable"
+    export LDFLAGS="-Wl,--strip-debug" # Sane file size
     $pybin/python setup.py build_ext -I/boost_$BOOST_VERSION -L/boost_$BOOST_VERSION/stage/lib $PARALLEL
     $pybin/python setup.py build
     $pybin/python setup.py bdist_wheel
