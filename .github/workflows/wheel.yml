@@ -62,15 +62,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: ${{ matrix.python-arch }}
 
-      - name: Set up dummy venv
+      - name: Set up venv
         if: matrix.os == 'Windows'
-        # Turn 'source' into a no-op.
-        # This is a hack so that we can source the venv activate script without
-        # special-casing Windows. In our Windows setup it is safe to build
-        # without using a venv.
         shell: cmd
         run: |
-          echo @echo off >source.bat
+          python -m venv venv
 
       # Note: We would need to set up a venv if we add Linux
 
@@ -93,6 +89,16 @@ jobs:
           brew install swig
 
       - name: Install dependencies
+        if: matrix.os == 'Windows'
+        shell: cmd
+        run: |
+          venv\Scripts\activate
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade setuptools wheel
+          python -m pip install numpy==${{ matrix.numpy-version }}
+
+      - name: Install dependencies
+        if: matrix.os != 'Windows'
         run: |
           source venv/bin/activate
           python -m pip install --upgrade pip
@@ -130,10 +136,10 @@ jobs:
           DISTUTILS_USE_SDK: 1
           PY_VCRUNTIME_REDIST: 1
         run: |
+          venv\Scripts\activate
           pushd "%VCVARSALL_DIR%"
           call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=14.0
           popd
-          source venv/bin/activate
           python setup.py build_ext -I%BOOST_ROOT_${{ matrix.boost-version }}% -L%BOOST_ROOT_${{ matrix.boost-version }}%/stage/lib
           python setup.py build
           python setup.py bdist_wheel
