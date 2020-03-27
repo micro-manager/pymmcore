@@ -9,8 +9,8 @@ pymmcore-specific suffix.
 Cf. PEP 440.
 
 
-Maintainer notes
-----------------
+ABI Compatibility
+-----------------
 
 - The Python platform and ABI compatibility is all handled by the Wheel system.
   (But see below re MSVC versions.)
@@ -26,12 +26,15 @@ Maintainer notes
   - Python 3.7 - NumPy 1.14.5
   - Python 3.8 - NumPy 1.17.3
 
+
+### Windows
+
 - MSVC version. Python 3.5-3.8 are built with MSVC 14.x (i.e. Visual Studio
-  2015 to 2019). _However,_ the official Python installer ships with its own
-  copy of the VC runtime (in particular, `vcruntime140.dll`). This means that
-  our extension module must be built with an MSVC version that is not newer
-  than the runtime shipped with Python. Getting this wrong results in crashes
-  that are very confusing to diagnose.
+  2015 to 2019). However, the official Python installer ships with its own copy
+  of the VC runtime (in particular, `vcruntime140.dll`). This means that (in
+  theory) our extension module must be built with an MSVC version that is not
+  newer than the runtime shipped with Python. I say "in theory" because it is
+  not clear if this actually results in problems, but let's paly it safe.
 
   Python prints the MSVC version used to build itself when started:
   - Python 3.5.4 (64-bit): MSC v.1900 = VS2015 (14.0)
@@ -39,49 +42,60 @@ Maintainer notes
   - Python 3.7.6 (64-bit): MSC v.1916
   - Python 3.8.1 (64-bit): MSC v.1916
 
-  In general, it is probably safest to **always build with VS2015** (older
-  minor versions of Python `>=3.6` may be built with VS2015). This can be done
-  by running `setup.py` inside the VS2015 Native Tools Command Prompt (this
-  works because we use `setuptools`; with `distutils` extra environment
-  variables are needed).
+  In general, it is probably safest to always build with VS2015 (older minor
+  versions of Python 3.7-3.8 may be built with VS2015). This can be done by
+  running `setup.py` inside the VS2015 Native Tools Command Prompt (this works
+  because we use `setuptools`; with `distutils` extra environment variables are
+  needed).
 
   It should also be noted that some Python package wheels (e.g. SciPy) ship a
   copy of `msvcp140.dll` (the C++ runtime) and other "140" DLLs. If they are
-  loaded first, the version is fixed.
+  loaded first, the version is pinned.
 
-  If/when Micro-Manager starts shipping with device adapters built with newer
-  MSVC versions **in the future, this is going to become a problem**.
+  We might want to pay attention to all this if/when Micro-Manager starts
+  shipping with device adapters built with newer MSVC versions in the future.
 
-  One workaround will be to have the user delete all copies of the VC runtime
-  within the Python installation, so that the system copy is used. But we would
-  like to avoid this except perhaps as a way to diagnose issues. It is fragile
-  because a subsequent package installation via `pip` could introduce an older
-  copy.
-
-- Should we ship `msvcp140.dll` as part of the wheel? Perhaps technically we
+- Should we ship `msvcp140.dll` as part of the wheel? Given how the Python.org
+  Windows installers are designed for non-admin installation, we technically
   should.
 
-- MacOS ABI versioning. `MACOSX_DEPLOYMENT_TARGET` should be set to match the
-  Python.org Python we are building for, as much as reasonably possible.
-  Currently, `10.9` is the best value for Python 3.5-3.8.
-  - Python up to 3.7 also provide a `10.6`-compatible installer (which also
-    includes 32-bit binaries). However, it is not feasible to set up a new
-    build environment that can (correctly) build for `<10.9`; even if we did,
-    it would not be compatible with newer versions of macOS.
-  - `10.9` is the oldest version that links with `libc++`; older deployment
-    targets would link with `libstdc++`.
-  - Our extension will still work if our deployment target is newer than
-    Python's, so long as it is not newer than the host macOS version.
-  - We can build `pymmcore` with `libc++` and it works fine with device
-    adapters built with `libstdc++`.
-  - In the not-so-likely event that our extension uses symbols only available
-    in macOS SDKs newer than the deployment target, those symbols will appear
-    as 'weak' in `nm -mu`.
-    - Not all weak symbols are a problem. There will always be a few from the
-      C++ standard library that are harmless.
-  - The built extension should be checked for undefined symbols (`nm -mu`) that
-    are "dynamically looked up", other than those starting with `_Py` or
-    `__Py`. There should be none if the build is correct.
+- Another reason why we cannot build with VS2019 at the moment is a compiler
+  [bug](https://developercommunity.visualstudio.com/content/problem/936402/msvc-192428316-generates-incorrect-x64-code-for-in.html),
+  which causes the Swig-wrapped `MMDevice/DeviceConstants.h` code to crash when
+  you import `pymmcore`.
+
+
+### macOS
+
+- `MACOSX_DEPLOYMENT_TARGET` should be set to match the Python.org Python we
+  are building for, as much as reasonably possible. Currently, `10.9` is the
+  best value for Python 3.5-3.8.
+- Python up to 3.7 also provide a `10.6`-compatible installer (which also
+  includes 32-bit binaries). However, it is not feasible to set up a new build
+  environment that can (correctly) build for `<10.9`.
+- `10.9` is the oldest version that links with `libc++`; older deployment
+  targets would link with `libstdc++`.
+- Our extension will still work if our deployment target is newer than
+  Python's, so long as it is not newer than the host macOS version.
+- We can build `pymmcore` with `libc++` and it works fine with device adapters
+  built with `libstdc++` (because the interface is POD-only).
+- In the not-so-likely event that our extension uses symbols only available in
+  macOS SDKs newer than the deployment target, those symbols will appear as
+  'weak' in `nm -mu`.
+  - Not all weak symbols are a problem. There will always be a few from the C++
+    standard library that are harmless.
+- The built extension should be checked for undefined symbols (`nm -mu`) that
+  are "dynamically looked up", other than those starting with `_Py` or `__Py`.
+  There should be none if the build is correct.
+
+
+### Linux
+
+- The manylinux docker images appear to solve all our problems.
+
+
+Dependency and tool versions
+----------------------------
 
 - The Python and NumPy version requirements in `setup.py` should be set so that
   `pip` just works.
@@ -114,29 +128,6 @@ Maintainer notes
   - Swig 4.x should be used.
 
 
-Building Boost on Windows
--------------------------
-
-For the few libraries we need, the build is extremely quick.
-
-- Download Boost 1.72.0 source code
-- Run the following in _VS2015 x64 Native Tools Command Prompt_ (but note that
-  even then `b2` will use the newest MSVC by default, so `toolset` must be
-  specified explicitly if multiple VS versions are installed):
-```
-cd C:\local\boost_1_72_0
-bootstrap
-b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-14.0
-```
-- The above command builds both 32- and 64-bit versions, against both the Debug
-  and Release MSVC runtimes.
-- With MSVC, Boost headers will automatically select the libraries to link to,
-  so we only need to set the paths.
-- Pass these flags to `setup.py build_ext`:
-  - `-IC:/local/boost_1_72_0`
-  - `-LC:/local/boost_1_72_0/stage/lib`
-
-
 Building with debug symbols on Windows
 --------------------------------------
 
@@ -153,9 +144,14 @@ would need a debug build of NumPy, which is hard to build on Windows.)
 Resources
 ---------
 
-- [Windows compiler versions for Python](https://wiki.python.org/moin/WindowsCompilers)
-- [Building extensions for Python 3.5 part two](http://stevedower.id.au/blog/building-for-python-3-5-part-two/)
-- [macOS compiler information](https://github.com/MacPython/wiki/wiki/Spinning-wheels)
-- [manylinux build environment](https://github.com/pypa/manylinux)
+- [Windows Compilers](https://wiki.python.org/moin/WindowsCompilers) on Python Wiki
+- [MacPython: Spinning wheels](https://github.com/MacPython/wiki/wiki/Spinning-wheels) (macOS ABI)
+- [manylinux](https://github.com/pypa/manylinux) Docker images; [PEP
+  513](https://python.org/dev/peps/pep-0513),
+  [571](https://python.org/dev/peps/pep-0571), and
+  [599](https://python.org/dev/peps/pep-0599)
 
-- [DLL search order on Windows](https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order)
+- Windows [DLL search order](https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order)
+- Unmaintained Apple [tech
+  note](https://developer.apple.com/library/archive/technotes/tn2064/_index.html)
+  describing `MACOSX_DEPLOYMENT_TARGET`
