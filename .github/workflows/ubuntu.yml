@@ -47,8 +47,7 @@ jobs:
       - name: Check for undefined symbols
         run: |
           echo 'Missing symbols:'
-          # Fail unless empty
-          ! ldd -r build/lib.*/_pymmcore.*.so |grep '^undefined symbol:' |grep -v Py
+          ldd -r build/lib.*/_pymmcore.*.so |grep '^undefined symbol:' |grep -v Py && exit 1
           echo '-- end of missing symbols --'
 
       - name: Sanity check

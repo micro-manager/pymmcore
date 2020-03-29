@@ -159,8 +159,7 @@ jobs:
           echo '-- end of weak symbols --'
 
           echo 'Undefined symbols not containing Py:'
-          # We have bash's -o pipefail set; make empty grep result mean success
-          ! nm -mu $PYMOD |c++filt |grep 'dynamically looked up' |grep -v _Py
+          nm -mu $PYMOD |c++filt |grep 'dynamically looked up' |grep -v _Py && exit 1
           echo '-- end of non-Py dynamically looked up symbols --'
 
       - name: Sanity check (Windows)
