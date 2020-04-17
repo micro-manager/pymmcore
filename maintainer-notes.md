@@ -4,6 +4,8 @@ Versioning scheme
 Use MMCore version (not device interface version) with extra pymmcore-specific
 suffix. Cf. PEP 440.
 
+This correspondence is enforced in the smoke test.
+
 
 ABI Compatibility
 -----------------

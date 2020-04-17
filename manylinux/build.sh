@@ -83,10 +83,10 @@ for wheel in prelim-wheels/*.whl; do
 done
 
 
-# Sanity check
+# Smoke test
 cd /
 for abitag in ${abitags[@]}; do
     pybin=/opt/python/$abitag/bin
     $pybin/pip install pymmcore --no-index -f /io/wheelhouse
-    $pybin/python -m pymmcore
+    $pybin/python /io/smoketest/smoke.py
 done

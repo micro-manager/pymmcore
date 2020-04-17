@@ -60,8 +60,8 @@ jobs:
           ldd -r build/lib.*/_pymmcore.*.so |grep '^undefined symbol:' |grep -v Py && exit 1
           echo '-- end of missing symbols --'
 
-      - name: Sanity check
+      - name: Smoke test
         run: |
           source venv/bin/activate
           cd tmp/pymmcore
-          python -m pymmcore
+          python ../../smoketest/smoke.py

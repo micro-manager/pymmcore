@@ -182,20 +182,20 @@ jobs:
           nm -mu $PYMOD |c++filt |grep 'dynamically looked up' |grep -v _Py && exit 1
           echo '-- end of non-Py dynamically looked up symbols --'
 
-      - name: Sanity check (Windows)
+      - name: Smoke test (Windows)
         if: matrix.os == 'Windows'
         run: |
           cd .. # Avoid picking up pymmcore.py from cwd
           python -m pip install (Get-Item pymmcore/tmp/pymmcore/dist/pymmcore-*.whl).FullName
-          python -m pymmcore
+          python pymmcore/smoketest/smoke.py
 
-      - name: Sanity check (Unix)
+      - name: Smoke test (Unix)
         if: matrix.os != 'Windows'
         run: |
           source venv/bin/activate
           cd .. # Avoid picking up pymmcore.py from cwd
           python -m pip install pymmcore/tmp/pymmcore/dist/pymmcore-*.whl
-          python -m pymmcore
+          python pymmcore/smoketest/smoke.py
 
       - uses: actions/upload-artifact@v1
         with:
