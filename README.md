@@ -1,20 +1,21 @@
 pymmcore: Python bindings for MMCore
 ====================================
 
-**Status**: Not available for `pip install` yet, but builds and works on
-Windows.
+**Status**: Not available for `pip install` yet, but builds and works.
 
-This project is intended to become the standard build for Python bindings to
-Micro-Manager's MMCore (the low-level device control/acquisition interface).
+The pymmcore package provides Python 3.x bindings to Micro-Manager's MMCore
+(the low-level device control/acquisition interface).
 
-Note: pymmcore is very similar to the legacy MMCorePy module, distributed with
-the Micro-Manager application. However, the Python package for pymmcore is
-named `pymmcore` instead of `MMCorePy`. This is to avoid importing the wrong
-package on systems where `pymmcore` (installed via `pip`) and `MMCorePy`
-(installed with the Micro-Manager app or built by the user) both exist.
+Note: pymmcore is very similar to the legacy MMCorePy module (Python 2.x only),
+distributed with the Micro-Manager application. However, the Python package for
+pymmcore is named `pymmcore` instead of `MMCorePy`. This is in part to avoid
+importing the wrong package on systems where `pymmcore` (usually installed via
+`pip`) and `MMCorePy` (installed with the Micro-Manager app or built by the
+user) both exist.
 
 Because pymmcore is distributed separately from Micro-Manager, it needs to be
 "pointed" at an existing Micro-Manager installation to access device adapters.
+(See the example below.)
 
 
 Installing
@@ -73,8 +74,6 @@ pymmcore.CMMCore().getAPIVersionInfo()
 Note that `getAPIVersionInfo()` should not be confused with `getVersionInfo()`,
 which returns the version number of MMCore.
 
-TODO: Tabulate actual version numbers here?
-
 
 Loading device adapters on Windows
 ----------------------------------
@@ -100,12 +99,6 @@ additional DLLs at a later time.
 
 Please report any cases where the Micro-Manager application can load a
 configuration but pymmcore cannot, even when using the above methods.
-
-
-Building on Linux
------------------
-
-See `.github/workflows/build-ubuntu.yml` as a starting point.
 
 
 License
