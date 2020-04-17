@@ -72,7 +72,14 @@ pymmcore.CMMCore().getAPIVersionInfo()
 ```
 
 Note that `getAPIVersionInfo()` should not be confused with `getVersionInfo()`,
-which returns the version number of MMCore.
+which returns the version number of MMCore. (The MMCore version is the first 3
+parts of the pymmcore version.)
+
+- For example, pymmcore `10.0.0.0` is based on MMCore `10.0.0`. That version of
+  MMCore had device interface version `69`.
+- Usually at least the last digit (patch version) of the MMCore version changes
+  when there is a change to the device interface version.
+- But several MMCore versions may share the same device interface version.
 
 
 Loading device adapters on Windows
