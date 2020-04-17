@@ -120,6 +120,23 @@ jobs:
           ./bootstrap.sh
           ./b2 --with-system --with-thread --with-date_time link=static architecture=x86 address-model=64
 
+      - name: Package and extract sources (Windows)
+        if: matrix.os == 'Windows'
+        run: |
+          python setup.py sdist --format=zip
+          mkdir tmp
+          Expand-Archive -Path dist/pymmcore-*.zip -DestinationPath tmp
+          mv tmp/pymmcore-* tmp/pymmcore
+
+      - name: Package and extract sources (Unix)
+        if: matrix.os == 'macOS'
+        run: |
+          source venv/bin/activate
+          python setup.py sdist
+          mkdir tmp
+          tar xvzf dist/pymmcore-*.tar.gz -C tmp
+          mv tmp/pymmcore-* tmp/pymmcore
+
       - name: Build wheel (Windows)
         if: matrix.os == 'Windows'
         shell: cmd
@@ -131,6 +148,7 @@ jobs:
           pushd "%VCVARSALL_DIR%"
           call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=14.0
           popd
+          cd tmp\pymmcore
           python setup.py build_ext -I%BOOST_ROOT_${{ matrix.boost-version }}% -L%BOOST_ROOT_${{ matrix.boost-version }}%/stage/lib
           python setup.py build
           python setup.py bdist_wheel
@@ -138,12 +156,13 @@ jobs:
       - name: Build wheel (macOS)
         if: matrix.os == 'macOS'
         env:
-          BOOST_ROOT: ./boost_${{ matrix.boost-version }}
+          BOOST_ROOT: ../../boost_${{ matrix.boost-version }}
           CC: clang
           CXX: clang++
           CFLAGS: -fvisibility=hidden -Wno-unused-variable
         run: |
           source venv/bin/activate
+          cd tmp/pymmcore
           python setup.py build_ext -I$BOOST_ROOT -L$BOOST_ROOT/stage/lib -j2
           python setup.py build
           python setup.py bdist_wheel
@@ -151,6 +170,7 @@ jobs:
       - name: Log undefined symbols (macOS)
         if: matrix.os == 'macOS'
         run: |
+          cd tmp/pymmcore
           PYMOD=$(echo build/lib.*/_pymmcore.*.so)
 
           echo "$PYMOD:"
@@ -166,7 +186,7 @@ jobs:
         if: matrix.os == 'Windows'
         run: |
           cd .. # Avoid picking up pymmcore.py from cwd
-          python -m pip install (Get-Item pymmcore/dist/pymmcore-*.whl).FullName
+          python -m pip install (Get-Item pymmcore/tmp/pymmcore/dist/pymmcore-*.whl).FullName
           python -m pymmcore
 
       - name: Sanity check (Unix)
@@ -174,7 +194,7 @@ jobs:
         run: |
           source venv/bin/activate
           cd .. # Avoid picking up pymmcore.py from cwd
-          python -m pip install pymmcore/dist/pymmcore-*.whl
+          python -m pip install pymmcore/tmp/pymmcore/dist/pymmcore-*.whl
           python -m pymmcore
 
       - uses: actions/upload-artifact@v1

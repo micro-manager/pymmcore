@@ -56,20 +56,28 @@ for abitag in ${abitags[@]}; do
     $pybin/pip install --upgrade pip
     $pybin/pip install --upgrade setuptools wheel numpy==${numpy_version}
 
-    rm -rf build
+    # Package and extract sources to ensure sdist is correct
+    rm -rf tmp dist/pymmcore-*.tar.gz
+    $pybin/python setup.py sdist
+    mkdir tmp
+    tar xzf dist/pymmcore-*.tar.gz -C tmp
+    cd tmp/pymmcore-*
+
     export CFLAGS="-fvisibility=hidden -Wno-deprecated -Wno-unused-variable"
     export LDFLAGS="-Wl,--strip-debug" # Sane file size
     $pybin/python setup.py build_ext -I/boost_$BOOST_VERSION -L/boost_$BOOST_VERSION/stage/lib $PARALLEL
     $pybin/python setup.py build
     $pybin/python setup.py bdist_wheel
+    mkdir -p /io/prelim-wheels
+    mv dist/*.whl /io/prelim-wheels
 done
 
 
 # Update ABI tag
 cd /io
-compgen -G "dist/*.whl" # Fail if none built
+compgen -G "prelim-wheels/*.whl" # Fail if none built
 mkdir -p wheelhouse
-for wheel in dist/*.whl; do
+for wheel in prelim-wheels/*.whl; do
     auditwheel show $wheel
     auditwheel repair $wheel -w wheelhouse
 done

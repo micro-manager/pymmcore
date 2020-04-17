@@ -35,17 +35,27 @@ jobs:
           pip install --upgrade pip
           pip install --upgrade setuptools numpy
 
+      - name: Package and extract sources
+        run: |
+          source venv/bin/activate
+          python setup.py sdist
+          mkdir tmp
+          tar xvzf dist/pymmcore-*.tar.gz -C tmp
+          mv tmp/pymmcore-* tmp/pymmcore
+
       - name: Build wheel
         env:
           CFLAGS: -Wno-deprecated
         run: |
           source venv/bin/activate
+          cd tmp/pymmcore
           python setup.py build_ext -j2
           python setup.py build
           python setup.py install
 
       - name: Check for undefined symbols
         run: |
+          cd tmp/pymmcore
           echo 'Missing symbols:'
           ldd -r build/lib.*/_pymmcore.*.so |grep '^undefined symbol:' |grep -v Py && exit 1
           echo '-- end of missing symbols --'
@@ -53,4 +63,5 @@ jobs:
       - name: Sanity check
         run: |
           source venv/bin/activate
+          cd tmp/pymmcore
           python -m pymmcore
