@@ -20,7 +20,6 @@ Release procedure
 Prepare two commits, one removing `dev` from the version and a subsequent one
 bumping to the next `dev` version. Push to master. Tag the (single) commit with
 the release version; the tag should be `v` prefixed to the version:
-
 ```bash
 git tag -a v1.2.3.4 $commit
 git push origin v1.2.3.4
@@ -29,7 +28,11 @@ git push origin v1.2.3.4
 This triggers a build, since our GitHub workflows build on push, including when
 it's an annotated tag. When the builds complete, download the artifacts and
 collect the wheels. Also locally prepare source distributions (`.tar.gz` and
-`.zip`) with `setup.py sdist`.
+`.zip`):
+```bash
+git checkout v1.2.3.4
+python setup.py sdist --format=zip,gztar
+```
 
 Pushing the tag also creates a GitHub release, which can be edited to add
 binaries. Upload the Windows, macOS, and manylinux wheels and source
@@ -37,7 +40,7 @@ distributions as a backup and second source.
 
 Finally upload to PyPI with `twine`:
 ```bash
-python3 -m twine upload dist/*
+python -m twine upload dist/*
 ```
 
 
