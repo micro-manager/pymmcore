@@ -200,4 +200,4 @@ jobs:
       - uses: actions/upload-artifact@v1
         with:
           name: pymmcore-wheels-win-mac
-          path: dist
+          path: tmp/pymmcore/dist
