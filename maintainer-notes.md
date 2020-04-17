@@ -6,6 +6,40 @@ suffix. Cf. PEP 440.
 
 This correspondence is enforced in the smoke test.
 
+Note that we can support multiple MMCore versions, possibly retroactively, by
+maintaining separate branches; this can ease transition when the device
+interface version changes. Such branches should be named `mmcore-x.y.z`.
+
+When upgrading the MMCore version (by bumping the micro-manager submodule
+commit), the pymmcore version in `setup.cfg` should be updated together.
+
+
+Release procedure
+-----------------
+
+Prepare two commits, one removing `dev` from the version and a subsequent one
+bumping to the next `dev` version. Push to master. Tag the (single) commit with
+the release version; the tag should be `v` prefixed to the version:
+
+```bash
+git tag -a v1.2.3.4 $commit
+git push origin v1.2.3.4
+```
+
+This triggers a build, since our GitHub workflows build on push, including when
+it's an annotated tag. When the builds complete, download the artifacts and
+collect the wheels. Also locally prepare source distributions (`.tar.gz` and
+`.zip`) with `setup.py sdist`.
+
+Pushing the tag also creates a GitHub release, which can be edited to add
+binaries. Upload the Windows, macOS, and manylinux wheels and source
+distributions as a backup and second source.
+
+Finally upload to PyPI with `twine`:
+```bash
+python3 -m twine upload dist/*
+```
+
 
 ABI Compatibility
 -----------------
