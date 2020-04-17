@@ -1,12 +1,10 @@
 Versioning scheme
 -----------------
 
-Until we make wheels available for all platforms, use `0.0.M.devN`.
+Use MMCore version (not device interface version) with extra pymmcore-specific
+suffix. Cf. PEP 440.
 
-Once official, use MMCore version (not device interface version) with extra
-pymmcore-specific suffix.
-
-Cf. PEP 440.
+This correspondence is enforced in the smoke test.
 
 
 ABI Compatibility
