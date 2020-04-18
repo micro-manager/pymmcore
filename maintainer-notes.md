@@ -21,7 +21,7 @@ Prepare two commits, one removing `dev` from the version and a subsequent one
 bumping to the next `dev` version. Push to master. Tag the (single) commit with
 the release version; the tag should be `v` prefixed to the version:
 ```bash
-git tag -a v1.2.3.4 $commit
+git tag -a v1.2.3.4 $commit -m Release
 git push origin v1.2.3.4
 ```
 
@@ -35,7 +35,7 @@ python setup.py sdist --format=zip
 
 Pushing the tag also creates a GitHub release, which can be edited to add
 binaries. Upload the Windows, macOS, and manylinux wheels and source
-distributions as a backup and second source.
+distribution as a backup and second source.
 
 Finally upload to PyPI with `twine`:
 ```bash
