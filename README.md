@@ -1,8 +1,6 @@
 pymmcore: Python bindings for MMCore
 ====================================
 
-**Status**: Not available for `pip install` yet, but builds and works.
-
 The pymmcore package provides Python 3.x bindings to Micro-Manager's MMCore
 (the low-level device control/acquisition interface).
 
@@ -21,10 +19,19 @@ Because pymmcore is distributed separately from Micro-Manager, it needs to be
 Installing
 ----------
 
-The following command **will** work once pymmcore is released:
+Windows (Python 3.5-3.8), macOS (Python 3.6-3.8, 64-bit), and Linux (Python
+3.5-3.8) are supported.
+
 ```
 python -m pip install --user pymmcore
 ```
+You can leave out the `--user` if installing into a virtual environment
+(recommended).
+
+Installation by `pip` should use binary wheels. If `pip` falls back to building
+from source code, it will probably fail. If this happens in a supported
+environment, please file a bug. To manually build from source, the scripts in
+`.github/workflows` should serve as a starting point.
 
 You also need a working installation of the Micro-Manager application.
 
@@ -80,6 +87,9 @@ parts of the pymmcore version.)
 - Usually at least the last digit (patch version) of the MMCore version changes
   when there is a change to the device interface version.
 - But several MMCore versions may share the same device interface version.
+
+For a list of device interface versions for each pymmcore version, see the
+[Releases](https://github.com/micro-manager/pymmcore/releases) page.
 
 
 Loading device adapters on Windows
