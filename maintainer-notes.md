@@ -27,11 +27,10 @@ git push origin v1.2.3.4
 
 This triggers a build, since our GitHub workflows build on push, including when
 it's an annotated tag. When the builds complete, download the artifacts and
-collect the wheels. Also locally prepare source distributions (`.tar.gz` and
-`.zip`):
+collect the wheels. Also locally prepare a source distribution:
 ```bash
 git checkout v1.2.3.4
-python setup.py sdist --format=zip,gztar
+python setup.py sdist --format=zip
 ```
 
 Pushing the tag also creates a GitHub release, which can be edited to add
