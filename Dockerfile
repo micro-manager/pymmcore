@@ -1,3 +1,6 @@
+# This dockerfile creates a minimal pymmcore image for demonstration purposes
+# (for example, DemoCamera should work).
+
 FROM ubuntu:18.04
 
 # System packages
