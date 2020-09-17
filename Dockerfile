@@ -3,26 +3,26 @@ FROM ubuntu:18.04
 # System packages
 RUN apt-get update && apt-get install -y \
         bzip2 \
-		bc \
-		build-essential \
-		cmake \
-		curl \
-		g++ \
-		gfortran \
+        bc \
+        build-essential \
+        cmake \
+        curl \
+        g++ \
+        gfortran \
         libboost-dev \
         libboost-thread-dev \
         libtool \
         autoconf \
         automake \
-		git \
-		pkg-config \
-		software-properties-common \
-		unzip \
-		wget \
-		&& \
-	apt-get clean && \
-	apt-get autoremove && \
-	rm -rf /var/lib/apt/lists/*
+        git \
+        pkg-config \
+        software-properties-common \
+        unzip \
+        wget \
+        && \
+    apt-get clean && \
+    apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/*
 RUN addgroup --gid 1001 python && \
     useradd --uid 1001 --gid 1001 python
 
@@ -44,5 +44,5 @@ ENV PATH=/miniconda/bin:${PATH}
 
 RUN conda update -y conda && \
     conda install -y python=3.7.6 numpy && \
-	pip install --upgrade pip && \
-  pip install pymmcore
+    pip install --upgrade pip && \
+    pip install pymmcore
