@@ -21,7 +21,6 @@ import distutils.command.build_ext
 import distutils.file_util
 import distutils.util
 import glob
-import numpy
 import os
 import setuptools
 
@@ -127,6 +126,10 @@ if is_windows:
     mmcore_defines.extend(windows_defines)
 
 
+def _get_includes():
+    import numpy
+    return [numpy.get_include()]
+
 mmcore_extension = setuptools.Extension(
     ext_mod_name,
     sources=mmcore_sources + [
@@ -140,9 +143,7 @@ mmcore_extension = setuptools.Extension(
         '-I./micro-manager/MMDevice',
         '-I./micro-manager/MMCore',
     ],
-    include_dirs=[
-        numpy.get_include(),
-    ],
+    include_dirs=_get_includes(),
     libraries=mmcore_libraries,
     define_macros=mmcore_defines,
 )
