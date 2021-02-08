@@ -59,6 +59,7 @@ ABI Compatibility
   - Python 3.6 - NumPy 1.12.0
   - Python 3.7 - NumPy 1.14.5
   - Python 3.8 - NumPy 1.17.3
+  - Python 3.9 - NumPy 1.19.3
 
 
 ### Windows
