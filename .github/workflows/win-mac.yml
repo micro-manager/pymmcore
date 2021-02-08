@@ -1,6 +1,5 @@
 name: Build Windows and macOS wheels
 
-
 on: [push]
 
 jobs:
@@ -8,35 +7,36 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [macOS]
-        runner: [macos-latest]
-        python-version: [3.9]
-        python-arch: [x64]
+        os: [Windows, macOS]
+        python-version: [3.5, 3.6, 3.7, 3.8]
+        python-arch: [x64, x86]
         boost-version: [1_72_0]
         macos-version: [10.9]
-        # include:
-          # - os: Windows
-          #   runner: windows-latest
-          # - python-version: 3.5
-          #   numpy-version: 1.10.4
-          # - python-version: 3.6
-          #   mac-python-version: 3.6.7
-          #   numpy-version: 1.12.0
-          # - python-version: 3.7
-          #   mac-python-version: 3.7.7
-          #   numpy-version: 1.14.5
-          # - python-version: 3.8
-          #   mac-python-version: 3.8.2
-          #   numpy-version: 1.17.3
-          # - python-arch: x64
-          #   msvc-arch: amd64
-          # - python-arch: x86
-          #   msvc-arch: x86
-        # exclude:
-        #   - os: macOS
-        #     python-arch: x86
-        #   - os: macOS
-        #     python-version: 3.5
+        include:
+          - os: Windows
+            runner: windows-latest
+          - os: macOS
+            runner: macOS-latest
+          - python-version: 3.5
+            numpy-version: 1.10.4
+          - python-version: 3.6
+            mac-python-version: 3.6.7
+            numpy-version: 1.12.0
+          - python-version: 3.7
+            mac-python-version: 3.7.7
+            numpy-version: 1.14.5
+          - python-version: 3.8
+            mac-python-version: 3.8.2
+            numpy-version: 1.17.3
+          - python-arch: x64
+            msvc-arch: amd64
+          - python-arch: x86
+            msvc-arch: x86
+        exclude:
+          - os: macOS
+            python-arch: x86
+          - os: macOS
+            python-version: 3.5
 
     name: ${{ matrix.os }} Python ${{ matrix.python-version }} ${{ matrix.python-arch }}
 
@@ -56,19 +56,19 @@ jobs:
           git submodule update --init --force --recursive --depth=1
 
       - name: Install Python (generic)
-        uses: actions/setup-python@v2
-        # if: matrix.os != 'macOS'
+        uses: actions/setup-python@v1
+        if: matrix.os != 'macOS'
         with:
           python-version: ${{ matrix.python-version }}
           architecture: ${{ matrix.python-arch }}
 
-      # - name: Install Python (macOS)
-      #   if: matrix.os == 'macOS'
-      #   run: |
-      #     # Install Python.org Python
-      #     curl -LO https://www.python.org/ftp/python/${{ matrix.mac-python-version }}/python-${{ matrix.mac-python-version }}-macosx${{ matrix.macos-version }}.pkg
-      #     sudo installer -pkg python-${{ matrix.mac-python-version }}-macosx${{ matrix.macos-version }}.pkg -target /
-      #     /Library/Frameworks/Python.framework/Versions/${{ matrix.python-version }}/bin/python3 -m venv venv
+      - name: Install Python (macOS)
+        if: matrix.os == 'macOS'
+        run: |
+          # Install Python.org Python
+          curl -LO https://www.python.org/ftp/python/${{ matrix.mac-python-version }}/python-${{ matrix.mac-python-version }}-macosx${{ matrix.macos-version }}.pkg
+          sudo installer -pkg python-${{ matrix.mac-python-version }}-macosx${{ matrix.macos-version }}.pkg -target /
+          /Library/Frameworks/Python.framework/Versions/${{ matrix.python-version }}/bin/python3 -m venv venv
 
       - name: Install tools (Windows)
         if: matrix.os == 'Windows'

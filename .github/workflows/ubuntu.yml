@@ -10,7 +10,7 @@ jobs:
   build:
     strategy:
       matrix:
-        runner: [ubuntu-18.04, ubuntu-20.04]
+        runner: [ubuntu-16.04, ubuntu-18.04]
 
     name: ${{ matrix.runner }} build check
 
