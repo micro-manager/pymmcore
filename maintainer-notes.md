@@ -69,15 +69,18 @@ ABI Compatibility
   of the VC runtime (in particular, `vcruntime140.dll`). This means that (in
   theory) our extension module must be built with an MSVC version that is not
   newer than the runtime shipped with Python. I say "in theory" because it is
-  not clear if this actually results in problems, but let's paly it safe.
+  not clear if this actually results in problems, but let's play it safe.
 
-  Python prints the MSVC version used to build itself when started:
-  - Python 3.5.4 (64-bit): MSC v.1900 = VS2015 (14.0)
-  - Python 3.6.8 (64-bit): MSC v.1916 = VS2017 (14.1)
+  Python prints the MSVC version used to build itself when started. This
+  version may change with the patch version of Python. Here are a few examples:
+  - Python 3.5.4 (64-bit): MSC v.1900 = VS2015
+  - Python 3.6.8 (64-bit): MSC v.1916 = VS2017
   - Python 3.7.6 (64-bit): MSC v.1916
   - Python 3.8.1 (64-bit): MSC v.1916
+  - Python 3.9.1 (64-bit): MSC v.1927 = VS2019
+  - Python 3.8.7 (64-bit): MCS v.1928 = VS2019
 
-  In general, it is probably safest to always build with VS2015 (older minor
+  In general, it is probably safest to always build with VS2015 (older patch
   versions of Python 3.7-3.8 may be built with VS2015). This can be done by
   running `setup.py` inside the VS2015 Native Tools Command Prompt (this works
   because we use `setuptools`; with `distutils` extra environment variables are
@@ -94,17 +97,12 @@ ABI Compatibility
   Windows installers are designed for non-admin installation, we technically
   should.
 
-- Another reason why we cannot build with VS2019 at the moment is a compiler
-  [bug](https://developercommunity.visualstudio.com/content/problem/936402/msvc-192428316-generates-incorrect-x64-code-for-in.html),
-  which causes the Swig-wrapped `MMDevice/DeviceConstants.h` code to crash when
-  you import `pymmcore`.
-
 
 ### macOS
 
 - `MACOSX_DEPLOYMENT_TARGET` should be set to match the Python.org Python we
   are building for, as much as reasonably possible. Currently, `10.9` is the
-  best value for Python 3.5-3.8.
+  best value for Python 3.5-3.9.
 - Python up to 3.7 also provide a `10.6`-compatible installer (which also
   includes 32-bit binaries). However, it is not feasible to set up a new build
   environment that can (correctly) build for `<10.9`.
