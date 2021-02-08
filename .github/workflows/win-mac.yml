@@ -8,7 +8,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [Windows, macOS]
-        python-version: [3.5, 3.6, 3.7, 3.8]
+        python-version: [3.5, 3.6, 3.7, 3.8, 3.9]
         python-arch: [x64, x86]
         boost-version: [1_72_0]
         macos-version: [10.9]
@@ -27,6 +27,9 @@ jobs:
             numpy-version: 1.14.5
           - python-version: 3.8
             mac-python-version: 3.8.2
+            numpy-version: 1.17.3
+          - python-version: 3.9
+            mac-python-version: 3.9.1
             numpy-version: 1.17.3
           - python-arch: x64
             msvc-arch: amd64
