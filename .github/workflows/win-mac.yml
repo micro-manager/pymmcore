@@ -30,7 +30,7 @@ jobs:
             numpy-version: 1.17.3
           - python-version: 3.9
             mac-python-version: 3.9.1
-            numpy-version: 1.17.3
+            numpy-version: 1.19.3
           - python-arch: x64
             msvc-arch: amd64
           - python-arch: x86
