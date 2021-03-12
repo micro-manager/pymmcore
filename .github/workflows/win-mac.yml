@@ -12,6 +12,7 @@ jobs:
         python-arch: [x64, x86]
         boost-version: [1_72_0]
         macos-version: [10.9]
+        msvc-version: ['14.0'] # VS2015
         include:
           - os: Windows
             runner: windows-latest
@@ -105,10 +106,10 @@ jobs:
         # current drive other than C:
         run: |
           cd /d "%VCVARSALL_DIR%"
-          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=14.0
+          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=${{ matrix.msvc-version}}
           cd /d %BOOST_ROOT_${{ matrix.boost-version }}%
           call bootstrap.bat
-          b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-14.0
+          b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-${{ matrix.msvc-version }}
 
       - name: Build Boost (macOS)
         if: matrix.os == 'macOS'
@@ -149,7 +150,7 @@ jobs:
           PY_VCRUNTIME_REDIST: 1
         run: |
           pushd "%VCVARSALL_DIR%"
-          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=14.0
+          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=${{ matrix.msvc-version }}
           popd
           cd tmp\pymmcore
           python setup.py build_ext -I%BOOST_ROOT_${{ matrix.boost-version }}% -L%BOOST_ROOT_${{ matrix.boost-version }}%/stage/lib
