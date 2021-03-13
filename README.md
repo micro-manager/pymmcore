@@ -71,8 +71,8 @@ version_ must match between pymmcore and the Micro-Manager device adapters
 The device interface version of a given Micro-Manager installation can be
 viewed in **Help** > **About Micro-Manager**.
 
-The device interface version of a given pymmcore version can be viewed as
-follows:
+The device interface version of a given pymmcore version is the fourth part in
+the version number, and can also be viewed as follows:
 ```python
 import pymmcore
 pymmcore.CMMCore().getAPIVersionInfo()
@@ -82,11 +82,13 @@ Note that `getAPIVersionInfo()` should not be confused with `getVersionInfo()`,
 which returns the version number of MMCore. (The MMCore version is the first 3
 parts of the pymmcore version.)
 
-- For example, pymmcore `10.0.0.0` is based on MMCore `10.0.0`. That version of
-  MMCore had device interface version `69`.
-- Usually at least the last digit (patch version) of the MMCore version changes
-  when there is a change to the device interface version.
-- But several MMCore versions may share the same device interface version.
+- For example, pymmcore `10.1.1.69.0` is based on MMCore `10.1.1` and has
+  device interface version `69`.
+- The device interface version can change independently of the MMCore version,
+  although it is less common for the device interface version to be incremented
+  without a corresponding version change of MMCore.
+- Older versions of pymmcore did not include the device interface version in
+  their version number.
 
 For a list of device interface versions for each pymmcore version, see the
 [Releases](https://github.com/micro-manager/pymmcore/releases) page.
