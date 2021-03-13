@@ -19,7 +19,7 @@ jobs:
       AUDITWHEEL_PLAT: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
       DOCKER_IMAGE: quay.io/pypa/manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
       BOOST_VERSION: ${{ matrix.boost-version }}
-      NUMPY_VERSIONS: cp35-cp35m 1.10.4 cp36-cp36m 1.12.0 cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3
+      NUMPY_VERSIONS: cp36-cp36m 1.12.0 cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3
 
     steps:
 
