@@ -99,28 +99,35 @@ jobs:
           python -m pip install --upgrade setuptools wheel
           python -m pip install numpy==${{ matrix.numpy-version }}
 
+      - name: Get Boost source
+        shell: bash
+        run: |
+          BOOST_VER=${{ matrix.boost-version }}
+          BOOST_DOTS=${BOOST_VER//_/.}
+          BOOST_TGZ=boost_$BOOST_VER.tar.gz
+          curl -fLO https://dl.bintray.com/boostorg/release/$BOOST_DOTS/source/$BOOST_TGZ || \
+              curl -fLO https://astuteinternet.dl.sourceforge.net/project/boost/boost/$BOOST_DOTS/$BOOST_TGZ
+          PATH="$PATH:/usr/bin/core_perl"  # shasum in Windows Git Bash
+          # Windows shasum fails if file list contains DOS newlines
+          tr -d '\015' <boost-sha256.txt >boost-sha256.unix.txt
+          shasum -a 256 -c boost-sha256.unix.txt
+          tar xzf $BOOST_TGZ
+
       - name: Build Boost (Windows)
         if: matrix.os == 'Windows'
         shell: cmd
-        # At least some versions of vcvarsall.bat fail when run with the
-        # current drive other than C:
         run: |
-          cd /d "%VCVARSALL_DIR%"
-          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=${{ matrix.msvc-version}}
-          cd /d %BOOST_ROOT_${{ matrix.boost-version }}%
+          pushd "%VCVARSALL_DIR%"
+          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=${{ matrix.msvc-version }}
+          popd
+          cd boost_${{ matrix.boost-version }}
           call bootstrap.bat
           b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-${{ matrix.msvc-version }}
 
       - name: Build Boost (macOS)
         if: matrix.os == 'macOS'
         run: |
-          BOOST_VER=${{ matrix.boost-version }}
-          BOOST_TGZ=boost_$BOOST_VER.tar.gz
-          curl -fLO https://dl.bintray.com/boostorg/release/${BOOST_VER//_/.}/source/$BOOST_TGZ || \
-              curl -fLO https://astuteinternet.dl.sourceforge.net/project/boost/boost/${BOOST_VER//_/.}/$BOOST_TGZ
-          shasum -a 256 -c boost-sha256.txt
-          tar xzf $BOOST_TGZ
-          cd boost_$BOOST_VER
+          cd boost_${{ matrix.boost-version }}
           ./bootstrap.sh
           ./b2 --with-system --with-thread --with-date_time link=static architecture=x86 address-model=64
 
@@ -145,6 +152,7 @@ jobs:
         if: matrix.os == 'Windows'
         shell: cmd
         env:
+          BOOST_ROOT: ../../boost_${{ matrix.boost-version }}
           MSSdk: 1
           DISTUTILS_USE_SDK: 1
           PY_VCRUNTIME_REDIST: 1
@@ -153,7 +161,7 @@ jobs:
           call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=${{ matrix.msvc-version }}
           popd
           cd tmp\pymmcore
-          python setup.py build_ext -I%BOOST_ROOT_${{ matrix.boost-version }}% -L%BOOST_ROOT_${{ matrix.boost-version }}%/stage/lib
+          python setup.py build_ext -I%BOOST_ROOT% -L%BOOST_ROOT%/stage/lib
           python setup.py build
           python setup.py bdist_wheel
 
