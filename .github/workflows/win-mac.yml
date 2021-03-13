@@ -8,27 +8,28 @@ jobs:
       fail-fast: true
       matrix:
         os: [Windows, macOS]
-        python-version: [3.5, 3.6, 3.7, 3.8, 3.9]
+        python-version: ['3.5', '3.6', '3.7', '3.8', '3.9']
         python-arch: [x64, x86]
-        boost-version: [1_72_0]
-        macos-version: [10.9]
+        boost-version: ['1_72_0']
+        macos-version: ['10.9']
+        msvc-version: ['14.0'] # VS2015
         include:
           - os: Windows
             runner: windows-latest
           - os: macOS
             runner: macOS-latest
-          - python-version: 3.5
+          - python-version: '3.5'
             numpy-version: 1.10.4
-          - python-version: 3.6
+          - python-version: '3.6'
             mac-python-version: 3.6.7
             numpy-version: 1.12.0
-          - python-version: 3.7
+          - python-version: '3.7'
             mac-python-version: 3.7.7
             numpy-version: 1.14.5
-          - python-version: 3.8
+          - python-version: '3.8'
             mac-python-version: 3.8.2
             numpy-version: 1.17.3
-          - python-version: 3.9
+          - python-version: '3.9'
             mac-python-version: 3.9.1
             numpy-version: 1.19.3
           - python-arch: x64
@@ -39,7 +40,7 @@ jobs:
           - os: macOS
             python-arch: x86
           - os: macOS
-            python-version: 3.5
+            python-version: '3.5'
 
     name: ${{ matrix.os }} Python ${{ matrix.python-version }} ${{ matrix.python-arch }}
 
@@ -98,28 +99,35 @@ jobs:
           python -m pip install --upgrade setuptools wheel
           python -m pip install numpy==${{ matrix.numpy-version }}
 
+      - name: Get Boost source
+        shell: bash
+        run: |
+          BOOST_VER=${{ matrix.boost-version }}
+          BOOST_DOTS=${BOOST_VER//_/.}
+          BOOST_TGZ=boost_$BOOST_VER.tar.gz
+          curl -fLO https://dl.bintray.com/boostorg/release/$BOOST_DOTS/source/$BOOST_TGZ || \
+              curl -fLO https://astuteinternet.dl.sourceforge.net/project/boost/boost/$BOOST_DOTS/$BOOST_TGZ
+          PATH="$PATH:/usr/bin/core_perl"  # shasum in Windows Git Bash
+          # Windows shasum fails if file list contains DOS newlines
+          tr -d '\015' <boost-sha256.txt >boost-sha256.unix.txt
+          shasum -a 256 -c boost-sha256.unix.txt
+          tar xzf $BOOST_TGZ
+
       - name: Build Boost (Windows)
         if: matrix.os == 'Windows'
         shell: cmd
-        # At least some versions of vcvarsall.bat fail when run with the
-        # current drive other than C:
         run: |
-          cd /d "%VCVARSALL_DIR%"
-          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=14.0
-          cd /d %BOOST_ROOT_${{ matrix.boost-version }}%
+          pushd "%VCVARSALL_DIR%"
+          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=${{ matrix.msvc-version }}
+          popd
+          cd boost_${{ matrix.boost-version }}
           call bootstrap.bat
-          b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-14.0
+          b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-${{ matrix.msvc-version }}
 
       - name: Build Boost (macOS)
         if: matrix.os == 'macOS'
         run: |
-          BOOST_VER=${{ matrix.boost-version }}
-          BOOST_TGZ=boost_$BOOST_VER.tar.gz
-          curl -fLO https://dl.bintray.com/boostorg/release/${BOOST_VER//_/.}/source/$BOOST_TGZ || \
-              curl -fLO https://astuteinternet.dl.sourceforge.net/project/boost/boost/${BOOST_VER//_/.}/$BOOST_TGZ
-          shasum -a 256 -c boost-sha256.txt
-          tar xzf $BOOST_TGZ
-          cd boost_$BOOST_VER
+          cd boost_${{ matrix.boost-version }}
           ./bootstrap.sh
           ./b2 --with-system --with-thread --with-date_time link=static architecture=x86 address-model=64
 
@@ -144,15 +152,16 @@ jobs:
         if: matrix.os == 'Windows'
         shell: cmd
         env:
+          BOOST_ROOT: ../../boost_${{ matrix.boost-version }}
           MSSdk: 1
           DISTUTILS_USE_SDK: 1
           PY_VCRUNTIME_REDIST: 1
         run: |
           pushd "%VCVARSALL_DIR%"
-          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=14.0
+          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=${{ matrix.msvc-version }}
           popd
           cd tmp\pymmcore
-          python setup.py build_ext -I%BOOST_ROOT_${{ matrix.boost-version }}% -L%BOOST_ROOT_${{ matrix.boost-version }}%/stage/lib
+          python setup.py build_ext -I%BOOST_ROOT% -L%BOOST_ROOT%/stage/lib
           python setup.py build
           python setup.py bdist_wheel
 
