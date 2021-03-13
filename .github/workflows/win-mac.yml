@@ -8,7 +8,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [Windows, macOS]
-        python-version: ['3.5', '3.6', '3.7', '3.8', '3.9']
+        python-version: ['3.6', '3.7', '3.8', '3.9']
         python-arch: [x64, x86]
         boost-version: ['1_72_0']
         macos-version: ['10.9']
@@ -18,8 +18,6 @@ jobs:
             runner: windows-latest
           - os: macOS
             runner: macOS-latest
-          - python-version: '3.5'
-            numpy-version: 1.10.4
           - python-version: '3.6'
             mac-python-version: 3.6.7
             numpy-version: 1.12.0
@@ -39,8 +37,6 @@ jobs:
         exclude:
           - os: macOS
             python-arch: x86
-          - os: macOS
-            python-version: '3.5'
 
     name: ${{ matrix.os }} Python ${{ matrix.python-version }} ${{ matrix.python-arch }}
 

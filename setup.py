@@ -149,8 +149,8 @@ mmcore_extension = setuptools.Extension(
 
 
 # See maintainer notes!
-python_req = '>=3.5'
-numpy_req = '>=1.10.4'
+python_req = '>=3.6'
+numpy_req = '>=1.12.0'
 
 
 setuptools.setup(
