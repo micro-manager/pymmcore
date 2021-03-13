@@ -7,9 +7,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        manylinux-version: [2010] # 2014 should be added when auditwheel fixed
+        manylinux-version: ['2010'] # 2014 should be added when auditwheel fixed
         arch: [i686, x86_64]
-        boost-version: [1_72_0]
+        boost-version: ['1_72_0']
 
     name: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
 
