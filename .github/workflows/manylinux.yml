@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        manylinux-version: ['2010'] # 2014 should be added when auditwheel fixed
+        manylinux-version: ['2014']
         arch: [i686, x86_64]
         boost-version: ['1_72_0']
 
