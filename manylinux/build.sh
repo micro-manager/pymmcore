@@ -10,8 +10,9 @@ cd /
 
 BOOST_DOTS=${BOOST_VERSION//_/.}
 BOOST_TGZ=boost_$BOOST_VERSION.tar.gz
-curl -fLO https://dl.bintray.com/boostorg/release/$BOOST_DOTS/source/$BOOST_TGZ || \
-    curl -fLO https://astuteinternet.dl.sourceforge.net/project/boost/boost/$BOOST_DOTS/$BOOST_TGZ
+# Try official source and an (arbitrary) SourceForge mirror
+curl -fLO https://boostorg.jfrog.io/artifactory/main/release/$BOOST_DOTS/source/$BOOST_TGZ || \
+    curl -fLO https://iweb.dl.sourceforge.net/project/boost/boost/$BOOST_DOTS/$BOOST_TGZ
 sha256sum -c /io/boost-sha256.txt
 tar xzf $BOOST_TGZ
 pushd boost_$BOOST_VERSION

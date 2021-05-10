@@ -101,8 +101,9 @@ jobs:
           BOOST_VER=${{ matrix.boost-version }}
           BOOST_DOTS=${BOOST_VER//_/.}
           BOOST_TGZ=boost_$BOOST_VER.tar.gz
-          curl -fLO https://dl.bintray.com/boostorg/release/$BOOST_DOTS/source/$BOOST_TGZ || \
-              curl -fLO https://astuteinternet.dl.sourceforge.net/project/boost/boost/$BOOST_DOTS/$BOOST_TGZ
+          # Try official source and an (arbitrary) SourceForge mirror
+          curl -fLO https://boostorg.jfrog.io/artifactory/main/release/$BOOST_DOTS/source/$BOOST_TGZ || \
+              curl -fLO https://iweb.dl.sourceforge.net/project/boost/boost/$BOOST_DOTS/$BOOST_TGZ
           PATH="$PATH:/usr/bin/core_perl"  # shasum in Windows Git Bash
           # Windows shasum fails if file list contains DOS newlines
           tr -d '\015' <boost-sha256.txt >boost-sha256.unix.txt
