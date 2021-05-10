@@ -20,7 +20,7 @@ Note that we can support multiple MMCore versions, possibly retroactively, by
 maintaining separate branches; this can ease transition when the device
 interface version changes. Such branches should be named `mmcore-x.y.z.w`.
 
-When upgrading the MMCore version (by bumping the micro-manager submodule
+When upgrading the MMCore version (by bumping the mmCoreAndDevices submodule
 commit), the pymmcore version in `setup.cfg` should be updated together.
 
 

@@ -41,7 +41,7 @@ class build_ext(distutils.command.build_ext.build_ext):
         self.run_command('build_clib')
         distutils.command.build_ext.build_ext.run(self)
         distutils.file_util.copy_file(
-            'micro-manager/MMCorePy_wrap/' + py_mod_name + '.py',
+            'mmCoreAndDevices/MMCorePy_wrap/' + py_mod_name + '.py',
             py_mod_name + '.py')
 
 
@@ -61,9 +61,9 @@ windows_defines = [
 
 
 mmdevice_build_info = {
-    'sources': glob.glob('micro-manager/MMDevice/*.cpp'),
+    'sources': glob.glob('mmCoreAndDevices/MMDevice/*.cpp'),
     'include_dirs': [
-        'micro-manager/MMDevice',
+        'mmCoreAndDevices/MMDevice',
     ],
     'macros': [
         ('MODULE_EXPORTS', None),
@@ -75,11 +75,11 @@ if is_windows:
 
 
 mmcore_source_globs = [
-    'micro-manager/MMCore/*.cpp',
-    'micro-manager/MMCore/Devices/*.cpp',
-    'micro-manager/MMCore/LibraryInfo/*.cpp',
-    'micro-manager/MMCore/LoadableModules/*.cpp',
-    'micro-manager/MMCore/Logging/*.cpp',
+    'mmCoreAndDevices/MMCore/*.cpp',
+    'mmCoreAndDevices/MMCore/Devices/*.cpp',
+    'mmCoreAndDevices/MMCore/LibraryInfo/*.cpp',
+    'mmCoreAndDevices/MMCore/LoadableModules/*.cpp',
+    'mmCoreAndDevices/MMCore/Logging/*.cpp',
 ]
 
 mmcore_sources = []
@@ -130,15 +130,15 @@ if is_windows:
 mmcore_extension = setuptools.Extension(
     ext_mod_name,
     sources=mmcore_sources + [
-        'micro-manager/MMCorePy_wrap/MMCorePy.i',
+        'mmCoreAndDevices/MMCorePy_wrap/MMCorePy.i',
     ],
     swig_opts=[
         '-c++',
         '-py3',
         '-builtin',
         '-module', py_mod_name,
-        '-I./micro-manager/MMDevice',
-        '-I./micro-manager/MMCore',
+        '-I./mmCoreAndDevices/MMDevice',
+        '-I./mmCoreAndDevices/MMCore',
     ],
     include_dirs=[
         numpy.get_include(),

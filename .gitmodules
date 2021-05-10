@@ -1,3 +1,4 @@
-[submodule "micro-manager"]
-	path = micro-manager
-	url = https://github.com/micro-manager/micro-manager.git
+[submodule "mmCoreAndDevices"]
+	path = mmCoreAndDevices
+	url = https://github.com/micro-manager/mmCoreAndDevices.git
+	branch = main
