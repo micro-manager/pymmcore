@@ -28,7 +28,7 @@ Release procedure
 -----------------
 
 Prepare two commits, one removing `dev` from the version and a subsequent one
-bumping to the next `dev` version. Push to master. Tag the (single) commit with
+bumping to the next `dev` version. Push to `main`. Tag the (single) commit with
 the release version; the tag should be `v` prefixed to the version:
 ```bash
 git tag -a v1.2.3.42.4 $commit -m Release
