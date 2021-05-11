@@ -1,33 +1,31 @@
-///////////////////////////////////////////////////////////////////////////////
-// FILE:          MMCorePy.i
-// PROJECT:       Micro-Manager
-// SUBSYSTEM:     MMCorePy
-//-----------------------------------------------------------------------------
-// DESCRIPTION:   SWIG generator for the Python interface wrapper.
-//              
-// COPYRIGHT:     University of California, San Francisco, 2006,
-//                All Rights reserved
+// SWIG interface file for MMCore Python bindings
 //
-// LICENSE:       This file is distributed under the "Lesser GPL" (LGPL) license.
-//                License text is included with the source distribution.
+// Copyright (C) 2006-2021 Regents of the University of California
+//           (C) 2020-2021 Board of Regents of the University of Wisconsin
+//                         System
 //
-//                This file is distributed in the hope that it will be useful,
-//                but WITHOUT ANY WARRANTY; without even the implied warranty
-//                of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// This library is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License, version 2.1, as
+// published by the Free Software Foundation.
 //
-//                IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-//                CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-//                INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES.
+// This library is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+// for more details.
 //
-// AUTHOR:        Arthur Edelstein, arthuredelstein@gmail.com, 2009.08.11
-//                based on the java wrapper code by
-//                Nenad Amodaj, nenad@amodaj.com, 06/07/2005
-// 
-// CVS:           $Id: MMCorePy.i 2178 2009-02-27 13:08:53Z nenad $
+// You should have received a copy of the GNU Lesser General Public License
+// along with this library; if not, write to the Free Software Foundation,
+// Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 //
-
-
-
+// Author:  Arthur Edelstein, arthuredelstein@gmail.com, 2009.08.11,
+//          based on the Java wrapper code by
+//          Nenad Amodaj, nenad@amodaj.com, 06/07/2005, and
+//          Micro-Manager team and contributors.
+//
+// History: This file used to be part of the micro-manager source tree; then
+//          part of the mmCoreAndDevices source tree. It was moved to this
+//          source tree (pymmcore) after mmCoreAndDevices commit
+//          5fbfe334730583fc5bd86af875f278f76f88b34d (2021-05-06).
 
 
 %module (directors="1") MMCorePy
@@ -107,7 +105,7 @@ import_array();
    unsigned numChannels = (arg1)->getNumberOfComponents();
    unsigned char * pyBuf;
    unsigned char * coreBuf = (unsigned char *) result;
-   
+
    if ((arg1)->getBytesPerPixel() == 4 && numChannels == 1)
    {
 
@@ -119,8 +117,8 @@ import_array();
 
 	  // copy R,G,B but leave out A in RGBA to return a WxHx3-dimensional array
 
-	  long pixelCount = dims[0] * dims[1];         
-	  
+	  long pixelCount = dims[0] * dims[1];
+
 	  for (long i=0; i<pixelCount; ++i)
 	  {
 	     *pyBuf++ = *coreBuf++; //R
@@ -129,7 +127,7 @@ import_array();
 
 	     ++coreBuf; // Skip the empty byte
 	  }
-	  
+
 	  // Return the numpy array object
 
       $result = numpyArray;
@@ -166,7 +164,7 @@ import_array();
                     PyErr_SetString(PyExc_TypeError, "One of the Image strings is the wrong length for this SLM.");
                     return NULL;
                 }
-   
+
                 inputVector.push_back((unsigned char *)PyString_AsString(o));
             }
             else
@@ -212,12 +210,12 @@ PyObject *setSLMImage_pywrap(const char* slmLabel, char *pixels, int receivedLen
 
 %{
 #define SWIG_FILE_WITH_INIT
-#include "../MMDevice/MMDeviceConstants.h"
-#include "../MMCore/Error.h"
-#include "../MMCore/Configuration.h"
-#include "../MMDevice/ImageMetadata.h"
-#include "../MMCore/MMEventCallback.h"
-#include "../MMCore/MMCore.h"
+#include "mmCoreAndDevices/MMDevice/MMDeviceConstants.h"
+#include "mmCoreAndDevices/MMCore/Error.h"
+#include "mmCoreAndDevices/MMCore/Configuration.h"
+#include "mmCoreAndDevices/MMDevice/ImageMetadata.h"
+#include "mmCoreAndDevices/MMCore/MMEventCallback.h"
+#include "mmCoreAndDevices/MMCore/MMCore.h"
 %}
 
 // Map Error codes to the appropriate python error type, and populate error message.
@@ -301,9 +299,9 @@ namespace std {
 %apply int &OUTPUT { int &ySize };
 
 
-%include "../MMDevice/MMDeviceConstants.h"
-%include "../MMCore/Error.h"
-%include "../MMCore/Configuration.h"
-%include "../MMCore/MMCore.h"
-%include "../MMDevice/ImageMetadata.h"
-%include "../MMCore/MMEventCallback.h"
+%include "mmCoreAndDevices/MMDevice/MMDeviceConstants.h"
+%include "mmCoreAndDevices/MMCore/Error.h"
+%include "mmCoreAndDevices/MMCore/Configuration.h"
+%include "mmCoreAndDevices/MMCore/MMCore.h"
+%include "mmCoreAndDevices/MMDevice/ImageMetadata.h"
+%include "mmCoreAndDevices/MMCore/MMEventCallback.h"
