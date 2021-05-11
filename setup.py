@@ -1,8 +1,7 @@
 # Setup for pymmcore
 #
-# Author: Mark Tsuchida
-#
-# Copyright (C) 2020 Board of Regents of the University of Wisconsin System
+# Copyright (C) 2020-2021 Board of Regents of the University of Wisconsin
+#                         System
 #
 # This library is free software; you can redistribute it and/or modify it under
 # the terms of the GNU Lesser General Public License, version 2.1, as published
@@ -16,6 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this library; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+#
+# Author: Mark A. Tsuchida
 
 import distutils.command.build_ext
 import distutils.file_util
@@ -40,9 +41,6 @@ class build_ext(distutils.command.build_ext.build_ext):
     def run(self):
         self.run_command('build_clib')
         distutils.command.build_ext.build_ext.run(self)
-        distutils.file_util.copy_file(
-            'mmCoreAndDevices/MMCorePy_wrap/' + py_mod_name + '.py',
-            py_mod_name + '.py')
 
 
 is_windows = distutils.util.get_platform().startswith('win')
@@ -130,7 +128,7 @@ if is_windows:
 mmcore_extension = setuptools.Extension(
     ext_mod_name,
     sources=mmcore_sources + [
-        'mmCoreAndDevices/MMCorePy_wrap/MMCorePy.i',
+        'pymmcore.i',
     ],
     swig_opts=[
         '-c++',
