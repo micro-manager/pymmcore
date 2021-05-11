@@ -27,7 +27,6 @@
 //          source tree (pymmcore) after mmCoreAndDevices commit
 //          5fbfe334730583fc5bd86af875f278f76f88b34d (2021-05-06).
 
-
 %module (directors="1") MMCorePy
 %feature("director") MMEventCallback;
 %feature("autodoc", "3");
@@ -55,90 +54,90 @@ import_array();
 
 %typemap(out) void*
 {
-   npy_intp dims[2];
-   dims[0] = (arg1)->getImageHeight();
-   dims[1] = (arg1)->getImageWidth();
-   npy_intp pixelCount = dims[0] * dims[1];
+    npy_intp dims[2];
+    dims[0] = (arg1)->getImageHeight();
+    dims[1] = (arg1)->getImageWidth();
+    npy_intp pixelCount = dims[0] * dims[1];
 
-   if ((arg1)->getBytesPerPixel() == 1)
-   {
-      PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT8);
-      memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount);
-      $result = numpyArray;
-   }
-   else if ((arg1)->getBytesPerPixel() == 2)
-   {
-      PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT16);
-      memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 2);
-      $result = numpyArray;
-   }
-   else if ((arg1)->getBytesPerPixel() == 4)
-   {
-      PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT32);
-      memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 4);
-      $result = numpyArray;
-   }
-   else if ((arg1)->getBytesPerPixel() == 8)
-   {
-      PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT64);
-      memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 8);
-      $result = numpyArray;
-   }
-   else
-   {
-      // don't know how to map
-      // TODO: thow exception?
-      // XXX Must do something, as returning NULL without setting error results
-      // in an opaque error.
-      $result = 0;
-   }
+    if ((arg1)->getBytesPerPixel() == 1)
+    {
+        PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT8);
+        memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount);
+        $result = numpyArray;
+    }
+    else if ((arg1)->getBytesPerPixel() == 2)
+    {
+        PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT16);
+        memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 2);
+        $result = numpyArray;
+    }
+    else if ((arg1)->getBytesPerPixel() == 4)
+    {
+        PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT32);
+        memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 4);
+        $result = numpyArray;
+    }
+    else if ((arg1)->getBytesPerPixel() == 8)
+    {
+        PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT64);
+        memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 8);
+        $result = numpyArray;
+    }
+    else
+    {
+        // don't know how to map
+        // TODO: thow exception?
+        // XXX Must do something, as returning NULL without setting error results
+        // in an opaque error.
+        $result = 0;
+    }
 }
 
 
 %typemap(out) unsigned int*
 {
-   //Here we assume we are getting RGBA (32 bits).
-   npy_intp dims[3];
-   dims[0] = (arg1)->getImageHeight();
-   dims[1] = (arg1)->getImageWidth();
-   dims[2] = 3; // RGB
-   unsigned numChannels = (arg1)->getNumberOfComponents();
-   unsigned char * pyBuf;
-   unsigned char * coreBuf = (unsigned char *) result;
+    //Here we assume we are getting RGBA (32 bits).
+    npy_intp dims[3];
+    dims[0] = (arg1)->getImageHeight();
+    dims[1] = (arg1)->getImageWidth();
+    dims[2] = 3; // RGB
+    unsigned numChannels = (arg1)->getNumberOfComponents();
+    unsigned char * pyBuf;
+    unsigned char * coreBuf = (unsigned char *) result;
 
-   if ((arg1)->getBytesPerPixel() == 4 && numChannels == 1)
-   {
+    if ((arg1)->getBytesPerPixel() == 4 && numChannels == 1)
+    {
 
-	  // create new numpy array object
-      PyObject * numpyArray = PyArray_SimpleNew(3, dims, NPY_UINT8);
+        // create new numpy array object
+        PyObject * numpyArray = PyArray_SimpleNew(3, dims, NPY_UINT8);
 
-	  // get a pointer to the data buffer
-	  pyBuf = (unsigned char *) PyArray_DATA((PyArrayObject *) numpyArray);
+        // get a pointer to the data buffer
+        pyBuf = (unsigned char *) PyArray_DATA((PyArrayObject *) numpyArray);
 
-	  // copy R,G,B but leave out A in RGBA to return a WxHx3-dimensional array
+        // copy R,G,B but leave out A in RGBA to return a WxHx3-dimensional array
 
-	  long pixelCount = dims[0] * dims[1];
+        long pixelCount = dims[0] * dims[1];
 
-	  for (long i=0; i<pixelCount; ++i)
-	  {
-	     *pyBuf++ = *coreBuf++; //R
-	     *pyBuf++ = *coreBuf++; //G
-	     *pyBuf++ = *coreBuf++; //B
+        for (long i=0; i<pixelCount; ++i)
+        {
+            *pyBuf++ = *coreBuf++; //R
+            *pyBuf++ = *coreBuf++; //G
+            *pyBuf++ = *coreBuf++; //B
 
-	     ++coreBuf; // Skip the empty byte
-	  }
+            ++coreBuf; // Skip the empty byte
+        }
 
-	  // Return the numpy array object
+        // Return the numpy array object
 
-      $result = numpyArray;
+        $result = numpyArray;
 
-   }
-   else
-   {
-      // don't know how to map
-      // TODO: thow exception?
-      $result = 0;
-   }
+    }
+    else
+    {
+        // don't know how to map
+        // TODO: thow exception?
+        $result = 0;
+    }
 }
 
 /* tell SWIG to treat char ** as a list of strings */
@@ -187,23 +186,23 @@ import_array();
 %extend CMMCore {
 PyObject *setSLMImage_pywrap(const char* slmLabel, char *pixels, int receivedLength)
 {
-   long expectedLength = self->getSLMWidth(slmLabel) * self->getSLMHeight(slmLabel);
-   //printf("expected: %d -- received: %d\n",expectedLength,receivedLength);
+    long expectedLength = self->getSLMWidth(slmLabel) * self->getSLMHeight(slmLabel);
+    //printf("expected: %d -- received: %d\n",expectedLength,receivedLength);
 
-   if (receivedLength == expectedLength)
-   {
-      self->setSLMImage(slmLabel, (unsigned char *)pixels);
-   }
-   else if (receivedLength == 4*expectedLength)
-   {
-      self->setSLMImage(slmLabel, (imgRGB32)pixels);
-   }
-   else
-   {
-      PyErr_SetString(PyExc_TypeError, "Image dimensions are wrong for this SLM.");
-      return (PyObject *) NULL;
-   }
-   return PyInt_FromLong(0);
+    if (receivedLength == expectedLength)
+    {
+        self->setSLMImage(slmLabel, (unsigned char *)pixels);
+    }
+    else if (receivedLength == 4*expectedLength)
+    {
+        self->setSLMImage(slmLabel, (imgRGB32)pixels);
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "Image dimensions are wrong for this SLM.");
+        return (PyObject *) NULL;
+    }
+    return PyInt_FromLong(0);
 }
 }
 %ignore setSLMImage;
@@ -277,8 +276,6 @@ PyObject *setSLMImage_pywrap(const char* slmLabel, char *pixels, int receivedLen
     SWIG_exception(SWIG_IndexError, ($1).getMsg().c_str());
 %}
 
-
-
 // instantiate STL mappings
 namespace std {
     %template(CharVector)   vector<char>;
@@ -289,7 +286,6 @@ namespace std {
     %template(StrMap)       map<string, string>;
 }
 
-
 // output arguments
 %apply double &OUTPUT { double &x_stage };
 %apply double &OUTPUT { double &y_stage };
@@ -297,7 +293,6 @@ namespace std {
 %apply int &OUTPUT { int &y };
 %apply int &OUTPUT { int &xSize };
 %apply int &OUTPUT { int &ySize };
-
 
 %include "mmCoreAndDevices/MMDevice/MMDeviceConstants.h"
 %include "mmCoreAndDevices/MMCore/Error.h"
