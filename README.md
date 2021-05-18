@@ -120,6 +120,12 @@ Please report any cases where the Micro-Manager application can load a
 configuration but pymmcore cannot, even when using the above methods.
 
 
+Code of Conduct
+---------------
+
+This project is covered by the [Micro-Manager Code of Conduct](https://github.com/micro-manager/micro-manager/blob/master/CodeOfConduct.md).
+
+
 License
 -------
 
