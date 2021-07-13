@@ -73,7 +73,7 @@ jobs:
       - name: Install tools (Windows)
         if: matrix.os == 'Windows'
         run: |
-          choco install -y swig --version 4.0.1
+          choco install -y swig
 
       - name: Install tools (macOS)
         if: matrix.os == 'macOS'
