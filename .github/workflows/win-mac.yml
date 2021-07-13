@@ -180,7 +180,7 @@ jobs:
         if: matrix.os == 'macOS'
         run: |
           cd tmp/pymmcore
-          PYMOD=$(echo build/lib.*/_pymmcore.*.so)
+          PYMOD=$(echo build/lib.*/pymmcore/_pymmcore_swig.*.so)
 
           echo "$PYMOD:"
           echo 'Weak symbols:'

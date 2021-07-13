@@ -57,7 +57,7 @@ jobs:
         run: |
           cd tmp/pymmcore
           echo 'Missing symbols:'
-          ldd -r build/lib.*/_pymmcore.*.so |grep '^undefined symbol:' |grep -v Py && exit 1
+          ldd -r build/lib.*/pymmcore/_pymmcore_swig.*.so |grep '^undefined symbol:' |grep -v Py && exit 1
           echo '-- end of missing symbols --'
 
       - name: Smoke test

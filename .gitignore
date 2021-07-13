@@ -9,7 +9,7 @@ dist/
 
 wheelhouse/
 
-pymmcore_wrap.h
-pymmcore_wrap.cpp
-pymmcore.py
+pymmcore/pymmcore_swig_wrap.h
+pymmcore/pymmcore_swig_wrap.cpp
+pymmcore/pymmcore_swig.py
 pymmcore.egg-info
