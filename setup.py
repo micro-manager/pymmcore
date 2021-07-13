@@ -172,7 +172,7 @@ numpy_req = '>=1.12.0'
 
 
 setuptools.setup(
-    packages=[pkg_name],
+    packages=setuptools.find_packages(include=(pkg_name + '*',)),
     ext_modules=[mmcore_extension],
     libraries=[
         ('MMDevice', mmdevice_build_info),
