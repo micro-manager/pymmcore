@@ -188,4 +188,7 @@ setuptools.setup(
         'build_ext': build_ext,
         'build_py': build_py,
     },
+    package_data={
+        'pymmcore': ['*.pyi', 'py.typed'],
+    },
 )
