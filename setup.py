@@ -18,16 +18,19 @@
 #
 # Author: Mark A. Tsuchida
 
-import distutils.command.build_ext
 import distutils.file_util
 import distutils.util
 import glob
 import numpy
 import os
+import os.path
 import setuptools
+import setuptools.command.build_ext
+import setuptools.command.build_py
 
-py_mod_name = 'pymmcore'
-ext_mod_name = '_' + py_mod_name
+pkg_name = 'pymmcore'
+swig_mod_name = 'pymmcore_swig'
+ext_mod_name = '.'.join((pkg_name, '_' + swig_mod_name))
 
 
 # We build MMCore from sources, into the Python extension. MMCore depends on
@@ -36,11 +39,20 @@ ext_mod_name = '_' + py_mod_name
 # make use of a rather obscure feature of distutils/setuptools called
 # build_clib. There may be other ways to do this....
 
-# Customize build_ext to also run build_clib and also copy the Python module
-class build_ext(distutils.command.build_ext.build_ext):
+
+# Customize 'build_py' to run 'build_ext' first; otherwise the SWIG-generated
+# .py file gets missed.
+class build_py(setuptools.command.build_py.build_py):
+    def run(self):
+        self.run_command('build_ext')
+        super().run()
+
+
+# Customize 'build_ext' to trigger 'build_clib' first.
+class build_ext(setuptools.command.build_ext.build_ext):
     def run(self):
         self.run_command('build_clib')
-        distutils.command.build_ext.build_ext.run(self)
+        super().run()
 
 
 is_windows = distutils.util.get_platform().startswith('win')
@@ -137,13 +149,12 @@ if is_windows:
 mmcore_extension = setuptools.Extension(
     ext_mod_name,
     sources=mmcore_sources + [
-        'pymmcore.i',
+        os.path.join(pkg_name, swig_mod_name + '.i'),
     ],
     swig_opts=[
         '-c++',
         '-py3',
         '-builtin',
-        '-module', py_mod_name,
         '-I./mmCoreAndDevices/MMDevice',
         '-I./mmCoreAndDevices/MMCore',
     ],
@@ -161,7 +172,7 @@ numpy_req = '>=1.12.0'
 
 
 setuptools.setup(
-    py_modules=[py_mod_name],
+    packages=setuptools.find_packages(include=(pkg_name + '*',)),
     ext_modules=[mmcore_extension],
     libraries=[
         ('MMDevice', mmdevice_build_info),
@@ -175,5 +186,6 @@ setuptools.setup(
     ],
     cmdclass={
         'build_ext': build_ext,
+        'build_py': build_py,
     },
 )

@@ -27,7 +27,8 @@
 //          source tree (pymmcore) after mmCoreAndDevices commit
 //          5fbfe334730583fc5bd86af875f278f76f88b34d (2021-05-06).
 
-%module (directors="1") MMCorePy
+%module (package="pymmcore", directors="1") pymmcore_swig
+
 %feature("director") MMEventCallback;
 %feature("autodoc", "3");
 
@@ -209,12 +210,12 @@ PyObject *setSLMImage_pywrap(const char* slmLabel, char *pixels, int receivedLen
 
 %{
 #define SWIG_FILE_WITH_INIT
-#include "mmCoreAndDevices/MMDevice/MMDeviceConstants.h"
-#include "mmCoreAndDevices/MMCore/Error.h"
-#include "mmCoreAndDevices/MMCore/Configuration.h"
-#include "mmCoreAndDevices/MMDevice/ImageMetadata.h"
-#include "mmCoreAndDevices/MMCore/MMEventCallback.h"
-#include "mmCoreAndDevices/MMCore/MMCore.h"
+#include "../mmCoreAndDevices/MMDevice/MMDeviceConstants.h"
+#include "../mmCoreAndDevices/MMCore/Error.h"
+#include "../mmCoreAndDevices/MMCore/Configuration.h"
+#include "../mmCoreAndDevices/MMDevice/ImageMetadata.h"
+#include "../mmCoreAndDevices/MMCore/MMEventCallback.h"
+#include "../mmCoreAndDevices/MMCore/MMCore.h"
 %}
 
 // Map Error codes to the appropriate python error type, and populate error message.
@@ -294,9 +295,9 @@ namespace std {
 %apply int &OUTPUT { int &xSize };
 %apply int &OUTPUT { int &ySize };
 
-%include "mmCoreAndDevices/MMDevice/MMDeviceConstants.h"
-%include "mmCoreAndDevices/MMCore/Error.h"
-%include "mmCoreAndDevices/MMCore/Configuration.h"
-%include "mmCoreAndDevices/MMCore/MMCore.h"
-%include "mmCoreAndDevices/MMDevice/ImageMetadata.h"
-%include "mmCoreAndDevices/MMCore/MMEventCallback.h"
+%include "../mmCoreAndDevices/MMDevice/MMDeviceConstants.h"
+%include "../mmCoreAndDevices/MMCore/Error.h"
+%include "../mmCoreAndDevices/MMCore/Configuration.h"
+%include "../mmCoreAndDevices/MMCore/MMCore.h"
+%include "../mmCoreAndDevices/MMDevice/ImageMetadata.h"
+%include "../mmCoreAndDevices/MMCore/MMEventCallback.h"
