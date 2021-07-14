@@ -27,9 +27,20 @@ commit), the pymmcore version in `setup.cfg` should be updated together.
 Release procedure
 -----------------
 
-Prepare two commits, one removing `dev` from the version and a subsequent one
-bumping to the next `dev` version. Push to `main`. Tag the (single) commit with
-the release version; the tag should be `v` prefixed to the version:
+Prepare two commits, one removing `.dev0` from the version and a subsequent one
+bumping the patch version and re-adding `.dev0`. Push to GitHub to set the sha1
+in stone:
+```bash
+git checkout main
+vim setup.cfg  # Remove .dev0
+git commit -a -m 'Version 1.2.3.42.4'
+vim setup.cfg  # Set version to 1.2.3.42.5.dev0
+git commit -a -m 'Version back to dev'
+git push
+```
+
+Tag the (single) commit with the release version; the tag should be `v`
+prefixed to the version:
 ```bash
 git tag -a v1.2.3.42.4 $commit -m Release
 git push origin v1.2.3.42.4
@@ -40,7 +51,7 @@ it's an annotated tag. When the builds complete, download the artifacts and
 collect the wheels. Also locally prepare a source distribution:
 ```bash
 git checkout v1.2.3.42.4
-python setup.py sdist --format=zip
+python setup.py sdist
 ```
 
 Pushing the tag also creates a GitHub release, which can be edited to add
