@@ -1,4 +1,12 @@
 # flake8: noqa
+
+# NOTE: for now this file is manually created (well, a lot of find/replace with a decent
+# amount of checking).  As such, it's conceivable that there are errors, so feel free
+# to submit PR fixes if you find one.
+# See https://github.com/micro-manager/pymmcore/pull/46 for discussion about fully
+# autogenerating "good" type hints. (along with a script that might help for anyone
+# so inclined)
+
 from typing import Any, List, Sequence, Tuple, Type, Union, overload
 
 import numpy as np
