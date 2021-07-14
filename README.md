@@ -4,12 +4,23 @@ pymmcore: Python bindings for MMCore
 The pymmcore package provides Python 3.x bindings to Micro-Manager's MMCore
 (the low-level device control/acquisition interface).
 
-Note: pymmcore is very similar to the legacy MMCorePy module (Python 2.x only),
-distributed with the Micro-Manager application. However, the Python package for
-pymmcore is named `pymmcore` instead of `MMCorePy`. This is in part to avoid
-importing the wrong package on systems where `pymmcore` (usually installed via
-`pip`) and `MMCorePy` (installed with the Micro-Manager app or built by the
-user) both exist.
+Using pymmcore, you can control and acquire images from all of the microscope
+devices supported by Micro-Manager, but without the GUI application.
+
+Not to be confused with
+[pycro-manager](https://github.com/micro-manager/pycro-manager), which allows
+control of the entire Micro-Manager application, including its Java APIs, and
+more.
+
+You might also be interested in
+[pymmcore-plus](https://github.com/tlambert03/pymmcore-plus).
+
+Note: pymmcore is similar to the legacy MMCorePy module (Python 2.x only),
+previously distributed with the Micro-Manager application. However, the Python
+package for pymmcore is named `pymmcore` instead of `MMCorePy`. This is in part
+to avoid importing the wrong package on systems where `pymmcore` (usually
+installed via `pip`) and `MMCorePy` (installed with the Micro-Manager app or
+built by the user) both exist.
 
 Because pymmcore is distributed separately from Micro-Manager, it needs to be
 "pointed" at an existing Micro-Manager installation to access device adapters.
@@ -30,8 +41,9 @@ You can leave out the `--user` if installing into a virtual environment
 
 Installation by `pip` should use binary wheels. If `pip` falls back to building
 from source code, it will probably fail. If this happens in a supported
-environment, please file a bug. To manually build from source, the scripts in
-`.github/workflows` should serve as a starting point.
+environment, please [file a
+bug](https://github.com/micro-manager/pymmcore/issues). To manually build from
+source, the scripts in `.github/workflows` should serve as a starting point.
 
 You also need a working installation of the Micro-Manager application.
 
@@ -43,7 +55,7 @@ Quick example
 import pymmcore
 import os.path
 
-mm_dir = "C:/Program Files/Micro-Manager-2.0beta"
+mm_dir = "C:/Program Files/Micro-Manager-2.0.x"
 
 mmc = pymmcore.CMMCore()
 mmc.setDeviceAdapterSearchPaths([mm_dir])
@@ -53,16 +65,16 @@ mmc.snapImage()
 mmc.getImage()
 ```
 
-We do not currently have Python-specific documentation for `CMMCore`. The [C++
-documentation](https://valelab4.ucsf.edu/~MM/doc/MMCore/html/class_c_m_m_core.html)
-is the best resource.
+We do not currently have Python-specific documentation for `CMMCore`. The [Java
+documentation](https://valelab4.ucsf.edu/~MM/doc-2.0.0-gamma/mmcorej/mmcorej/CMMCore.html)
+is probably the best resource.
 
 
 Matching Micro-Manager and pymmcore versions
 --------------------------------------------
 
 The version number of pymmcore is independent of the Micro-Manager version
-number.
+number; instead it tracks the MMCore and device interface versions.
 
 In order to use a given Micro-Manager installation, the _device interface
 version_ must match between pymmcore and the Micro-Manager device adapters
