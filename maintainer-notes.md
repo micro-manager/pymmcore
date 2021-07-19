@@ -28,40 +28,29 @@ Release procedure
 -----------------
 
 Prepare two commits, one removing `.dev0` from the version and a subsequent one
-bumping the patch version and re-adding `.dev0`. Push to GitHub to set the sha1
-in stone:
+bumping the patch version and re-adding `.dev0`. Tag the former with `v`
+prefixed to the version:
 ```bash
 git checkout main
+
 vim setup.cfg  # Remove .dev0
 git commit -a -m 'Version 1.2.3.42.4'
+git tag -a v1.2.3.42.4 -m Release
+
 vim setup.cfg  # Set version to 1.2.3.42.5.dev0
 git commit -a -m 'Version back to dev'
+
+git push origin v1.2.3.42.4
 git push
 ```
 
-Tag the (single) commit with the release version; the tag should be `v`
-prefixed to the version:
-```bash
-git tag -a v1.2.3.42.4 $commit -m Release
-git push origin v1.2.3.42.4
-```
-
-This triggers a build, since our GitHub workflows build on push, including when
-it's an annotated tag. When the builds complete, download the artifacts and
-collect the wheels. Also locally prepare a source distribution:
-```bash
-git checkout v1.2.3.42.4
-python setup.py sdist
-```
+This triggers a build, since our GitHub workflow builds on push, including when
+it's an annotated tag. The build, when successful, automatically uploads to
+PyPI when the tag name starts with `v`.
 
 Pushing the tag also creates a GitHub release, which can be edited to add
 binaries. Upload the Windows, macOS, and manylinux wheels and source
 distribution as a backup and second source.
-
-Finally upload to PyPI with `twine`:
-```bash
-python -m twine upload dist/*
-```
 
 
 ABI Compatibility
