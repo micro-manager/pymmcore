@@ -218,15 +218,19 @@ PyObject *setSLMImage_pywrap(const char* slmLabel, char *pixels, int receivedLen
 #include "../mmCoreAndDevices/MMCore/MMCore.h"
 %}
 
-// Map Error codes to the appropriate python error type, and populate error message.
-// NOTE: direct use of the %exception directive will not work in most cases because
-// of the way SWIG parses a C++ method with a `throws` specification (used frequently in MM)
-%typemap(throws) CMMError %{
-    CMMError e = $1;
+// Exception handling. Tranditionally, MMCore uses exception specifications
+// (throw(CMMError)) to tell SWIG to generate exception handling code. This is
+// handled by the %typemap(throws) below.
+// However, C++ exception specifications are deprecated since C++11 and removed
+// in C++17. So in order to future-proof this interface, we also specify a
+// general exception handler using %exception. The latter applies to all
+// functions that do not have an exception specification (or, in the future,
+// noexcept).
+
+%{
+static int cmmerror_swig_exception_code(const CMMError& e) {
     switch (e.getCode())
     {
-        case MMERR_OK:
-            break;
         case MMERR_BadAffineTransform:
         case MMERR_BadConfigName:
         case MMERR_DuplicateConfigGroup:
@@ -248,34 +252,57 @@ PyObject *setSLMImage_pywrap(const char* slmLabel, char *pixels, int receivedLen
         case MMERR_PropertyNotInCache:
         case MMERR_SetPropertyFailed:
         case MMERR_UnexpectedDevice:
-            SWIG_exception(SWIG_ValueError, e.what());
+            return SWIG_ValueError;
         case MMERR_FileOpenFailed:
         case MMERR_InvalidCFGEntry:
         case MMERR_InvalidConfigurationFile:
         case MMERR_LoadLibraryFailed:
-            SWIG_exception(SWIG_IOError, e.what());
+            return SWIG_IOError;
         case MMERR_CircularBufferEmpty:
         case MMERR_InvalidConfigurationIndex:
-            SWIG_exception(SWIG_IndexError, e.what());
+            return SWIG_IndexError;
         case MMERR_CircularBufferFailedToInitialize:
         case MMERR_OutOfMemory:
-            SWIG_exception(SWIG_MemoryError, e.what());
+            return SWIG_MemoryError;
         case MMERR_CameraBufferReadFailed:
         case MMERR_CircularBufferIncompatibleImage:
         case MMERR_UnhandledException:
         case MMERR_UnknownModule:
+        case MMERR_OK: // Shouldn't get here with MMERR_OK
         default:
-            SWIG_exception(SWIG_RuntimeError, e.what());
+            return SWIG_RuntimeError;
     }
+}
 %}
 
+// Applies to functions with C++ exception specification (to be retired when
+// C++ exception specifications retired)
+%typemap(throws) CMMError %{
+    SWIG_exception(cmmerror_swig_exception_code($1), ($1).getMsg().c_str());
+%}
 %typemap(throws) MetadataKeyError %{
     SWIG_exception(SWIG_ValueError, ($1).getMsg().c_str());
 %}
-
 %typemap(throws) MetadataIndexError %{
     SWIG_exception(SWIG_IndexError, ($1).getMsg().c_str());
 %}
+
+// Applies to functions without exception specification
+%exception {
+    try {
+        $action
+    }
+    catch (const CMMError& e) {
+        SWIG_exception(cmmerror_swig_exception_code(e), e.getMsg().c_str());
+    }
+    catch (MetadataKeyError& e) {
+        SWIG_exception(SWIG_ValueError, e.getMsg().c_str());
+    }
+    catch (MetadataIndexError& e) {
+        SWIG_exception(SWIG_IndexError, e.getMsg().c_str());
+    }
+}
+
 
 // instantiate STL mappings
 namespace std {
