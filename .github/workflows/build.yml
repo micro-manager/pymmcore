@@ -1,9 +1,78 @@
-name: Build Windows and macOS wheels
+name: Build and publish
 
 on: [push, pull_request]
 
 jobs:
-  build:
+  sdist:
+    name: sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --force --recursive --depth=1
+
+      - name: Install tools and dependencies
+        run: |
+          sudo apt-get install -y python3-dev python3-pip python3-venv
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip build
+
+      - name: Create source distribution
+        run: |
+          source venv/bin/activate
+          python -m build --sdist --outdir dist/ .
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: pymmcore-sdist
+          path: dist
+
+
+  wheels-manylinux:
+    strategy:
+      fail-fast: true
+      matrix:
+        manylinux-version: ['2014']
+        arch: [i686, x86_64]
+        boost-version: ['1_72_0']
+
+    name: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
+
+    runs-on: ubuntu-latest
+
+    env:
+      AUDITWHEEL_PLAT: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
+      DOCKER_IMAGE: quay.io/pypa/manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
+      BOOST_VERSION: ${{ matrix.boost-version }}
+      NUMPY_VERSIONS: cp36-cp36m 1.12.0 cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Checkout submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --force --recursive --depth=1
+
+      - name: Pull image
+        run: |
+          docker pull $DOCKER_IMAGE
+
+      - name: Build
+        run: |
+          docker run -e NUMPY_VERSIONS -e BOOST_VERSION -e AUDITWHEEL_PLAT -v $(pwd):/io $DOCKER_IMAGE /io/manylinux/build.sh
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: pymmcore-wheels-manylinux
+          path: wheelhouse
+
+
+  wheels-winmac:
     strategy:
       fail-fast: true
       matrix:
@@ -47,7 +116,6 @@ jobs:
       VCVARSALL_DIR: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build
 
     steps:
-
       - uses: actions/checkout@v2
 
       - name: Checkout submodules
