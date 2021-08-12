@@ -27,7 +27,7 @@
 //          source tree (pymmcore) after mmCoreAndDevices commit
 //          5fbfe334730583fc5bd86af875f278f76f88b34d (2021-05-06).
 
-%module (package="pymmcore", directors="1") pymmcore_swig
+%module (package="pymmcore", directors="1", threads="1") pymmcore_swig
 
 %feature("director") MMEventCallback;
 %feature("autodoc", "3");

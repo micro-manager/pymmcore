@@ -157,7 +157,6 @@ mmcore_extension = setuptools.Extension(
         '-builtin',
         '-I./mmCoreAndDevices/MMDevice',
         '-I./mmCoreAndDevices/MMCore',
-        '-threads',
     ],
     include_dirs=[
         numpy.get_include(),
