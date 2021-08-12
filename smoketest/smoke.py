@@ -1,21 +1,11 @@
 import pymmcore
 
-import configparser
-import os.path
-
 
 #
 # At the moment, the only test is that our version numbering is correct
 #
 
-
-script_dir = os.path.dirname(os.path.realpath(__file__))
-setup_cfg = os.path.join(os.path.dirname(script_dir), 'setup.cfg')
-
-config = configparser.ConfigParser()
-config.read(setup_cfg)
-
-pymmcore_version = config['metadata']['version'].split('.')
+pymmcore_version = pymmcore.__version__.split('.')
 print("Version: {}".format(pymmcore_version))
 
 mmc = pymmcore.CMMCore()
