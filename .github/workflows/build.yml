@@ -5,6 +5,7 @@ on: [push, pull_request]
 jobs:
   upload:
     name: Upload to PyPI
+    if: github.repository == 'micro-manager/pymmcore'
     runs-on: ubuntu-latest
     needs: [sdist, wheels-manylinux, wheels-winmac]
     steps:
