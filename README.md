@@ -65,9 +65,10 @@ mmc.snapImage()
 mmc.getImage()
 ```
 
-We do not currently have Python-specific documentation for `CMMCore`. The [Java
-documentation](https://valelab4.ucsf.edu/~MM/doc-2.0.0-gamma/mmcorej/mmcorej/CMMCore.html)
-is probably the best resource.
+We do not currently have Python-specific documentation for MMCore. The [Java
+documentation](https://micro-manager.org/apidoc/mmcorej/latest/) is probably
+the best resource (start at the class `CMMCore`). There is also [C++
+documentation](https://micro-manager.org/apidoc/MMCore/latest/).
 
 
 Matching Micro-Manager and pymmcore versions
