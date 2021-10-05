@@ -82,7 +82,7 @@ jobs:
       AUDITWHEEL_PLAT: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
       DOCKER_IMAGE: quay.io/pypa/manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
       BOOST_VERSION: ${{ matrix.boost-version }}
-      NUMPY_VERSIONS: cp36-cp36m 1.12.0 cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3
+      NUMPY_VERSIONS: cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3 cp310-cp310 1.21.3
 
     steps:
       - uses: actions/checkout@v2
@@ -111,28 +111,32 @@ jobs:
       fail-fast: true
       matrix:
         os: [Windows, macOS]
-        python-version: ['3.6', '3.7', '3.8', '3.9']
+        python-version: ['3.7', '3.8', '3.9', '3.10']
         python-arch: [x64, x86]
         boost-version: ['1_72_0']
-        macos-version: ['10.9']
+        macos-deployment-target: ['10.9']
         msvc-version: ['14.0'] # VS2015
         include:
           - os: Windows
             runner: windows-latest
           - os: macOS
             runner: macOS-latest
-          - python-version: '3.6'
-            mac-python-version: 3.6.8
-            numpy-version: 1.12.0
           - python-version: '3.7'
             mac-python-version: 3.7.9
+            mac-python-installer-macos-version: macosx10.9
             numpy-version: 1.14.5
           - python-version: '3.8'
-            mac-python-version: 3.8.8
+            mac-python-version: 3.8.10
+            mac-python-installer-macos-version: macosx10.9
             numpy-version: 1.17.3
           - python-version: '3.9'
-            mac-python-version: 3.9.2
+            mac-python-version: 3.9.7
+            mac-python-installer-macos-version: macosx10.9
             numpy-version: 1.19.3
+          - python-version: '3.10'
+            mac-python-version: 3.10.0
+            mac-python-installer-macos-version: macos11
+            numpy-version: 1.21.3
           - python-arch: x64
             msvc-arch: amd64
           - python-arch: x86
@@ -146,7 +150,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
 
     env:
-      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-version }}
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-deployment-target }}
       VCVARSALL_DIR: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build
 
     steps:
@@ -167,9 +171,8 @@ jobs:
       - name: Install Python (macOS)
         if: matrix.os == 'macOS'
         run: |
-          # Install Python.org Python
-          curl -LO https://www.python.org/ftp/python/${{ matrix.mac-python-version }}/python-${{ matrix.mac-python-version }}-macosx${{ matrix.macos-version }}.pkg
-          sudo installer -pkg python-${{ matrix.mac-python-version }}-macosx${{ matrix.macos-version }}.pkg -target /
+          curl -L -o python.pkg https://www.python.org/ftp/python/${{ matrix.mac-python-version }}/python-${{ matrix.mac-python-version }}-${{ matrix.mac-python-installer-macos-version }}.pkg
+          sudo installer -pkg python.pkg -target /
           /Library/Frameworks/Python.framework/Versions/${{ matrix.python-version }}/bin/python3 -m venv venv
 
       - name: Install tools (Windows)

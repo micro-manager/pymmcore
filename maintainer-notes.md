@@ -70,16 +70,17 @@ ABI Compatibility
   - Python 3.7 - NumPy 1.14.5
   - Python 3.8 - NumPy 1.17.3
   - Python 3.9 - NumPy 1.19.3
+  - Python 3.10 - NumPy 1.21.3
 
 
 ### Windows
 
-- MSVC version. Python 3.5-3.8 are built with MSVC 14.x (i.e. Visual Studio
-  2015 to 2019). However, the official Python installer ships with its own copy
-  of the VC runtime (in particular, `vcruntime140.dll`). This means that (in
-  theory) our extension module must be built with an MSVC version that is not
-  newer than the runtime shipped with Python. I say "in theory" because it is
-  not clear if this actually results in problems, but let's play it safe.
+- MSVC version. Python 3.5 and later are built with MSVC 14.x (i.e. Visual
+  Studio 2015 to 2019). However, the official Python installer ships with its
+  own copy of the VC runtime (in particular, `vcruntime140.dll`). This means
+  that (in theory) our extension module must be built with an MSVC version that
+  is not newer than the runtime shipped with Python. I say "in theory" because
+  it is not clear if this actually results in problems, but let's play it safe.
 
   Python prints the MSVC version used to build itself when started. This
   version may change with the patch version of Python. Here are a few examples:
@@ -88,7 +89,8 @@ ABI Compatibility
   - Python 3.7.6 (64-bit): MSC v.1916
   - Python 3.8.1 (64-bit): MSC v.1916
   - Python 3.9.1 (64-bit): MSC v.1927 = VS2019
-  - Python 3.8.7 (64-bit): MCS v.1928 = VS2019
+  - Python 3.8.7 (64-bit): MSC v.1928 = VS2019
+  - Python 3.10.0 (64-bit): MSC v.1929 = VS2019
 
   In general, it is probably safest to always build with VS2015 (older patch
   versions of Python 3.7-3.8 may be built with VS2015). This can be done by
@@ -112,7 +114,7 @@ ABI Compatibility
 
 - `MACOSX_DEPLOYMENT_TARGET` should be set to match the Python.org Python we
   are building for, as much as reasonably possible. Currently, `10.9` is the
-  best value for Python 3.5-3.9.
+  best value for Python 3.5-3.10.
 - Python up to 3.7 also provide a `10.6`-compatible installer (which also
   includes 32-bit binaries). However, it is not feasible to set up a new build
   environment that can (correctly) build for `<10.9`.
