@@ -158,7 +158,7 @@ jobs:
           git submodule update --init --force --recursive --depth=1
 
       - name: Install Python (generic)
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         if: matrix.os != 'macOS'
         with:
           python-version: ${{ matrix.python-version }}
