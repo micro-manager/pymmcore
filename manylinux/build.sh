@@ -24,7 +24,8 @@ popd
 git clone https://github.com/swig/swig.git
 pushd swig
 git checkout rel-4.0.1
-curl -LO https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz
+curl -fLO https://iweb.dl.sourceforge.net/project/pcre/pcre/8.45/pcre-8.45.tar.gz || \
+    curl -fLJO https://sourceforge.net/projects/pcre/files/pcre/8.45/pcre-8.45.tar.gz/download
 ./Tools/pcre-build.sh
 ./autogen.sh
 ./configure
