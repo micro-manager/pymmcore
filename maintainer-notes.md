@@ -70,7 +70,7 @@ ABI Compatibility
   - Python 3.7 - NumPy 1.14.5
   - Python 3.8 - NumPy 1.17.3
   - Python 3.9 - NumPy 1.19.3
-  - Python 3.10 - NumPy 1.21.3
+  - Python 3.10 - NumPy 1.21.3 (Windows: amd64 only)
 
 
 ### Windows
