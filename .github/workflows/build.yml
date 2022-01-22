@@ -144,6 +144,9 @@ jobs:
         exclude:
           - os: macOS
             python-arch: x86
+          - os: Windows  # NumPy has 64-bit only for Windows wheels >= cp310
+            python-version: '3.10'
+            python-arch: x86
 
     name: ${{ matrix.os }} Python ${{ matrix.python-version }} ${{ matrix.python-arch }}
 
