@@ -73,6 +73,11 @@ jobs:
         manylinux-version: ['2014']
         arch: [i686, x86_64]
         boost-version: ['1_78_0']
+        include:
+          - arch: i686
+            numpy-versions: cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3
+          - arch: x86_64
+            numpy-versions: cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3 cp310-cp310 1.21.3
 
     name: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
 
@@ -82,7 +87,7 @@ jobs:
       AUDITWHEEL_PLAT: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
       DOCKER_IMAGE: quay.io/pypa/manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
       BOOST_VERSION: ${{ matrix.boost-version }}
-      NUMPY_VERSIONS: cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3 cp310-cp310 1.21.3
+      NUMPY_VERSIONS: ${{ matrix.numpy-versions }}
 
     steps:
       - uses: actions/checkout@v2
