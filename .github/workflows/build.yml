@@ -115,7 +115,7 @@ jobs:
         python-arch: [x64, x86]
         boost-version: ['1_72_0']
         macos-deployment-target: ['10.9']
-        msvc-version: ['14.0'] # VS2015
+        msvc-version: ['14.1'] # VS2017
         include:
           - os: Windows
             runner: windows-latest
