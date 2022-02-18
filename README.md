@@ -39,6 +39,11 @@ python -m pip install --user pymmcore
 You can leave out the `--user` if installing into a virtual environment
 (recommended).
 
+Or install via conda:
+```
+conda install -c conda-forge pymmcore
+```
+
 Installation by `pip` should use binary wheels. If `pip` falls back to building
 from source code, it will probably fail. If this happens in a supported
 environment, please [file a
