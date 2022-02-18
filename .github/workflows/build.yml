@@ -154,7 +154,6 @@ jobs:
 
     env:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-deployment-target }}
-      VCVARSALL_DIR: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build
 
     steps:
       - uses: actions/checkout@v2
@@ -163,6 +162,13 @@ jobs:
         run: |
           git submodule sync --recursive
           git submodule update --init --force --recursive --depth=1
+
+      - name: Find Visual Studio (Windows)
+        if: matrix.os == 'Windows'
+        shell: pwsh
+        run: |
+          $VsDir = (& "${Env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere" -latest -property installationPath)
+          echo "VCVARSALL_DIR=$VsDir/VC/Auxiliary/Build" >>$Env:GITHUB_ENV
 
       - name: Install Python (generic)
         uses: actions/setup-python@v2
