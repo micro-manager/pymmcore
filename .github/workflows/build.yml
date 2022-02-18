@@ -72,7 +72,7 @@ jobs:
       matrix:
         manylinux-version: ['2014']
         arch: [i686, x86_64]
-        boost-version: ['1_72_0']
+        boost-version: ['1_78_0']
 
     name: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
 
@@ -113,7 +113,7 @@ jobs:
         os: [Windows, macOS]
         python-version: ['3.7', '3.8', '3.9', '3.10']
         python-arch: [x64, x86]
-        boost-version: ['1_72_0']
+        boost-version: ['1_78_0']
         macos-deployment-target: ['10.9']
         msvc-version: ['14.1'] # VS2017
         include:

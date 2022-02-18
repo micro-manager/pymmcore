@@ -2,7 +2,7 @@
 
 set -e -x
 
-test -n "$BOOST_VERSION" || BOOST_VERSION=1_72_0
+test -n "$BOOST_VERSION" || BOOST_VERSION=1_78_0
 test -n "$PARALLEL" || PARALLEL=-j2
 
 cd /

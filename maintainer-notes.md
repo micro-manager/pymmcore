@@ -159,7 +159,8 @@ Dependency and tool versions
   - We need to choose a version of Boost that is (1) new enough to build with
     the compiler required by the target Python version and (2) old enough for
     MMCore to build. Probably (1) is a more stringent requirement.
-    - 1.72.0 appears to work well.
+    - 1.72.0 worked well previously
+    - 1.72.0 did not work with toolset=msvc-14.1; 1.78.0 did work
   - On macOS, Boost builds its static libraries with `-fvisibility=hidden`. We
     need to match this in our extension module to prevent linker warnings.
     Default hidden visibility makes sense anyway.
