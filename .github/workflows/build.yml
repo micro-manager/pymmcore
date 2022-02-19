@@ -72,7 +72,7 @@ jobs:
       matrix:
         manylinux-version: ['2014']
         arch: [i686, x86_64]
-        boost-version: ['1_72_0']
+        boost-version: ['1_78_0']
 
     name: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
 
@@ -113,9 +113,9 @@ jobs:
         os: [Windows, macOS]
         python-version: ['3.7', '3.8', '3.9', '3.10']
         python-arch: [x64, x86]
-        boost-version: ['1_72_0']
+        boost-version: ['1_78_0']
         macos-deployment-target: ['10.9']
-        msvc-version: ['14.0'] # VS2015
+        msvc-version: ['14.1'] # VS2017
         include:
           - os: Windows
             runner: windows-latest
@@ -154,7 +154,6 @@ jobs:
 
     env:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-deployment-target }}
-      VCVARSALL_DIR: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build
 
     steps:
       - uses: actions/checkout@v2
@@ -163,6 +162,13 @@ jobs:
         run: |
           git submodule sync --recursive
           git submodule update --init --force --recursive --depth=1
+
+      - name: Find Visual Studio (Windows)
+        if: matrix.os == 'Windows'
+        shell: pwsh
+        run: |
+          $VsDir = (& "${Env:ProgramFiles(x86)}/Microsoft Visual Studio/Installer/vswhere" -latest -property installationPath)
+          echo "VCVARSALL_DIR=$VsDir/VC/Auxiliary/Build" >>$Env:GITHUB_ENV
 
       - name: Install Python (generic)
         uses: actions/setup-python@v2
