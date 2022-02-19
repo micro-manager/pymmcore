@@ -27,6 +27,7 @@ jobs:
 
       - name: Install tools and dependencies
         run: |
+          sudo apt-get update
           sudo apt-get install -y python3-dev python3-pip python3-venv
           sudo apt-get install -y build-essential swig
           sudo apt-get install -y libboost-system-dev libboost-thread-dev libboost-date-time-dev
