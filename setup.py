@@ -128,6 +128,15 @@ else:
         mmcore_libraries.extend(mmcore_boost_libraries)
 
 
+if not is_windows:
+    cflags = [
+        '-std=c++14',
+    ]
+    if 'CFLAGS' in os.environ:
+        cflags.insert(0, os.environ['CFLAGS'])
+    os.environ['CFLAGS'] = ' '.join(cflags)
+
+
 # MMCore on macOS currently requires these frameworks (for a feature that
 # should be deprecated). Frameworks need to appear on the linker command line
 # before the object files, so extra_link_args doesn't work.
@@ -137,7 +146,7 @@ if is_macos:
         '-framework', 'IOKit',
     ]
     if 'LDFLAGS' in os.environ:
-        ldflags = [os.environ['LDFLAGS']] + ldflags
+        ldflags.insert(0, os.environ['LDFLAGS'])
     os.environ['LDFLAGS'] = ' '.join(ldflags)
 
 
