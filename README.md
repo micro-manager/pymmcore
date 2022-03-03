@@ -13,7 +13,7 @@ control of the entire Micro-Manager application, including its Java APIs, and
 more.
 
 You might also be interested in
-[pymmcore-plus](https://github.com/tlambert03/pymmcore-plus).
+[pymmcore-plus](https://pymmcore-plus.readthedocs.io) which wraps this library and provides extra functionality.
 
 Note: pymmcore is similar to the legacy MMCorePy module (Python 2.x only),
 previously distributed with the Micro-Manager application. However, the Python
