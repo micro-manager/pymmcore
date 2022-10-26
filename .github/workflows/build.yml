@@ -77,7 +77,7 @@ jobs:
           - arch: i686
             numpy-versions: cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3
           - arch: x86_64
-            numpy-versions: cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3 cp310-cp310 1.21.3
+            numpy-versions: cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3 cp310-cp310 1.21.3 cp311-cp311 1.23.2
 
     name: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
 
@@ -116,7 +116,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [Windows, macOS]
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         python-arch: [x64, x86]
         boost-version: ['1_78_0']
         macos-deployment-target: ['10.9']
@@ -142,6 +142,10 @@ jobs:
             mac-python-version: 3.10.0
             mac-python-installer-macos-version: macos11
             numpy-version: 1.21.3
+          - python-version: '3.11'
+            mac-python-version: 3.11.0
+            mac-python-installer-macos-version: macos11
+            numpy-version: 1.23.2
           - python-arch: x64
             msvc-arch: amd64
           - python-arch: x86

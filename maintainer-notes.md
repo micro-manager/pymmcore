@@ -71,6 +71,7 @@ ABI Compatibility
   - Python 3.8 - NumPy 1.17.3
   - Python 3.9 - NumPy 1.19.3
   - Python 3.10 - NumPy 1.21.3 (Windows: amd64 only)
+  - Python 3.11 - NumPy 1.23.2
 
 
 ### Windows
@@ -91,6 +92,7 @@ ABI Compatibility
   - Python 3.9.1 (64-bit): MSC v.1927 = VS2019
   - Python 3.8.7 (64-bit): MSC v.1928 = VS2019
   - Python 3.10.0 (64-bit): MSC v.1929 = VS2019
+  - Python 3.11.0 (64-bit): MSC v.1933 = VS2022
 
   In general, it is probably safest to always build with VS2015 (older patch
   versions of Python 3.7-3.8 may be built with VS2015). This can be done by
