@@ -30,8 +30,8 @@ Because pymmcore is distributed separately from Micro-Manager, it needs to be
 Installing
 ----------
 
-Windows (Python 3.7-3.10), macOS (Python 3.7-3.10, 64-bit), and Linux (Python
-3.7-3.10) are supported. Only 64-bit is supported for Python 3.10 and later.
+Windows (Python 3.7-3.11), macOS (Python 3.7-3.11, 64-bit), and Linux (Python
+3.7-3.11) are supported. Only 64-bit is supported for Python 3.10 and later.
 
 ```
 python -m pip install --user pymmcore
