@@ -69,7 +69,6 @@ jobs:
       matrix:
         manylinux-version: ['2014']
         arch: [i686, x86_64]
-        boost-version: ['1_78_0']
         include:
           - arch: i686
             numpy-versions: cp37-cp37m 1.14.5 cp38-cp38 1.17.3 cp39-cp39 1.19.3
@@ -83,7 +82,6 @@ jobs:
     env:
       AUDITWHEEL_PLAT: manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
       DOCKER_IMAGE: quay.io/pypa/manylinux${{ matrix.manylinux-version }}_${{ matrix.arch }}
-      BOOST_VERSION: ${{ matrix.boost-version }}
       NUMPY_VERSIONS: ${{ matrix.numpy-versions }}
 
     steps:
@@ -100,7 +98,7 @@ jobs:
 
       - name: Build
         run: |
-          docker run -e NUMPY_VERSIONS -e BOOST_VERSION -e AUDITWHEEL_PLAT -v $(pwd):/io $DOCKER_IMAGE /io/manylinux/build.sh
+          docker run -e NUMPY_VERSIONS -e AUDITWHEEL_PLAT -v $(pwd):/io $DOCKER_IMAGE /io/manylinux/build.sh
 
       - uses: actions/upload-artifact@v1
         with:
@@ -115,7 +113,6 @@ jobs:
         os: [Windows, macOS]
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         python-arch: [x64, x86]
-        boost-version: ['1_78_0']
         macos-deployment-target: ['10.9']
         msvc-version: ['14.1'] # VS2017
         include:
@@ -215,39 +212,6 @@ jobs:
           python -m pip install --upgrade setuptools wheel
           python -m pip install numpy==${{ matrix.numpy-version }}
 
-      - name: Get Boost source
-        shell: bash
-        run: |
-          BOOST_VER=${{ matrix.boost-version }}
-          BOOST_DOTS=${BOOST_VER//_/.}
-          BOOST_TGZ=boost_$BOOST_VER.tar.gz
-          # Try official source and an (arbitrary) SourceForge mirror
-          curl -fLO https://boostorg.jfrog.io/artifactory/main/release/$BOOST_DOTS/source/$BOOST_TGZ || \
-              curl -fLO https://iweb.dl.sourceforge.net/project/boost/boost/$BOOST_DOTS/$BOOST_TGZ
-          PATH="$PATH:/usr/bin/core_perl"  # shasum in Windows Git Bash
-          # Windows shasum fails if file list contains DOS newlines
-          tr -d '\015' <boost-sha256.txt >boost-sha256.unix.txt
-          shasum -a 256 -c boost-sha256.unix.txt
-          tar xzf $BOOST_TGZ
-
-      - name: Build Boost (Windows)
-        if: matrix.os == 'Windows'
-        shell: cmd
-        run: |
-          pushd "%VCVARSALL_DIR%"
-          call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=${{ matrix.msvc-version }}
-          popd
-          cd boost_${{ matrix.boost-version }}
-          call bootstrap.bat
-          b2 --with-system --with-thread --with-date_time link=static runtime-link=shared toolset=msvc-${{ matrix.msvc-version }}
-
-      - name: Build Boost (macOS)
-        if: matrix.os == 'macOS'
-        run: |
-          cd boost_${{ matrix.boost-version }}
-          ./bootstrap.sh
-          ./b2 --with-system --with-thread --with-date_time link=static architecture=x86 address-model=64
-
       - name: Package and extract sources (Windows)
         if: matrix.os == 'Windows'
         run: |
@@ -269,7 +233,6 @@ jobs:
         if: matrix.os == 'Windows'
         shell: cmd
         env:
-          BOOST_ROOT: ../../boost_${{ matrix.boost-version }}
           MSSdk: 1
           DISTUTILS_USE_SDK: 1
           PY_VCRUNTIME_REDIST: 1
@@ -278,21 +241,20 @@ jobs:
           call vcvarsall.bat ${{ matrix.msvc-arch }} -vcvars_ver=${{ matrix.msvc-version }}
           popd
           cd tmp\pymmcore
-          python setup.py build_ext -I%BOOST_ROOT% -L%BOOST_ROOT%/stage/lib
+          python setup.py build_ext
           python setup.py build
           python setup.py bdist_wheel
 
       - name: Build wheel (macOS)
         if: matrix.os == 'macOS'
         env:
-          BOOST_ROOT: ../../boost_${{ matrix.boost-version }}
           CC: clang
           CXX: clang++
           CFLAGS: -fvisibility=hidden -Wno-unused-variable
         run: |
           source venv/bin/activate
           cd tmp/pymmcore
-          python setup.py build_ext -I$BOOST_ROOT -L$BOOST_ROOT/stage/lib -j2
+          python setup.py build_ext -j2
           python setup.py build
           python setup.py bdist_wheel
 

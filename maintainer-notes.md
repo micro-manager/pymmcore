@@ -154,23 +154,6 @@ Dependency and tool versions
   - The required version ranges can be made platform-specific if necessary (see
     setuptools docs)
 
-- Boost should linked as a static library (for distribution).
-  - Currently, MMCore depends on Boost.System, Boost.Datetime, and Boost.Thread
-    (and other header-only libraries).
-  - `setup.py` expects Boost to be taken care of externally.
-  - We need to choose a version of Boost that is (1) new enough to build with
-    the compiler required by the target Python version and (2) old enough for
-    MMCore to build. Probably (1) is a more stringent requirement.
-    - 1.72.0 worked well previously
-    - 1.72.0 did not work with toolset=msvc-14.1; 1.78.0 did work
-  - On macOS, Boost builds its static libraries with `-fvisibility=hidden`. We
-    need to match this in our extension module to prevent linker warnings.
-    Default hidden visibility makes sense anyway.
-  - Local or user builds can of course just use the Boost shared libraries on
-    their system, if compatible.
-  - Future versions of MMCore (once Visual Studio 2010 support is dropped) will
-    drop the Boost requirement.
-
 - Swig.
   - Swig 1.x generates code that is no longer compatible with Python 3.x.
   - Swig 4.x should be used.
