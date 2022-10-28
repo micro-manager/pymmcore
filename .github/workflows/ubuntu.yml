@@ -4,7 +4,13 @@ name: Check build on Ubuntu
 # system-provided dependencies. The binaries are not expected to work on any
 # other Linux distribution.
 
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
 
 jobs:
   build:
