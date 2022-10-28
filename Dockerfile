@@ -12,8 +12,6 @@ RUN apt-get update && apt-get install -y \
         curl \
         g++ \
         gfortran \
-        libboost-dev \
-        libboost-thread-dev \
         libtool \
         autoconf \
         automake \

@@ -109,23 +109,10 @@ if is_windows:
         'Iphlpapi',
         'Advapi32',
     ])
-    # On Windows, Boost headers automatically configure Boost libraries.
 else:
     mmcore_libraries.extend([
         'dl',
     ])
-    mmcore_boost_libraries = [
-        'boost_date_time',
-        'boost_system',
-        'boost_thread',
-    ]
-    # On macOS, Homebrew-installed Boost has a '-mt' suffix; to build with
-    # those, set the environment variable PYMMCORE_USE_HOMEBREW_BOOST=1.
-    flag = os.environ.get('PYMMCORE_USE_HOMEBREW_BOOST')
-    if flag is not None and flag != '0' and flag.lower() != 'no':
-        mmcore_libraries.extend([s + '-mt' for s in mmcore_boost_libraries])
-    else:
-        mmcore_libraries.extend(mmcore_boost_libraries)
 
 
 if not is_windows:

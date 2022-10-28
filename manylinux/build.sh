@@ -2,23 +2,9 @@
 
 set -e -x
 
-test -n "$BOOST_VERSION" || BOOST_VERSION=1_78_0
 test -n "$PARALLEL" || PARALLEL=-j2
 
 cd /
-
-
-BOOST_DOTS=${BOOST_VERSION//_/.}
-BOOST_TGZ=boost_$BOOST_VERSION.tar.gz
-# Try official source and an (arbitrary) SourceForge mirror
-curl -fLO https://boostorg.jfrog.io/artifactory/main/release/$BOOST_DOTS/source/$BOOST_TGZ || \
-    curl -fLO https://iweb.dl.sourceforge.net/project/boost/boost/$BOOST_DOTS/$BOOST_TGZ
-sha256sum -c /io/boost-sha256.txt
-tar xzf $BOOST_TGZ
-pushd boost_$BOOST_VERSION
-./bootstrap.sh
-./b2 --with-system --with-thread --with-date_time link=static runtime-link=shared cxxflags="-fPIC -fvisibility=hidden"
-popd
 
 
 git clone https://github.com/swig/swig.git
@@ -68,7 +54,7 @@ for abitag in ${abitags[@]}; do
 
     export CFLAGS="-fvisibility=hidden -Wno-deprecated -Wno-unused-variable"
     export LDFLAGS="-Wl,--strip-debug" # Sane file size
-    $pybin/python setup.py build_ext -I/boost_$BOOST_VERSION -L/boost_$BOOST_VERSION/stage/lib $PARALLEL
+    $pybin/python setup.py build_ext $PARALLEL
     $pybin/python setup.py build
     $pybin/python setup.py bdist_wheel
     mkdir -p /io/prelim-wheels
