@@ -16,7 +16,7 @@ jobs:
     needs: [sdist, wheels-manylinux, wheels-winmac]
     steps:
       - name: Download wheels and sdist
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - name: Collect wheels and sdist
         run: |
@@ -38,7 +38,7 @@ jobs:
     name: sdist
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Checkout submodules
         run: |
@@ -57,7 +57,7 @@ jobs:
           source venv/bin/activate
           python -m build --sdist --outdir dist/ .
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: pymmcore-sdist
           path: dist
@@ -85,7 +85,7 @@ jobs:
       NUMPY_VERSIONS: ${{ matrix.numpy-versions }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Checkout submodules
         run: |
@@ -100,7 +100,7 @@ jobs:
         run: |
           docker run -e NUMPY_VERSIONS -e AUDITWHEEL_PLAT -v $(pwd):/io $DOCKER_IMAGE /io/manylinux/build.sh
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: pymmcore-wheels-manylinux
           path: wheelhouse
@@ -159,7 +159,7 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-deployment-target }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Checkout submodules
         run: |
@@ -174,7 +174,7 @@ jobs:
           echo "VCVARSALL_DIR=$VsDir/VC/Auxiliary/Build" >>$Env:GITHUB_ENV
 
       - name: Install Python (generic)
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         if: matrix.os != 'macOS'
         with:
           python-version: ${{ matrix.python-version }}
@@ -288,7 +288,7 @@ jobs:
           python -m pip install pymmcore/tmp/pymmcore/dist/pymmcore-*.whl
           python pymmcore/smoketest/smoke.py
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: pymmcore-wheels-win-mac
           path: tmp/pymmcore/dist
