@@ -6,8 +6,8 @@
 # See https://github.com/micro-manager/pymmcore/pull/46 for discussion about fully
 # autogenerating "good" type hints. (along with a script that might help for anyone
 # so inclined)
-
-from typing import Any, List, Sequence, Tuple, Type, Union, overload
+from __future__ import annotations
+from typing import Any, List, Sequence, Tuple, Union, overload
 
 import numpy as np
 
@@ -198,8 +198,17 @@ class CMMCore:
     def __init__(self) -> None: ...
     def addGalvoPolygonVertex(
         self, galvoLabel: str, polygonIndex: int, x: float, y: float
-    ) -> None: ...
-    def addSearchPath(self, path: str) -> None: ...
+    ) -> None:
+        """Add a vertex to a galvo polygon."""
+    def addSearchPath(self, path: str) -> None:
+        """Add a list of paths to the legacy device adapter search path list.
+
+        Do not use in new code. This adds to a global (static) fallback list that is
+        only searched when a device adapter is not located in any of the directories
+        set by setDeviceAdapterSearchPaths(). The list is initially empty.
+
+        DEPRECATED: Use the non-static setDeviceAdapterSearchPaths() instead.
+        """
     def assignImageSynchro(self, deviceLabel: str) -> None:
         """Add device to the image-synchro list."""
     def clearCircularBuffer(self) -> None:
@@ -210,7 +219,11 @@ class CMMCore:
         """Indicates if logging of debug messages is enabled"""
     @overload
     def defineConfig(self, groupName: str, configName: str) -> None:
-        """Defines a configuration."""
+        """Defines a configuration.
+
+        If the configuration group/name was not previously defined a new configuration
+        will be automatically created; otherwise nothing happens.
+        """
     @overload
     def defineConfig(
         self,
@@ -219,7 +232,14 @@ class CMMCore:
         deviceLabel: str,
         propName: str,
         value: str,
-    ) -> None: ...
+    ) -> None:
+        """Defines a single configuration entry (setting).
+
+        If the configuration group/name was not previously defined a new configuration
+        will be automatically created. If the name was previously defined the new
+        setting will be added to its list of property settings. The new setting will
+        override previously defined ones if it refers to the same property name.
+        """
     def defineConfigGroup(self, groupName: str) -> None:
         """Creates an empty configuration group."""
     @overload
@@ -228,13 +248,28 @@ class CMMCore:
     @overload
     def definePixelSizeConfig(
         self, resolutionID: str, deviceLabel: str, propName: str, value: str
-    ) -> None: ...
+    ) -> None:
+        """Defines a single pixel size entry (setting).
+
+        The system will treat pixel size configurations very similar to configuration
+        presets, i.e. it will try to detect if any of the pixel size presets matches the
+        current state of the system.
+
+        If the pixel size was previously defined the new setting will be added to its
+        list of property settings. The new setting will override previously defined ones
+        if it refers to the same property name.
+        """
     def definePropertyBlock(
         self, blockName: str, propertyName: str, propertyValue: str
-    ) -> None: ...
+    ) -> None:
+        """Defines a reference for the collection of property-value pairs.
+
+        DEPRECATED: Property blocks will not be supported in the future.
+        """
     def defineStateLabel(
         self, stateDeviceLabel: str, state: int, stateLabel: str
-    ) -> None: ...
+    ) -> None:
+        """Defines a label for the specific state."""
     @overload
     def deleteConfig(self, groupName: str, configName: str) -> None:
         """Deletes a configuration from a group."""
@@ -265,7 +300,7 @@ class CMMCore:
         """Enables or disables log message display on the standard console."""
     def fullFocus(self) -> None:
         """Performs focus acquisition and lock for the one-shot focusing device."""
-    def getAllowedPropertyValues(self, label: str, propName: str) -> Tuple[str]:
+    def getAllowedPropertyValues(self, label: str, propName: str) -> Tuple[str, ...]:
         """Returns all valid values for the specified property."""
     def getAPIVersionInfo(self) -> str:
         """Returns the module and device interface versions."""
@@ -275,19 +310,19 @@ class CMMCore:
         """Measures offset for the one-shot focusing device."""
     def getAutoShutter(self) -> bool:
         """Returns the current setting of the auto-shutter option."""
-    def getAvailableConfigGroups(self) -> Tuple[str]:
+    def getAvailableConfigGroups(self) -> Tuple[str, ...]:
         """Returns the names of all defined configuration groups"""
-    def getAvailableConfigs(self, configGroup: str) -> Tuple[str]:
+    def getAvailableConfigs(self, configGroup: str) -> Tuple[str, ...]:
         """Returns all defined configuration names in a given group"""
-    def getAvailableDeviceDescriptions(self, library: str) -> Tuple[str]:
+    def getAvailableDeviceDescriptions(self, library: str) -> Tuple[str, ...]:
         """Get descriptions for available devices from the specified library."""
-    def getAvailableDevices(self, library: str) -> Tuple[str]:
+    def getAvailableDevices(self, library: str) -> Tuple[str, ...]:
         """Get available devices from the specified device library."""
-    def getAvailableDeviceTypes(self, library: str) -> Tuple[int]:
+    def getAvailableDeviceTypes(self, library: str) -> Tuple[int, ...]:
         """Get type information for available devices from the specified library."""
-    def getAvailablePixelSizeConfigs(self) -> Tuple[str]:
+    def getAvailablePixelSizeConfigs(self) -> Tuple[str, ...]:
         """Returns all defined resolution preset names"""
-    def getAvailablePropertyBlocks(self) -> Tuple[str]:
+    def getAvailablePropertyBlocks(self) -> Tuple[str, ...]:
         """Returns all defined property block identifiers."""
     def getBufferFreeCapacity(self) -> int:
         """Returns the number of images that can be added to the buffer without
@@ -333,21 +368,21 @@ class CMMCore:
         """Get the current pixel configuration name"""
     def getData(self, stateDeviceLabel: str) -> PropertyBlock:
         """Returns the collection of property-value pairs defined for the current state."""
-    def getDeviceAdapterNames(self) -> Tuple[str]:
+    def getDeviceAdapterNames(self) -> Tuple[str, ...]:
         """Return the names of discoverable device adapters."""
-    def getDeviceAdapterSearchPaths(self) -> Tuple[str]:
+    def getDeviceAdapterSearchPaths(self) -> Tuple[str, ...]:
         """Return the current device adapter search paths."""
     def getDeviceDelayMs(self, label: str) -> float:
         """Reports action delay in milliseconds for the specific device."""
     def getDeviceDescription(self, label: str) -> str:
         """Returns description text for a given device label. "Description" is determined
         by the library and is immutable."""
-    def getDeviceLibraries(self) -> Tuple[str]: ...
+    def getDeviceLibraries(self) -> Tuple[str, ...]: ...
     def getDeviceLibrary(self, label: str) -> str:
         """Returns device library (aka module, device adapter) name."""
     def getDeviceName(self, label: str) -> str:
         """Returns device name for a given device label."""
-    def getDevicePropertyNames(self, label: str) -> Tuple[str]:
+    def getDevicePropertyNames(self, label: str) -> Tuple[str, ...]:
         """Returns all property names supported by the device."""
     def getDeviceType(self, label: str) -> DeviceType:
         """Returns device type."""
@@ -402,12 +437,12 @@ class CMMCore:
     def getInstalledDeviceDescription(
         self, hubLabel: str, peripheralLabel: str
     ) -> str: ...
-    def getInstalledDevices(self, hubLabel: str) -> Tuple[str]:
+    def getInstalledDevices(self, hubLabel: str) -> Tuple[str, ...]:
         """Performs auto-detection and loading of child devices that are attached to a
         Hub device."""
     def getLastFocusScore(self) -> float:
         """Returns the latest focus score from the focusing device."""
-    def getLastImage(self) -> Any:
+    def getLastImage(self) -> np.ndarray:
         """Gets the last image from the circular buffer."""
     @overload
     def getLastImageMD(self, channel: int, slice: int, md: Metadata) -> np.ndarray: ...
@@ -415,12 +450,12 @@ class CMMCore:
     def getLastImageMD(self, md: Metadata) -> np.ndarray:
         """Returns a pointer to the pixels of the image that was last inserted into the
         circular buffer. Also provides all metadata associated with that image"""
-    def getLoadedDevices(self) -> Tuple[str]:
+    def getLoadedDevices(self) -> Tuple[str, ...]:
         """Returns an array of labels for currently loaded devices."""
-    def getLoadedDevicesOfType(self, devType: DeviceType) -> Tuple[str]:
+    def getLoadedDevicesOfType(self, devType: DeviceType) -> Tuple[str, ...]:
         """Returns an array of labels for currently loaded devices of specific type."""
-    def getLoadedPeripheralDevices(self, hubLabel: str) -> Tuple[str]: ...
-    def getMACAddresses(self) -> Tuple[str]: ...
+    def getLoadedPeripheralDevices(self, hubLabel: str) -> Tuple[str, ...]: ...
+    def getMACAddresses(self) -> Tuple[str, ...]: ...
     def getMagnificationFactor(self) -> float:
         """Returns the product of all Magnifiers in the system or 1.0 when none is found.
         This is used internally by GetPixelSizeUm"""
@@ -432,7 +467,7 @@ class CMMCore:
         widths: Sequence[int],
         heights: Sequence[int],
     ) -> None: ...
-    def getNBeforeLastImageMD(self, n: int, md: Metadata) -> Any:
+    def getNBeforeLastImageMD(self, n: int, md: Metadata) -> np.ndarray:
         """Returns a pointer to the pixels of the image that was inserted n images ago.
         Also provides all metadata associated with that image"""
     def getNumberOfCameraChannels(self) -> int:
@@ -444,16 +479,16 @@ class CMMCore:
     def getParentLabel(self, peripheralLabel: str) -> str:
         """Returns parent device."""
     @overload
-    def getPixelSizeAffine(self) -> Tuple[float]:
+    def getPixelSizeAffine(self) -> Tuple[float, ...]:
         """Returns the current Affine Transform to related camera pixels with
         stage movement."""
     @overload
-    def getPixelSizeAffine(self, cached: bool) -> Tuple[float]:
+    def getPixelSizeAffine(self, cached: bool) -> Tuple[float, ...]:
         """Returns the current Affine Transform to related camera pixels with
         stage movement."""
     def getPixelSizeAffineAsString(self) -> str:
         """Convenience function."""
-    def getPixelSizeAffineByID(self, resolutionID: str) -> Tuple[float]:
+    def getPixelSizeAffineByID(self, resolutionID: str) -> Tuple[float, ...]:
         """Returns the Affine Transform to related camera pixels with stage movement for
         the requested pixel size group. The raw affine transform without correction for
         binning and magnification will be returned."""
@@ -542,7 +577,7 @@ class CMMCore:
     ) -> PropertyBlock:
         """Returns the collection of property-value pairs defined for the specific
         device and state label."""
-    def getStateLabels(self, stateDeviceLabel: str) -> Tuple[str]:
+    def getStateLabels(self, stateDeviceLabel: str) -> Tuple[str, ...]:
         """Return labels for all states"""
     def getSystemState(self) -> Configuration:
         """Returns the entire system state, i.e."""
@@ -568,12 +603,13 @@ class CMMCore:
     ) -> None: ...
     def getXYStageDevice(self) -> str:
         """Returns the label of the currently selected XYStage device."""
-    @overload
-    def getXYStagePosition(self) -> List[float]:
-        """Convenience function: returns the current XY position of the current
-        XY stage device as a Point2D.Double."""
-    @overload
-    def getXYStagePosition(self, stage: str) -> List[float]: ...
+    # https://github.com/micro-manager/pymmcore/issues/65
+    # @overload
+    # def getXYStagePosition(self) -> List[float]:
+    #     """Convenience function: returns the current XY position of the current
+    #     XY stage device as a Point2D.Double."""
+    # @overload
+    # def getXYStagePosition(self, stage: str) -> List[float]: ...
     def getXYStageSequenceMaxLength(self, xyStageLabel: str) -> int:
         """Gets the maximum length of an XY stage's position sequence."""
     @overload
@@ -651,7 +687,11 @@ class CMMCore:
         """Load a set of galvo polygons to the device"""
     def loadPropertySequence(
         self, label: str, propName: str, eventSequence: Sequence[str]
-    ) -> None: ...
+    ) -> None:
+        """Transfer a sequence of events/states/whatever to the device.
+
+        This should only be called for device-properties that are sequenceable
+        """
     def loadSLMSequence(self, slmLabel: str, imageSequence: List[bytes]) -> None:
         """Load a sequence of images into the SLM"""
     def loadStageSequence(
@@ -668,7 +708,12 @@ class CMMCore:
         MM specific format."""
     def loadXYStageSequence(
         self, xyStageLabel: str, xSequence: Sequence[float], ySequence: Sequence[float]
-    ) -> None: ...
+    ) -> None:
+        """Transfer a sequence of stage positions to the xy stage.
+
+        xSequence and ySequence must have the same length. This should only be called
+        for XY stages that are sequenceable
+        """
     @overload
     def logMessage(self, msg: str) -> None:
         """Record text message in the log file."""
@@ -679,13 +724,14 @@ class CMMCore:
         """A static method that does nothing."""
     def pointGalvoAndFire(
         self, galvoLabel: str, x: float, y: float, pulseTime_us: float
-    ) -> None: ...
-    def popNextImage(self) -> Any:
+    ) -> None:
+        """Set the Galvo to an x,y position and fire the laser for a predetermined duration."""
+    def popNextImage(self) -> np.ndarray:
         """Gets and removes the next image from the circular buffer."""
     @overload
-    def popNextImageMD(self, channel: int, slice: int, md: Metadata) -> Any: ...
+    def popNextImageMD(self, channel: int, slice: int, md: Metadata) -> np.ndarray: ...
     @overload
-    def popNextImageMD(self, md: Metadata) -> Any:
+    def popNextImageMD(self, md: Metadata) -> np.ndarray:
         """Gets and removes the next image (and metadata) from the circular buffer"""
     def prepareSequenceAcquisition(self, cameraLabel: str) -> None:
         """Prepare the camera for the sequence acquisition to save the time in the
@@ -701,7 +747,11 @@ class CMMCore:
         """Clears the image synchro device list."""
     def renameConfig(
         self, groupName: str, oldConfigName: str, newConfigName: str
-    ) -> None: ...
+    ) -> None:
+        """Renames a configuration within a specified group.
+
+        The command will fail if the configuration was not previously defined.
+        """
     def renameConfigGroup(self, oldGroupName: str, newGroupName: str) -> None:
         """Renames a configuration group."""
     def renamePixelSizeConfig(self, oldConfigName: str, newConfigName: str) -> None:
@@ -725,7 +775,10 @@ class CMMCore:
         """Enable software translation of coordinates for the given focus/Z stage."""
     @overload
     def setAdapterOriginXY(self, newXUm: float, newYUm: float) -> None:
-        """Enable software translation of coordinates for the current XY stage."""
+        """Enable software translation of coordinates for the current XY stage.
+
+        The current position of the stage becomes (newXUm, newYUm). It is recommended
+        that setOriginXY() be used instead where available."""
     @overload
     def setAdapterOriginXY(
         self, xyStageLabel: str, newXUm: float, newYUm: float
@@ -765,20 +818,27 @@ class CMMCore:
         """Set the galvo's illumination state to on or off"""
     def setGalvoPolygonRepetitions(self, galvoLabel: str, repetitions: int) -> None:
         """Set the number of times to loop galvo polygons"""
-    def setGalvoPosition(self, galvoLabel: str, x: float, y: float) -> None: ...
+    def setGalvoPosition(self, galvoLabel: str, x: float, y: float) -> None:
+        """Set the Galvo to an x,y position."""
     def setGalvoSpotInterval(self, galvoLabel: str, pulseTime_us: float) -> None: ...
     def setImageProcessorDevice(self, procLabel: str) -> None:
         """Sets the current image processor device."""
-    @overload
-    def setMultiROI(self, rects: List[Any]) -> None: ...
-    @overload
+    # this overload does not appear to be present
+    # @overload
+    # def setMultiROI(self, rects: List[Any]) -> None: ...
+    # @overload
     def setMultiROI(
         self,
         xs: Sequence[int],
         ys: Sequence[int],
         widths: Sequence[int],
         heights: Sequence[int],
-    ) -> None: ...
+    ) -> None:
+        """Set multiple ROIs for the current camera device.
+
+        Will fail if the camera does not support multiple ROIs, any widths or heights
+        are non-positive, or if the vectors do not all have the same length.
+        """
     @overload
     def setOrigin(self) -> None:
         """Zero the current focus/Z stage's coordinates at the current position."""
@@ -828,7 +888,8 @@ class CMMCore:
         """Set the primary Core log file."""
     def setProperty(
         self, label: str, propName: str, propValue: Union[bool, float, int, str]
-    ) -> None: ...
+    ) -> None:
+        """Changes the value of the device property."""
     @overload
     def setRelativePosition(self, d: float) -> None:
         """Sets the relative position of the stage in microns."""
@@ -843,10 +904,22 @@ class CMMCore:
         self, xyStageLabel: str, dx: float, dy: float
     ) -> None: ...
     @overload
-    def setROI(self, x: int, y: int, xSize: int, ySize: int) -> None: ...
+    def setROI(self, x: int, y: int, xSize: int, ySize: int) -> None:
+        """Set the hardware region of interest for the current/specified camera.
+
+        A successful call to this method will clear any images in the sequence buffer,
+        even if the ROI does not change.
+
+        If multiple ROIs are set prior to this call, they will be replaced by the new
+        single ROI.
+
+        The coordinates are in units of binned pixels. That is, conceptually, binning is
+        applied before the ROI.
+        """
     @overload
     def setROI(self, label: str, x: int, y: int, xSize: int, ySize: int) -> None: ...
-    def setSerialPortCommand(self, portLabel: str, command: str, term: str) -> None: ...
+    def setSerialPortCommand(self, portLabel: str, command: str, term: str) -> None:
+        """Send string to the serial device and return an answer."""
     def setSerialProperties(
         self,
         portName: str,
@@ -882,14 +955,19 @@ class CMMCore:
     ) -> None: ...
     def setStageLinearSequence(
         self, stageLabel: str, dZ_um: float, nSlices: int
-    ) -> None: ...
+    ) -> None:
+        """Loads a linear sequence (defined by stepsize and nr. of steps) into the device."""
     def setState(self, stateDeviceLabel: str, state: int) -> None:
         """Sets the state (position) on the specific device."""
     def setStateLabel(self, stateDeviceLabel: str, stateLabel: str) -> None:
         """Sets device state using the previously assigned label (string)."""
     def setSystemState(self, conf: Configuration) -> None:
         """Sets all properties contained in the Configuration object."""
-    def setTimeoutMs(self, timeoutMs: int) -> None: ...
+    def setTimeoutMs(self, timeoutMs: int) -> None:
+        """Sets the timeout for all wait commands.
+
+        (Default is 5000 ms)
+        """
     @overload
     def setXYPosition(self, x: float, y: float) -> None:
         """Sets the position of the XY stage in microns."""
