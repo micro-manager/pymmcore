@@ -234,7 +234,7 @@ class CMMCore:
         value: str,
     ) -> None:
         """Defines a single configuration entry (setting).
-        
+
         If the configuration group/name was not previously defined a new configuration
         will be automatically created. If the name was previously defined the new
         setting will be added to its list of property settings. The new setting will
@@ -254,17 +254,16 @@ class CMMCore:
         The system will treat pixel size configurations very similar to configuration
         presets, i.e. it will try to detect if any of the pixel size presets matches the
         current state of the system.
-        
+
         If the pixel size was previously defined the new setting will be added to its
         list of property settings. The new setting will override previously defined ones
         if it refers to the same property name.
         """
- 
     def definePropertyBlock(
         self, blockName: str, propertyName: str, propertyValue: str
     ) -> None:
         """Defines a reference for the collection of property-value pairs.
-        
+
         DEPRECATED: Property blocks will not be supported in the future.
         """
     def defineStateLabel(
@@ -711,7 +710,7 @@ class CMMCore:
         self, xyStageLabel: str, xSequence: Sequence[float], ySequence: Sequence[float]
     ) -> None:
         """Transfer a sequence of stage positions to the xy stage.
-        
+
         xSequence and ySequence must have the same length. This should only be called
         for XY stages that are sequenceable
         """
@@ -750,7 +749,7 @@ class CMMCore:
         self, groupName: str, oldConfigName: str, newConfigName: str
     ) -> None:
         """Renames a configuration within a specified group.
-        
+
         The command will fail if the configuration was not previously defined.
         """
     def renameConfigGroup(self, oldGroupName: str, newGroupName: str) -> None:
@@ -777,9 +776,9 @@ class CMMCore:
     @overload
     def setAdapterOriginXY(self, newXUm: float, newYUm: float) -> None:
         """Enable software translation of coordinates for the current XY stage.
-        
+
         The current position of the stage becomes (newXUm, newYUm). It is recommended
-        that setOriginXY() be used instead where available."""        
+        that setOriginXY() be used instead where available."""
     @overload
     def setAdapterOriginXY(
         self, xyStageLabel: str, newXUm: float, newYUm: float
@@ -966,7 +965,7 @@ class CMMCore:
         """Sets all properties contained in the Configuration object."""
     def setTimeoutMs(self, timeoutMs: int) -> None:
         """Sets the timeout for all wait commands.
-        
+
         (Default is 5000 ms)
         """
     @overload
