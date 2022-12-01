@@ -1103,18 +1103,34 @@ class CMMError:
     def what(self) -> str: ...
 
 class Configuration:
+    """Encapsulation of the configuration information.
+
+    Designed to be wrapped by SWIG. A collection of configuration settings."""
+
     def __init__(self) -> None: ...
-    def addSetting(self, setting: PropertySetting) -> None: ...
-    def deleteSetting(self, device: str, prop, str) -> None: ...
+    def addSetting(self, setting: PropertySetting) -> None:
+        """Adds new property setting to the existing contents."""
+    def deleteSetting(self, device: str, prop: str) -> None:
+        """Removes property setting, specified by device and property names, from the configuration."""
     @overload
-    def getSetting(self, index: int) -> PropertySetting: ...
+    def getSetting(self, index: int) -> PropertySetting:
+        """Returns the setting with specified index."""
     @overload
-    def getSetting(self, device: str, prop: str) -> PropertySetting: ...
-    def getVerbose(self) -> str: ...
-    def isConfigurationIncluded(self, cfg: Configuration) -> bool: ...
-    def isPropertyIncluded(self, device: str, prop: str) -> bool: ...
-    def isSettingIncluded(self, ps: PropertySetting) -> bool: ...
-    def size(self) -> int: ...
+    def getSetting(self, device: str, prop: str) -> PropertySetting:
+        """Get the setting with specified device name and property name."""
+    def getVerbose(self) -> str:
+        """Returns verbose description of the object's contents."""
+    def isConfigurationIncluded(self, cfg: Configuration) -> bool:
+        """Checks whether a configuration is included.
+
+        Included means that all devices from the operand configuration are included
+        and that settings match,"""
+    def isPropertyIncluded(self, device: str, prop: str) -> bool:
+        """Checks whether the property is included in the configuration."""
+    def isSettingIncluded(self, ps: PropertySetting) -> bool:
+        """Checks whether the setting is included in the configuration."""
+    def size(self) -> int:
+        """Returns the number of settings."""
 
 class MetadataTag:
     def Clone(self) -> MetadataTag: ...
@@ -1208,6 +1224,8 @@ class PropertyPair:
     def getPropertyValue(self) -> str: ...
 
 class PropertySetting:
+    """Property setting defined as triplet: device - property - value."""
+
     @overload
     def __init__(self) -> None: ...
     @overload
@@ -1217,12 +1235,20 @@ class PropertySetting:
         self, deviceLabel: str, prop: str, value: str, readOnly: bool
     ) -> None: ...
     @staticmethod
-    def generateKey(self, device: str, prop: str) -> str: ...
-    def getDeviceLabel(self) -> str: ...
+    def generateKey(self, device: str, prop: str) -> str:
+        """Returns `{device}-{prop}`."""
+    def getDeviceLabel(self) -> str:
+        """Returns the device label."""
     def getKey(self) -> str: ...
-    def getPropertyName(self) -> str: ...
-    def getPropertyValue(self) -> str: ...
-    def getReadOnly(self) -> bool: ...
-    def getVerbose(self) -> str: ...
-    def isEqualTo(self, ps: PropertySetting) -> bool: ...
-    def __eq__(sel, other: Any) -> bool: ...
+    def getPropertyName(self) -> str:
+        """Returns the property name."""
+    def getPropertyValue(self) -> str:
+        """Returns the property value."""
+    def getReadOnly(self) -> bool:
+        """Returns the read-only status."""
+    def getVerbose(self) -> str:
+        """Returns verbose description of the object's contents."""
+    def isEqualTo(self, ps: PropertySetting) -> bool:
+        """Returns true if the settings are equal."""
+    def __eq__(self, other: Any) -> bool:
+        """prefer isEqualTo()."""
