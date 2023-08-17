@@ -308,6 +308,7 @@ static int cmmerror_swig_exception_code(const CMMError& e) {
 namespace std {
     %template(CharVector)   vector<char>;
     %template(LongVector)   vector<long>;
+    %template(UnsignedVector)   vector<unsigned>;
     %template(DoubleVector) vector<double>;
     %template(StrVector)    vector<string>;
     %template(pair_ss)      pair<string, string>;
