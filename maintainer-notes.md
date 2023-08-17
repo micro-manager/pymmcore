@@ -65,9 +65,6 @@ ABI Compatibility
 
   In practice, we should use the oldest NumPy for which wheels are available on
   PyPI for the given Python version (and all 3 platforms):
-  - Python 3.5 - NumPy 1.10.4
-  - Python 3.6 - NumPy 1.12.0
-  - Python 3.7 - NumPy 1.14.5
   - Python 3.8 - NumPy 1.17.3
   - Python 3.9 - NumPy 1.19.3
   - Python 3.10 - NumPy 1.21.3 (Windows: amd64 only)
@@ -85,17 +82,14 @@ ABI Compatibility
 
   Python prints the MSVC version used to build itself when started. This
   version may change with the patch version of Python. Here are a few examples:
-  - Python 3.5.4 (64-bit): MSC v.1900 = VS2015
-  - Python 3.6.8 (64-bit): MSC v.1916 = VS2017
-  - Python 3.7.6 (64-bit): MSC v.1916
-  - Python 3.8.1 (64-bit): MSC v.1916
+  - Python 3.8.1 (64-bit): MSC v.1916 = VS2017
   - Python 3.9.1 (64-bit): MSC v.1927 = VS2019
   - Python 3.8.7 (64-bit): MSC v.1928 = VS2019
   - Python 3.10.0 (64-bit): MSC v.1929 = VS2019
   - Python 3.11.0 (64-bit): MSC v.1933 = VS2022
 
   In general, it is probably safest to always build with VS2015 (older patch
-  versions of Python 3.7-3.8 may be built with VS2015). This can be done by
+  versions of Python 3.8 may be built with VS2015). This can be done by
   running `setup.py` inside the VS2015 Native Tools Command Prompt (this works
   because we use `setuptools`; with `distutils` extra environment variables are
   needed).
@@ -117,15 +111,8 @@ ABI Compatibility
 - `MACOSX_DEPLOYMENT_TARGET` should be set to match the Python.org Python we
   are building for, as much as reasonably possible. Currently, `10.9` is the
   best value for Python 3.5-3.10.
-- Python up to 3.7 also provide a `10.6`-compatible installer (which also
-  includes 32-bit binaries). However, it is not feasible to set up a new build
-  environment that can (correctly) build for `<10.9`.
-- `10.9` is the oldest version that links with `libc++`; older deployment
-  targets would link with `libstdc++`.
 - Our extension will still work if our deployment target is newer than
   Python's, so long as it is not newer than the host macOS version.
-- We can build `pymmcore` with `libc++` and it works fine with device adapters
-  built with `libstdc++` (because the interface is POD-only).
 - In the not-so-likely event that our extension uses symbols only available in
   macOS SDKs newer than the deployment target, those symbols will appear as
   'weak' in `nm -mu`.
