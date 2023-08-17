@@ -8,6 +8,7 @@
 # so inclined)
 from __future__ import annotations
 from typing import Any, List, Sequence, Tuple, Union, overload
+from typing_extensions import deprecated
 
 import numpy as np
 
@@ -200,6 +201,7 @@ class CMMCore:
         self, galvoLabel: str, polygonIndex: int, x: float, y: float
     ) -> None:
         """Add a vertex to a galvo polygon."""
+    @deprecated("Use setDeviceAdapterSearchPaths() instead.")
     def addSearchPath(self, path: str) -> None:
         """Add a list of paths to the legacy device adapter search path list.
 
@@ -207,10 +209,20 @@ class CMMCore:
         only searched when a device adapter is not located in any of the directories
         set by setDeviceAdapterSearchPaths(). The list is initially empty.
 
-        DEPRECATED: Use the non-static setDeviceAdapterSearchPaths() instead.
+        !!! warning "Deprecated"
+        
+            Use the non-static
+            [`setDeviceAdapterSearchPaths()`][pymmcore.CMMCore.setDeviceAdapterSearchPaths]
+            instead.
         """
+    @deprecated("ImageSynchro will not be supported in the future.")
     def assignImageSynchro(self, deviceLabel: str) -> None:
-        """Add device to the image-synchro list."""
+        """Add device to the image-synchro list.
+        
+        !!! warning "Deprecated"
+        
+            ImageSynchro will not be supported in the future.
+        """
     def clearCircularBuffer(self) -> None:
         """Removes all images from the circular buffer."""
     def clearROI(self) -> None:
@@ -259,12 +271,15 @@ class CMMCore:
         list of property settings. The new setting will override previously defined ones
         if it refers to the same property name.
         """
+    @deprecated("Property blocks will not be supported in the future.")
     def definePropertyBlock(
         self, blockName: str, propertyName: str, propertyValue: str
     ) -> None:
         """Defines a reference for the collection of property-value pairs.
 
-        DEPRECATED: Property blocks will not be supported in the future.
+        !!! warning "Deprecated"
+        
+            Property blocks will not be supported in the future.
         """
     def defineStateLabel(
         self, stateDeviceLabel: str, state: int, stateLabel: str
@@ -322,8 +337,14 @@ class CMMCore:
         """Get type information for available devices from the specified library."""
     def getAvailablePixelSizeConfigs(self) -> Tuple[str, ...]:
         """Returns all defined resolution preset names"""
+    @deprecated("Property blocks will not be supported in the future.")
     def getAvailablePropertyBlocks(self) -> Tuple[str, ...]:
-        """Returns all defined property block identifiers."""
+        """Returns all defined property block identifiers.
+        
+        !!! warning "Deprecated"
+        
+            Property blocks will not be supported in the future.
+        """
     def getBufferFreeCapacity(self) -> int:
         """Returns the number of images that can be added to the buffer without
         overflowing.
@@ -366,8 +387,14 @@ class CMMCore:
     @overload
     def getCurrentPixelSizeConfig(self, cached: bool) -> str:
         """Get the current pixel configuration name"""
+    @deprecated("Property blocks will not be supported in the future.")
     def getData(self, stateDeviceLabel: str) -> PropertyBlock:
-        """Returns the collection of property-value pairs defined for the current state."""
+        """Returns the collection of property-value pairs defined for the current state.
+        
+        !!! warning "Deprecated"
+        
+            Property blocks will not be supported in the future.
+        """
     def getDeviceAdapterNames(self) -> Tuple[str, ...]:
         """Return the names of discoverable device adapters."""
     def getDeviceAdapterSearchPaths(self) -> Tuple[str, ...]:
@@ -377,7 +404,17 @@ class CMMCore:
     def getDeviceDescription(self, label: str) -> str:
         """Returns description text for a given device label. "Description" is determined
         by the library and is immutable."""
-    def getDeviceLibraries(self) -> Tuple[str, ...]: ...
+    @deprecated("Use the non-static getDeviceAdapterNames() instead")
+    def getDeviceLibraries(self) -> Tuple[str]:
+        """Returns the list of device adapters available in the default search path(s).
+
+        Do not use in new code. For backward compatibility only.
+
+        !!! warning "Deprecated"
+        
+            Use the non-static
+            [`getDeviceAdapterNames()`][pymmcore.CMMCore.getDeviceAdapterNames] instead.
+        """
     def getDeviceLibrary(self, label: str) -> str:
         """Returns device library (aka module, device adapter) name."""
     def getDeviceName(self, label: str) -> str:
@@ -403,7 +440,8 @@ class CMMCore:
     def getGalvoDevice(self) -> str:
         """Returns the label of the currently selected Galvo device."""
     @overload
-    def getGalvoPosition(self, galvoDevice: str) -> List[float]: ...
+    def getGalvoPosition(self, galvoDevice: str) -> List[float]:
+        """Get x,y position of the galvo device."""
     @overload
     def getGalvoPosition(
         self, galvoLabel: str, x_stage: Sequence[float], y_stage: Sequence[float]
@@ -436,7 +474,8 @@ class CMMCore:
         """Horizontal dimension of the image buffer in pixels."""
     def getInstalledDeviceDescription(
         self, hubLabel: str, peripheralLabel: str
-    ) -> str: ...
+    ) -> str:
+        """Returns `GetInstalledPeripheralDescription` from the specified `hubLabel` device."""
     def getInstalledDevices(self, hubLabel: str) -> Tuple[str, ...]:
         """Performs auto-detection and loading of child devices that are attached to a
         Hub device."""
@@ -454,8 +493,13 @@ class CMMCore:
         """Returns an array of labels for currently loaded devices."""
     def getLoadedDevicesOfType(self, devType: DeviceType) -> Tuple[str, ...]:
         """Returns an array of labels for currently loaded devices of specific type."""
-    def getLoadedPeripheralDevices(self, hubLabel: str) -> Tuple[str, ...]: ...
-    def getMACAddresses(self) -> Tuple[str, ...]: ...
+    def getLoadedPeripheralDevices(self, hubLabel: str) -> Tuple[str, ...]:
+        """Return labels of all loaded peripherals of `hubLabel` device."""
+    def getMACAddresses(self) -> Tuple[str, ...]:
+        """Retrieve vector of MAC addresses for the Ethernet cards in the current computer.
+
+        formatted as `xx-xx-xx-xx-xx-xx`
+        """
     def getMagnificationFactor(self) -> float:
         """Returns the product of all Magnifiers in the system or 1.0 when none is found.
         This is used internally by GetPixelSizeUm"""
@@ -466,7 +510,12 @@ class CMMCore:
         ys: Sequence[int],
         widths: Sequence[int],
         heights: Sequence[int],
-    ) -> None: ...
+    ) -> None:
+        """Get multiple ROIs from the current camera device.
+        
+        Will fail if the camera does not support multiple ROIs. Will return empty
+        vectors if multiple ROIs are not currently being used.
+        """
     def getNBeforeLastImageMD(self, n: int, md: Metadata) -> np.ndarray:
         """Returns a pointer to the pixels of the image that was inserted n images ago.
         Also provides all metadata associated with that image"""
@@ -486,8 +535,6 @@ class CMMCore:
     def getPixelSizeAffine(self, cached: bool) -> Tuple[float, ...]:
         """Returns the current Affine Transform to related camera pixels with
         stage movement."""
-    def getPixelSizeAffineAsString(self) -> str:
-        """Convenience function."""
     def getPixelSizeAffineByID(self, resolutionID: str) -> Tuple[float, ...]:
         """Returns the Affine Transform to related camera pixels with stage movement for
         the requested pixel size group. The raw affine transform without correction for
@@ -512,8 +559,14 @@ class CMMCore:
         """Return the name of the primary Core log file."""
     def getProperty(self, label: str, propName: str) -> str:
         """Returns the property value for the specified device."""
+    @deprecated("Property blocks will not be supported in the future.")
     def getPropertyBlockData(self, blockName: str) -> PropertyBlock:
-        """Returns the collection of property-value pairs defined in this block."""
+        """Returns the collection of property-value pairs defined in this block.
+        
+        !!! warning "Deprecated"
+        
+            Property blocks will not be supported in the future.
+        """
     def getPropertyFromCache(self, deviceLabel: str, propName: str) -> str:
         """Returns the cached property value for the specified device."""
     def getPropertyLowerLimit(self, label: str, propName: str) -> float:
@@ -530,7 +583,13 @@ class CMMCore:
     def getRemainingImageCount(self) -> int:
         """Returns number ofimages available in the Circular Buffer"""
     @overload
-    def getROI(self) -> Rectangle: ...
+    def getROI(self) -> Rectangle:
+        """Return the current hardware region of interest for a camera.
+
+        If multiple ROIs are set, this method instead returns a rectangle that describes
+        the image that the camera will generate. The coordinates are in units of binned
+        pixels. That is, conceptually, binning is applied before the ROI.
+        """
     @overload
     def getROI(self, label: str) -> Rectangle: ...
     # these overloads don't seem to work?
@@ -572,18 +631,28 @@ class CMMCore:
         """Obtain the state for a given label."""
     def getStateLabel(self, stateDeviceLabel: str) -> str:
         """Returns the current state as the label (string)."""
+    @deprecated("Property blocks will not be supported in the future.")
     def getStateLabelData(
         self, stateDeviceLabel: str, stateLabel: str
     ) -> PropertyBlock:
         """Returns the collection of property-value pairs defined for the specific
-        device and state label."""
+        device and state label.
+        
+        !!! warning "Deprecated"
+        
+            Property blocks will not be supported in the future.
+        """
     def getStateLabels(self, stateDeviceLabel: str) -> Tuple[str, ...]:
         """Return labels for all states"""
     def getSystemState(self) -> Configuration:
         """Returns the entire system state, i.e."""
     def getSystemStateCache(self) -> Configuration:
         """Returns the entire system state, i.e."""
-    def getTimeoutMs(self) -> int: ...
+    def getTimeoutMs(self) -> int:
+        """Get the timeout for all wait commands.
+
+        (Default is 5000 ms)
+        """
     def getUserId(self) -> str:
         """Displays current user name."""
     def getVersionInfo(self) -> str:
@@ -603,13 +672,7 @@ class CMMCore:
     ) -> None: ...
     def getXYStageDevice(self) -> str:
         """Returns the label of the currently selected XYStage device."""
-    # https://github.com/micro-manager/pymmcore/issues/65
-    # @overload
-    # def getXYStagePosition(self) -> List[float]:
-    #     """Convenience function: returns the current XY position of the current
-    #     XY stage device as a Point2D.Double."""
-    # @overload
-    # def getXYStagePosition(self, stage: str) -> List[float]: ...
+
     def getXYStageSequenceMaxLength(self, xyStageLabel: str) -> int:
         """Gets the maximum length of an XY stage's position sequence."""
     @overload
@@ -741,10 +804,22 @@ class CMMCore:
         """Reads the contents of the Rx buffer."""
     def registerCallback(self, cb: MMEventCallback) -> None:
         """Register a callback (listener class)."""
+    @deprecated("ImageSynchro will not be supported in the future.")
     def removeImageSynchro(self, deviceLabel: str) -> None:
-        """Removes device from the image-synchro list."""
+        """Removes device from the image-synchro list.
+        
+        !!! warning "Deprecated"
+        
+            ImageSynchro will not be supported in the future. 
+        """
+    @deprecated("ImageSynchro will not be supported in the future.")
     def removeImageSynchroAll(self) -> None:
-        """Clears the image synchro device list."""
+        """Clears the image synchro device list.
+        
+        !!! warning "Deprecated"
+        
+            ImageSynchro will not be supported in the future. 
+        """
     def renameConfig(
         self, groupName: str, oldConfigName: str, newConfigName: str
     ) -> None:
@@ -820,7 +895,8 @@ class CMMCore:
         """Set the number of times to loop galvo polygons"""
     def setGalvoPosition(self, galvoLabel: str, x: float, y: float) -> None:
         """Set the Galvo to an x,y position."""
-    def setGalvoSpotInterval(self, galvoLabel: str, pulseTime_us: float) -> None: ...
+    def setGalvoSpotInterval(self, galvoLabel: str, pulseTime_us: float) -> None:
+        """Set the SpotInterval for the specified galvo device."""
     def setImageProcessorDevice(self, procLabel: str) -> None:
         """Sets the current image processor device."""
     # this overload does not appear to be present
@@ -902,7 +978,8 @@ class CMMCore:
     @overload
     def setRelativeXYPosition(
         self, xyStageLabel: str, dx: float, dy: float
-    ) -> None: ...
+    ) -> None:
+        """Sets the relative position of the XY stage in microns."""
     @overload
     def setROI(self, x: int, y: int, xSize: int, ySize: int) -> None:
         """Set the hardware region of interest for the current/specified camera.
@@ -929,7 +1006,8 @@ class CMMCore:
         handshaking: str,
         parity: str,
         stopBits: str,
-    ) -> None: ...
+    ) -> None:
+        """Sets all com port properties in a single call."""
     def setShutterDevice(self, shutterLabel: str) -> None:
         """the current shutter device."""
     @overload
@@ -952,7 +1030,8 @@ class CMMCore:
     @overload
     def setSLMPixelsTo(
         self, slmLabel: str, red: int, green: int, blue: int
-    ) -> None: ...
+    ) -> None:
+        """Set all SLM pixels to an RGB color."""
     def setStageLinearSequence(
         self, stageLabel: str, dZ_um: float, nSlices: int
     ) -> None:
@@ -990,7 +1069,8 @@ class CMMCore:
 
         This should only be called for device-properties that are sequenceable"""
     @overload
-    def startSecondaryLogFile(self, filename: str, enableDebug: bool) -> int: ...
+    def startSecondaryLogFile(self, filename: str, enableDebug: bool) -> int:
+        """Start capturing logging output into an additional file."""
     @overload
     def startSecondaryLogFile(
         self, filename: str, enableDebug: bool, truncate: bool
@@ -1070,12 +1150,20 @@ class CMMCore:
         """Waits (blocks the calling thread) until the specified device becomes non-busy."""
     def waitForDeviceType(self, devType: DeviceType) -> None:
         """Blocks until all devices of the specific type become ready (not-busy)."""
+    @deprecated("ImageSynchro will not be supported in the future.")
     def waitForImageSynchro(self) -> None:
-        """Wait for the slowest device in the ImageSynchro list."""
+        """Wait for the slowest device in the ImageSynchro list.
+        
+        !!! warning "Deprecated"
+        
+            will not be supported in the future.
+        """
     def waitForSystem(self) -> None:
         """Blocks until all devices in the system become ready (not-busy)."""
     def writeToSerialPort(self, portLabel: str, data: bytes) -> None:
         """Sends an array of characters to the serial port and returns immediately."""
+    
+    # These are in MMCoreJ, not pymmcore
     # def getTaggedImage(self) -> TaggedImage: ...
     # def getTaggedImage(self, cameraChannelIndex: int) -> TaggedImage: ...
     # def getNBeforeLastTaggedImage(self, n: int) -> TaggedImage: ...
@@ -1083,6 +1171,15 @@ class CMMCore:
     # def getLastTaggedImage(self,cameraChannelIndex: int) -> TaggedImage: ...
     # def popNextTaggedImage(self) -> TaggedImage: ...
     # def popNextTaggedImage(self, cameraChannelIndex: int) -> TaggedImage: ...
+    # def getPixelSizeAffineAsString(self) -> str:
+        # """Convenience function."""
+    # https://github.com/micro-manager/pymmcore/issues/65
+    # @overload
+    # def getXYStagePosition(self) -> List[float]:
+    #     """Convenience function: returns the current XY position of the current
+    #     XY stage device as a Point2D.Double."""
+    # @overload
+    # def getXYStagePosition(self, stage: str) -> List[float]: ...
 
 ErrorCode = int
 
