@@ -7,7 +7,7 @@
 # autogenerating "good" type hints. (along with a script that might help for anyone
 # so inclined)
 from __future__ import annotations
-from typing import Any, List, Sequence, Tuple, Union, overload
+from typing import Any, Final, List, Literal, overload, Sequence, Tuple, Union
 from typing_extensions import deprecated
 
 import numpy as np
@@ -56,87 +56,86 @@ Unimplemented: int
 UnknownType: int
 XYStageDevice: int
 
-g_CFGCommand_ConfigGroup: str
-g_CFGCommand_ConfigPixelSize: str
-g_CFGCommand_Configuration: str
-g_CFGCommand_Delay: str
-g_CFGCommand_Device: str
-g_CFGCommand_Equipment: str
-g_CFGCommand_FocusDirection: str
-g_CFGCommand_ImageSynchro: str
-g_CFGCommand_Label: str
-g_CFGCommand_ParentID: str
-g_CFGCommand_PixelSizeAffine: str
-g_CFGCommand_PixelSize_um: str
-g_CFGCommand_Property: str
-g_CFGGroup_PixelSizeUm: str
-g_CFGGroup_System: str
-g_CFGGroup_System_Shutdown: str
-g_CFGGroup_System_Startup: str
-g_FieldDelimiters: str
-g_Keyword_ActualExposure: str
-g_Keyword_ActualInterval_ms: str
-g_Keyword_AnswerTimeout: str
-g_Keyword_BaudRate: str
-g_Keyword_Binning: str
-g_Keyword_CCDTemperature: str
-g_Keyword_CCDTemperatureSetPoint: str
-g_Keyword_CameraChannelIndex: str
-g_Keyword_CameraChannelName: str
-g_Keyword_CameraID: str
-g_Keyword_CameraName: str
-g_Keyword_Channel: str
-g_Keyword_Closed_Position: str
-g_Keyword_ColorMode: str
-g_Keyword_CoreAutoFocus: str
-g_Keyword_CoreAutoShutter: str
-g_Keyword_CoreCamera: str
-g_Keyword_CoreChannelGroup: str
-g_Keyword_CoreDevice: str
-g_Keyword_CoreFocus: str
-g_Keyword_CoreGalvo: str
-g_Keyword_CoreImageProcessor: str
-g_Keyword_CoreInitialize: str
-g_Keyword_CoreSLM: str
-g_Keyword_CoreShutter: str
-g_Keyword_CoreTimeoutMs: str
-g_Keyword_CoreXYStage: str
-g_Keyword_DataBits: str
-g_Keyword_Delay: str
-g_Keyword_DelayBetweenCharsMs: str
-g_Keyword_Description: str
-g_Keyword_EMGain: str
-g_Keyword_Elapsed_Time_ms: str
-g_Keyword_Exposure: str
-g_Keyword_Gain: str
-g_Keyword_Handshaking: str
-g_Keyword_HubID: str
-g_Keyword_Interval_ms: str
-g_Keyword_Label: str
-g_Keyword_Meatdata_Exposure: str
-g_Keyword_Metadata_ImageNumber: str
-g_Keyword_Metadata_ROI_X: str
-g_Keyword_Metadata_ROI_Y: str
-g_Keyword_Metadata_Score: str
-g_Keyword_Metadata_StartTime: str
-g_Keyword_Metadata_TimeInCore: str
-g_Keyword_Name: str
-g_Keyword_Offset: str
-g_Keyword_Parity: str
-g_Keyword_PixelType: str
-g_Keyword_Port: str
-g_Keyword_Position: str
-g_Keyword_ReadoutMode: str
-g_Keyword_ReadoutTime: str
-g_Keyword_Speed: str
-g_Keyword_State: str
-g_Keyword_StopBits: str
-g_Keyword_Transpose_Correction: str
-g_Keyword_Transpose_MirrorX: str
-g_Keyword_Transpose_MirrorY: str
-g_Keyword_Transpose_SwapXY: str
-g_Keyword_Type: str
-g_Keyword_Version: str
+g_CFGCommand_ConfigGroup: Final[Literal["ConfigGroup"]]
+g_CFGCommand_ConfigPixelSize: Final[Literal["ConfigPixelSize"]]
+g_CFGCommand_Configuration: Final[Literal["Config"]]
+g_CFGCommand_Delay: Final[Literal["Delay"]]
+g_CFGCommand_Device: Final[Literal["Device"]]
+g_CFGCommand_Equipment: Final[Literal["Equipment"]]
+g_CFGCommand_FocusDirection: Final[Literal["FocusDirection"]]
+g_CFGCommand_ImageSynchro: Final[Literal["ImageSynchro"]]
+g_CFGCommand_Label: Final[Literal["Label"]]
+g_CFGCommand_ParentID: Final[Literal["Parent"]]
+g_CFGCommand_PixelSizeAffine: Final[Literal["PixelSizeAffine"]]
+g_CFGCommand_PixelSize_um: Final[Literal["PixelSize_um"]]
+g_CFGCommand_Property: Final[Literal["Property"]]
+g_CFGGroup_PixelSizeUm: Final[Literal["PixelSize_um"]]
+g_CFGGroup_System: Final[Literal["System"]]
+g_CFGGroup_System_Shutdown: Final[Literal["Shutdown"]]
+g_CFGGroup_System_Startup: Final[Literal["Startup"]]
+g_FieldDelimiters: Final[Literal[","]]
+g_Keyword_ActualExposure: Final[Literal["ActualExposure"]]
+g_Keyword_ActualInterval_ms: Final[Literal["ActualInterval-ms"]]
+g_Keyword_AnswerTimeout: Final[Literal["AnswerTimeout"]]
+g_Keyword_BaudRate: Final[Literal["BaudRate"]]
+g_Keyword_Binning: Final[Literal["Binning"]]
+g_Keyword_CCDTemperature: Final[Literal["CCDTemperature"]]
+g_Keyword_CCDTemperatureSetPoint: Final[Literal["CCDTemperatureSetPoint"]]
+g_Keyword_CameraChannelIndex: Final[Literal["CameraChannelIndex"]]
+g_Keyword_CameraChannelName: Final[Literal["CameraChannelName"]]
+g_Keyword_CameraID: Final[Literal["CameraID"]]
+g_Keyword_CameraName: Final[Literal["CameraName"]]
+g_Keyword_Channel: Final[Literal["Channel"]]
+g_Keyword_Closed_Position: Final[Literal["ClosedPosition"]]
+g_Keyword_ColorMode: Final[Literal["ColorMode"]]
+g_Keyword_CoreAutoFocus: Final[Literal["AutoFocus"]]
+g_Keyword_CoreAutoShutter: Final[Literal["AutoShutter"]]
+g_Keyword_CoreCamera: Final[Literal["Camera"]]
+g_Keyword_CoreChannelGroup: Final[Literal["ChannelGroup"]]
+g_Keyword_CoreDevice: Final[Literal["Core"]]
+g_Keyword_CoreFocus: Final[Literal["Focus"]]
+g_Keyword_CoreGalvo: Final[Literal["Galvo"]]
+g_Keyword_CoreImageProcessor: Final[Literal["ImageProcessor"]]
+g_Keyword_CoreInitialize: Final[Literal["Initialize"]]
+g_Keyword_CoreSLM: Final[Literal["SLM"]]
+g_Keyword_CoreShutter: Final[Literal["Shutter"]]
+g_Keyword_CoreTimeoutMs: Final[Literal["TimeoutMs"]]
+g_Keyword_CoreXYStage: Final[Literal["XYStage"]]
+g_Keyword_DataBits: Final[Literal["DataBits"]]
+g_Keyword_Delay: Final[Literal["Delay_ms"]]
+g_Keyword_DelayBetweenCharsMs: Final[Literal["DelayBetweenCharsMs"]]
+g_Keyword_Description: Final[Literal["Description"]]
+g_Keyword_EMGain: Final[Literal["EMGain"]]
+g_Keyword_Elapsed_Time_ms: Final[Literal["ElapsedTime-ms"]]
+g_Keyword_Exposure: Final[Literal["Exposure"]]
+g_Keyword_Gain: Final[Literal["Gain"]]
+g_Keyword_Handshaking: Final[Literal["Handshaking"]]
+g_Keyword_HubID: Final[Literal["HubID"]]
+g_Keyword_Interval_ms: Final[Literal["Interval-ms"]]
+g_Keyword_Label: Final[Literal["Label"]]
+g_Keyword_Meatdata_Exposure: Final[Literal["Exposure-ms"]]
+g_Keyword_Metadata_ImageNumber: Final[Literal["ImageNumber"]]
+g_Keyword_Metadata_ROI_X: Final[Literal["ROI-X-start"]]
+g_Keyword_Metadata_ROI_Y: Final[Literal["ROI-Y-start"]]
+g_Keyword_Metadata_Score: Final[Literal["Score"]]
+g_Keyword_Metadata_TimeInCore: Final[Literal["TimeReceivedByCore"]]
+g_Keyword_Name: Final[Literal["Name"]]
+g_Keyword_Offset: Final[Literal["Offset"]]
+g_Keyword_Parity: Final[Literal["Parity"]]
+g_Keyword_PixelType: Final[Literal["PixelType"]]
+g_Keyword_Port: Final[Literal["Port"]]
+g_Keyword_Position: Final[Literal["Position"]]
+g_Keyword_ReadoutMode: Final[Literal["ReadoutMode"]]
+g_Keyword_ReadoutTime: Final[Literal["ReadoutTime"]]
+g_Keyword_Speed: Final[Literal["Speed"]]
+g_Keyword_State: Final[Literal["State"]]
+g_Keyword_StopBits: Final[Literal["StopBits"]]
+g_Keyword_Transpose_Correction: Final[Literal["TransposeCorrection"]]
+g_Keyword_Transpose_MirrorX: Final[Literal["TransposeMirrorX"]]
+g_Keyword_Transpose_MirrorY: Final[Literal["TransposeMirrorY"]]
+g_Keyword_Transpose_SwapXY: Final[Literal["TransposeXY"]]
+g_Keyword_Type: Final[Literal["Type"]]
+g_Keyword_Version: Final[Literal["Version"]]
 
 DEVICE_BUFFER_OVERFLOW: int
 DEVICE_CAMERA_BUSY_ACQUIRING: int
@@ -210,7 +209,7 @@ class CMMCore:
         set by setDeviceAdapterSearchPaths(). The list is initially empty.
 
         !!! warning "Deprecated"
-        
+
             Use the non-static
             [`setDeviceAdapterSearchPaths()`][pymmcore.CMMCore.setDeviceAdapterSearchPaths]
             instead.
@@ -218,9 +217,9 @@ class CMMCore:
     @deprecated("ImageSynchro will not be supported in the future.")
     def assignImageSynchro(self, deviceLabel: str) -> None:
         """Add device to the image-synchro list.
-        
+
         !!! warning "Deprecated"
-        
+
             ImageSynchro will not be supported in the future.
         """
     def clearCircularBuffer(self) -> None:
@@ -278,7 +277,7 @@ class CMMCore:
         """Defines a reference for the collection of property-value pairs.
 
         !!! warning "Deprecated"
-        
+
             Property blocks will not be supported in the future.
         """
     def defineStateLabel(
@@ -340,9 +339,9 @@ class CMMCore:
     @deprecated("Property blocks will not be supported in the future.")
     def getAvailablePropertyBlocks(self) -> Tuple[str, ...]:
         """Returns all defined property block identifiers.
-        
+
         !!! warning "Deprecated"
-        
+
             Property blocks will not be supported in the future.
         """
     def getBufferFreeCapacity(self) -> int:
@@ -390,9 +389,9 @@ class CMMCore:
     @deprecated("Property blocks will not be supported in the future.")
     def getData(self, stateDeviceLabel: str) -> PropertyBlock:
         """Returns the collection of property-value pairs defined for the current state.
-        
+
         !!! warning "Deprecated"
-        
+
             Property blocks will not be supported in the future.
         """
     def getDeviceAdapterNames(self) -> Tuple[str, ...]:
@@ -411,7 +410,7 @@ class CMMCore:
         Do not use in new code. For backward compatibility only.
 
         !!! warning "Deprecated"
-        
+
             Use the non-static
             [`getDeviceAdapterNames()`][pymmcore.CMMCore.getDeviceAdapterNames] instead.
         """
@@ -472,9 +471,7 @@ class CMMCore:
         """Returns the label of the currently selected image processor device."""
     def getImageWidth(self) -> int:
         """Horizontal dimension of the image buffer in pixels."""
-    def getInstalledDeviceDescription(
-        self, hubLabel: str, peripheralLabel: str
-    ) -> str:
+    def getInstalledDeviceDescription(self, hubLabel: str, peripheralLabel: str) -> str:
         """Returns `GetInstalledPeripheralDescription` from the specified `hubLabel` device."""
     def getInstalledDevices(self, hubLabel: str) -> Tuple[str, ...]:
         """Performs auto-detection and loading of child devices that are attached to a
@@ -512,7 +509,7 @@ class CMMCore:
         heights: Sequence[int],
     ) -> None:
         """Get multiple ROIs from the current camera device.
-        
+
         Will fail if the camera does not support multiple ROIs. Will return empty
         vectors if multiple ROIs are not currently being used.
         """
@@ -562,9 +559,9 @@ class CMMCore:
     @deprecated("Property blocks will not be supported in the future.")
     def getPropertyBlockData(self, blockName: str) -> PropertyBlock:
         """Returns the collection of property-value pairs defined in this block.
-        
+
         !!! warning "Deprecated"
-        
+
             Property blocks will not be supported in the future.
         """
     def getPropertyFromCache(self, deviceLabel: str, propName: str) -> str:
@@ -637,9 +634,9 @@ class CMMCore:
     ) -> PropertyBlock:
         """Returns the collection of property-value pairs defined for the specific
         device and state label.
-        
+
         !!! warning "Deprecated"
-        
+
             Property blocks will not be supported in the future.
         """
     def getStateLabels(self, stateDeviceLabel: str) -> Tuple[str, ...]:
@@ -672,7 +669,6 @@ class CMMCore:
     ) -> None: ...
     def getXYStageDevice(self) -> str:
         """Returns the label of the currently selected XYStage device."""
-
     def getXYStageSequenceMaxLength(self, xyStageLabel: str) -> int:
         """Gets the maximum length of an XY stage's position sequence."""
     @overload
@@ -807,18 +803,18 @@ class CMMCore:
     @deprecated("ImageSynchro will not be supported in the future.")
     def removeImageSynchro(self, deviceLabel: str) -> None:
         """Removes device from the image-synchro list.
-        
+
         !!! warning "Deprecated"
-        
-            ImageSynchro will not be supported in the future. 
+
+            ImageSynchro will not be supported in the future.
         """
     @deprecated("ImageSynchro will not be supported in the future.")
     def removeImageSynchroAll(self) -> None:
         """Clears the image synchro device list.
-        
+
         !!! warning "Deprecated"
-        
-            ImageSynchro will not be supported in the future. 
+
+            ImageSynchro will not be supported in the future.
         """
     def renameConfig(
         self, groupName: str, oldConfigName: str, newConfigName: str
@@ -976,9 +972,7 @@ class CMMCore:
     def setRelativeXYPosition(self, dx: float, dy: float) -> None:
         """Sets the relative position of the XY stage in microns."""
     @overload
-    def setRelativeXYPosition(
-        self, xyStageLabel: str, dx: float, dy: float
-    ) -> None:
+    def setRelativeXYPosition(self, xyStageLabel: str, dx: float, dy: float) -> None:
         """Sets the relative position of the XY stage in microns."""
     @overload
     def setROI(self, x: int, y: int, xSize: int, ySize: int) -> None:
@@ -1028,9 +1022,7 @@ class CMMCore:
     def setSLMPixelsTo(self, slmLabel: str, intensity: int) -> None:
         """Set all SLM pixels to a single 8-bit intensity."""
     @overload
-    def setSLMPixelsTo(
-        self, slmLabel: str, red: int, green: int, blue: int
-    ) -> None:
+    def setSLMPixelsTo(self, slmLabel: str, red: int, green: int, blue: int) -> None:
         """Set all SLM pixels to an RGB color."""
     def setStageLinearSequence(
         self, stageLabel: str, dZ_um: float, nSlices: int
@@ -1153,16 +1145,15 @@ class CMMCore:
     @deprecated("ImageSynchro will not be supported in the future.")
     def waitForImageSynchro(self) -> None:
         """Wait for the slowest device in the ImageSynchro list.
-        
+
         !!! warning "Deprecated"
-        
+
             will not be supported in the future.
         """
     def waitForSystem(self) -> None:
         """Blocks until all devices in the system become ready (not-busy)."""
     def writeToSerialPort(self, portLabel: str, data: bytes) -> None:
         """Sends an array of characters to the serial port and returns immediately."""
-    
     # These are in MMCoreJ, not pymmcore
     # def getTaggedImage(self) -> TaggedImage: ...
     # def getTaggedImage(self, cameraChannelIndex: int) -> TaggedImage: ...
@@ -1172,7 +1163,7 @@ class CMMCore:
     # def popNextTaggedImage(self) -> TaggedImage: ...
     # def popNextTaggedImage(self, cameraChannelIndex: int) -> TaggedImage: ...
     # def getPixelSizeAffineAsString(self) -> str:
-        # """Convenience function."""
+    # """Convenience function."""
     # https://github.com/micro-manager/pymmcore/issues/65
     # @overload
     # def getXYStagePosition(self) -> List[float]:
