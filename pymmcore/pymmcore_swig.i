@@ -185,10 +185,14 @@ import_array();
 %rename(setSLMImage) setSLMImage_pywrap;
 %apply (char *STRING, int LENGTH) { (char *pixels, int receivedLength) };
 %extend CMMCore {
-PyObject *setSLMImage_pywrap(const char* slmLabel, char *pixels, int receivedLength)
+void setSLMImage_pywrap(const char* slmLabel, char *pixels, int receivedLength) throw (CMMError)
 {
+    // TODO This size check is done here (instead of in MMCore) because the
+    // CMMCore::setSLMImage() interface is deficient: it does not include a
+    // length parameter. It will be better to change the CMMCore functions to
+    // require a length and move this check there.
+
     long expectedLength = self->getSLMWidth(slmLabel) * self->getSLMHeight(slmLabel);
-    //printf("expected: %d -- received: %d\n",expectedLength,receivedLength);
 
     if (receivedLength == expectedLength)
     {
@@ -200,10 +204,8 @@ PyObject *setSLMImage_pywrap(const char* slmLabel, char *pixels, int receivedLen
     }
     else
     {
-        PyErr_SetString(PyExc_TypeError, "Image dimensions are wrong for this SLM.");
-        return (PyObject *) NULL;
+        throw CMMError("Image dimensions are wrong for this SLM");
     }
-    return PyInt_FromLong(0);
 }
 }
 %ignore setSLMImage;
