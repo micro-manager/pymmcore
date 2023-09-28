@@ -548,7 +548,7 @@ class CMMCore:
         """Returns the pixel size in um for the requested pixel size group"""
     @overload
     def getPosition(self) -> float:
-        """Returns the current position of the stage in microns."""
+        """Returns the current position of the current FocusDevice in microns."""
     @overload
     def getPosition(self, stageLabel: str) -> float:
         """Returns the current position of the stage in microns."""
@@ -949,7 +949,7 @@ class CMMCore:
         configuration preset."""
     @overload
     def setPosition(self, position: float) -> None:
-        """Sets the position of the stage in microns."""
+        """Sets the position of the current FocusDevice in microns."""
     @overload
     def setPosition(self, stageLabel: str, position: float) -> None:
         """Sets the position of the stage in microns."""
