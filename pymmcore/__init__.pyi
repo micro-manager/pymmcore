@@ -1025,7 +1025,7 @@ class CMMCore:
             SLM might convert grayscale to binary internally.
         """
     @overload
-    def setSLMImage(self, slmLabel: str, pixels: np.ndarray[np.uint8, np.uint8, np.uint8]) -> None:
+    def setSLMImage(self, slmLabel: str, pixels: np.ndarray[Any, np.dtype[np.uint8]] -> None:
         """
         Write a color image to the SLM (imgRGB32). The pixels must be 3D numpy array [h,w,c] of uint8s with 3 color channels [R,G,B].
 
