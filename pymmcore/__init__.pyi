@@ -11,6 +11,8 @@ from typing import Any, Final, List, Literal, overload, Sequence, Tuple, Union
 from typing_extensions import deprecated
 
 import numpy as np
+import numpy.typing as npt
+
 
 AfterLoadSequence: int
 AfterSet: int
@@ -1016,7 +1018,7 @@ class CMMCore:
         """For SLM devices with build-in light source (such as projectors),
         this will set the exposure time, but not (yet) start the illumination"""
     @overload
-    def setSLMImage(self, slmLabel: str, pixels: np.ndarray[Any, np.dtype[np.uint8]]) -> None:
+    def setSLMImage(self, slmLabel: str, pixels: npt.NDArray[np.uint8]) -> None:
         """
         Write a 8-bit grayscale image to the SLM. Pixels must be a 2D numpy array [h,w] of uint8s.
 
@@ -1025,7 +1027,7 @@ class CMMCore:
             SLM might convert grayscale to binary internally.
         """
     @overload
-    def setSLMImage(self, slmLabel: str, pixels: np.ndarray[Any, np.dtype[np.uint8]] -> None:
+    def setSLMImage(self, slmLabel: str, pixels: npt.NDArray[np.uint8]) -> None:
         """
         Write a color image to the SLM (imgRGB32). The pixels must be 3D numpy array [h,w,c] of uint8s with 3 color channels [R,G,B].
 

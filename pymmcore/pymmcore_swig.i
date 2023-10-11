@@ -215,7 +215,7 @@ import_array();
     {
         // Check if pixels is a numpy array
         if (!PyArray_Check(pixels)) {
-            throw CMMError("Pixels must be a numpy array");
+            throw CMMError("Pixels must be a 2D numpy array [h,w] of uint8, or a 3D numpy array [h,w,c] of uint8 with 3 color channels [R,G,B]. Received a non-numpy array.");
         }
 
         // Get the dimensions of the numpy array
