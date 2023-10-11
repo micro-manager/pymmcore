@@ -15,12 +15,17 @@ concurrency:
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+    name: Build wheels on ${{ matrix.os }} ${{ matrix.macos_arch }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, windows-2022, macos-11]
+        os: [ubuntu-22.04, windows-2022]
+        include:
+          - os: macos-11
+            macos_arch: "x86_64"
+          - os: macos-11
+            macos_arch: "arm64"
 
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +34,8 @@ jobs:
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16
+        env:
+          CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
 
       - uses: actions/upload-artifact@v3
         with:

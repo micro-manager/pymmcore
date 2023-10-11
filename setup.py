@@ -24,9 +24,7 @@ import platform
 from pathlib import Path
 
 import numpy
-import setuptools
-import setuptools.command.build_ext
-import setuptools.command.build_py
+from setuptools import Extension, command, setup
 
 PKG_NAME = "pymmcore"
 SWIG_MOD_NAME = "pymmcore_swig"
@@ -45,27 +43,17 @@ MMDevicePath = ROOT / "mmCoreAndDevices" / "MMDevice"
 
 # Customize 'build_py' to run 'build_ext' first; otherwise the SWIG-generated
 # .py file gets missed.
-class build_py(setuptools.command.build_py.build_py):
+class build_py(command.build_py.build_py):
     def run(self):
         self.run_command("build_ext")
         super().run()
 
 
 # Customize 'build_ext' to trigger 'build_clib' first.
-class build_ext(setuptools.command.build_ext.build_ext):
+class build_ext(command.build_ext.build_ext):
     def run(self):
         self.run_command("build_clib")
         super().run()
-
-
-windows_defines = [
-    ("_CRT_SECURE_NO_WARNINGS", None),
-    # These would not be necessary if _WIN32 or _MSC_VER were used correctly.
-    ("WIN32", None),
-    ("_WINDOWS", None),
-    # See DeviceUtils.h
-    ("MMDEVICE_NO_GETTIMEOFDAY", None),
-]
 
 
 mmdevice_build_info = {
@@ -75,8 +63,17 @@ mmdevice_build_info = {
 }
 
 if IS_WINDOWS:
-    mmdevice_build_info.setdefault("macros", []).extend(windows_defines)
-
+    define_macros = [
+        ("_CRT_SECURE_NO_WARNINGS", None),
+        # These would not be necessary if _WIN32 or _MSC_VER were used correctly.
+        ("WIN32", None),
+        ("_WINDOWS", None),
+        # See DeviceUtils.h
+        ("MMDEVICE_NO_GETTIMEOFDAY", None),
+    ]
+    mmdevice_build_info["macros"].extend(define_macros)
+else:
+    define_macros = []
 
 omit = ["unittest"] + (["Unix"] if IS_WINDOWS else ["Windows"])
 mmcore_sources = [
@@ -108,7 +105,7 @@ if IS_MACOS:
     os.environ["LDFLAGS"] = " ".join(ldflags)
 
 
-mmcore_extension = setuptools.Extension(
+mmcore_extension = Extension(
     f"{PKG_NAME}._{SWIG_MOD_NAME}",
     sources=mmcore_sources + [os.path.join(PKG_NAME, f"{SWIG_MOD_NAME}.i")],
     swig_opts=[
@@ -120,10 +117,10 @@ mmcore_extension = setuptools.Extension(
     ],
     include_dirs=[numpy.get_include()],
     libraries=mmcore_libraries,
-    define_macros=windows_defines if IS_WINDOWS else [],
+    define_macros=define_macros,
 )
 
-setuptools.setup(
+setup(
     ext_modules=[mmcore_extension],
     libraries=[("MMDevice", mmdevice_build_info)],
     cmdclass={"build_ext": build_ext, "build_py": build_py},
