@@ -18,11 +18,10 @@
 #
 # Author: Mark A. Tsuchida
 
-import distutils.file_util
-import distutils.util
 import glob
 import os
 import os.path
+import platform
 
 import numpy
 import setuptools
@@ -31,6 +30,8 @@ import setuptools.command.build_py
 
 PKG_NAME = "pymmcore"
 SWIG_MOD_NAME = "pymmcore_swig"
+IS_WINDOWS = platform.system() == "Windows"
+IS_MACOS = platform.system() == "Darwin"
 
 # We build MMCore from sources, into the Python extension. MMCore depends on
 # MMDevice. However, we need to build MMDevice separately from MMCore, because
@@ -54,9 +55,6 @@ class build_ext(setuptools.command.build_ext.build_ext):
         super().run()
 
 
-is_windows = distutils.util.get_platform().startswith("win")
-is_macos = distutils.util.get_platform().startswith("macosx")
-
 windows_defines = [
     ("_CRT_SECURE_NO_WARNINGS", None),
     # These would not be necessary if _WIN32 or _MSC_VER were used correctly.
@@ -73,7 +71,7 @@ mmdevice_build_info = {
     "macros": [("MODULE_EXPORTS", None)],
 }
 
-if is_windows:
+if IS_WINDOWS:
     mmdevice_build_info["macros"].extend(windows_defines)
 
 
@@ -88,25 +86,21 @@ mmcore_source_globs = [
 mmcore_sources = []
 for g in mmcore_source_globs:
     mmcore_sources += glob.glob(g)
-if is_windows:
+if IS_WINDOWS:
     mmcore_sources = [f for f in mmcore_sources if "Unix" not in f]
 else:
     mmcore_sources = [f for f in mmcore_sources if "Windows" not in f]
 
 
-mmcore_libraries = [
-    "MMDevice",
-]
-if is_windows:
+mmcore_libraries = ["MMDevice"]
+if IS_WINDOWS:
     mmcore_libraries.extend(["Iphlpapi", "Advapi32"])
 else:
     mmcore_libraries.extend(["dl"])
 
 
-if not is_windows:
-    cflags = [
-        "-std=c++14",
-    ]
+if not IS_WINDOWS:
+    cflags = ["-std=c++14"]
     if "CFLAGS" in os.environ:
         cflags.insert(0, os.environ["CFLAGS"])
     os.environ["CFLAGS"] = " ".join(cflags)
@@ -115,7 +109,7 @@ if not is_windows:
 # MMCore on macOS currently requires these frameworks (for a feature that
 # should be deprecated). Frameworks need to appear on the linker command line
 # before the object files, so extra_link_args doesn't work.
-if is_macos:
+if IS_MACOS:
     ldflags = [
         "-framework",
         "CoreFoundation",
@@ -128,9 +122,8 @@ if is_macos:
 
 
 mmcore_defines = []
-if is_windows:
+if IS_WINDOWS:
     mmcore_defines.extend(windows_defines)
-
 
 mmcore_extension = setuptools.Extension(
     f"{PKG_NAME}._{SWIG_MOD_NAME}",
