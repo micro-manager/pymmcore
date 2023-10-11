@@ -45,14 +45,14 @@ MMDevicePath = ROOT / "mmCoreAndDevices" / "MMDevice"
 
 # Customize 'build_py' to run 'build_ext' first; otherwise the SWIG-generated
 # .py file gets missed.
-class build_py(setuptools.command.build_py):
+class build_py(setuptools.command.build_py.build_py):
     def run(self):
         self.run_command("build_ext")
         super().run()
 
 
 # Customize 'build_ext' to trigger 'build_clib' first.
-class build_ext(setuptools.command.build_ext):
+class build_ext(setuptools.command.build_ext.build_ext):
     def run(self):
         self.run_command("build_clib")
         super().run()
