@@ -18,10 +18,10 @@
 #
 # Author: Mark A. Tsuchida
 
-import glob
 import os
 import os.path
 import platform
+from pathlib import Path
 
 import numpy
 import setuptools
@@ -32,6 +32,9 @@ PKG_NAME = "pymmcore"
 SWIG_MOD_NAME = "pymmcore_swig"
 IS_WINDOWS = platform.system() == "Windows"
 IS_MACOS = platform.system() == "Darwin"
+ROOT = Path(__file__).parent
+MMCorePath = ROOT / "mmCoreAndDevices" / "MMCore"
+MMDevicePath = ROOT / "mmCoreAndDevices" / "MMDevice"
 
 # We build MMCore from sources, into the Python extension. MMCore depends on
 # MMDevice. However, we need to build MMDevice separately from MMCore, because
@@ -66,38 +69,27 @@ windows_defines = [
 
 
 mmdevice_build_info = {
-    "sources": glob.glob("mmCoreAndDevices/MMDevice/*.cpp"),
+    "sources": [str(x.relative_to(ROOT)) for x in MMDevicePath.glob("*.cpp")],
     "include_dirs": ["mmCoreAndDevices/MMDevice"],
     "macros": [("MODULE_EXPORTS", None)],
 }
 
 if IS_WINDOWS:
-    mmdevice_build_info["macros"].extend(windows_defines)
+    mmdevice_build_info.setdefault("macros", []).extend(windows_defines)
 
 
-mmcore_source_globs = [
-    "mmCoreAndDevices/MMCore/*.cpp",
-    "mmCoreAndDevices/MMCore/Devices/*.cpp",
-    "mmCoreAndDevices/MMCore/LibraryInfo/*.cpp",
-    "mmCoreAndDevices/MMCore/LoadableModules/*.cpp",
-    "mmCoreAndDevices/MMCore/Logging/*.cpp",
+omit = ["unittest"] + (["Unix"] if IS_WINDOWS else ["Windows"])
+mmcore_sources = [
+    str(x.relative_to(ROOT))
+    for x in MMCorePath.rglob("*.cpp")
+    if all(o not in str(x) for o in omit)
 ]
-
-mmcore_sources = []
-for g in mmcore_source_globs:
-    mmcore_sources += glob.glob(g)
-if IS_WINDOWS:
-    mmcore_sources = [f for f in mmcore_sources if "Unix" not in f]
-else:
-    mmcore_sources = [f for f in mmcore_sources if "Windows" not in f]
-
 
 mmcore_libraries = ["MMDevice"]
 if IS_WINDOWS:
     mmcore_libraries.extend(["Iphlpapi", "Advapi32"])
 else:
     mmcore_libraries.extend(["dl"])
-
 
 if not IS_WINDOWS:
     cflags = ["-std=c++14"]
@@ -110,20 +102,11 @@ if not IS_WINDOWS:
 # should be deprecated). Frameworks need to appear on the linker command line
 # before the object files, so extra_link_args doesn't work.
 if IS_MACOS:
-    ldflags = [
-        "-framework",
-        "CoreFoundation",
-        "-framework",
-        "IOKit",
-    ]
+    ldflags = ["-framework", "CoreFoundation", "-framework", "IOKit"]
     if "LDFLAGS" in os.environ:
         ldflags.insert(0, os.environ["LDFLAGS"])
     os.environ["LDFLAGS"] = " ".join(ldflags)
 
-
-mmcore_defines = []
-if IS_WINDOWS:
-    mmcore_defines.extend(windows_defines)
 
 mmcore_extension = setuptools.Extension(
     f"{PKG_NAME}._{SWIG_MOD_NAME}",
@@ -137,11 +120,8 @@ mmcore_extension = setuptools.Extension(
     ],
     include_dirs=[numpy.get_include()],
     libraries=mmcore_libraries,
-    define_macros=mmcore_defines,
+    define_macros=windows_defines if IS_WINDOWS else [],
 )
-
-
-# See maintainer notes!
 
 setuptools.setup(
     ext_modules=[mmcore_extension],

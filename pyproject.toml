@@ -1,13 +1,23 @@
 # https://peps.python.org/pep-0517/
 [build-system]
-requires = ["setuptools >=61.0.0", "numpy >=1.12.0"]
+requires = [
+    "setuptools >=61.0.0",
+    "numpy==1.14.5; python_version=='3.7'",
+    "numpy==1.17.3; python_version=='3.8'",
+    "numpy==1.19.3; python_version=='3.9'",
+    "numpy==1.21.3; python_version=='3.10'",
+    "numpy==1.23.2; python_version=='3.11'",
+    "numpy==1.26.0; python_version=='3.12'",
+]
 build-backend = "setuptools.build_meta"
+
 
 # https://peps.python.org/pep-0621/
 [project]
 name = "pymmcore"
 description = "Python bindings for MMCore, Micro-Manager's device control layer"
-dynamic = ["version", "readme"]
+dynamic = ["version"]
+readme = "README.md"
 requires-python = ">=3.7"
 license = { text = "BSD 3-Clause License" }
 authors = [{ name = "Micro-Manager Team" }]
@@ -33,10 +43,33 @@ repository = "https://github.com/micro-manager/pymmcore"
 
 [tool.setuptools.dynamic]
 version = { attr = "pymmcore._version.__version__" }
-readme = { file = ["README.md"], content-type = "text/markdown" }
 
 [tool.setuptools.packages.find]
 include = ["pymmcore*"]
 
 [tool.setuptools.package-data]
 "*" = ["py.typed", ".pyi"]
+
+
+[tool.cibuildwheel]
+# Skip 32-bit builds & PyPy wheels on all platforms
+skip = ["*-win32", "*-manylinux_i686", "pp*", "*musllinux*"]
+# test-requires = "pytest"
+# test-command = 'pytest "{project}/tests" -v'
+# test-extras = ["test"]
+# manylinux-x86_64-image = "manylinux_2_24"
+
+# [tool.cibuildwheel.macos]
+# archs = ["x86_64", "arm64"]
+# repair-wheel-command = [
+#     "DYLD_LIBRARY_PATH=$REPAIR_LIBRARY_PATH delocate-listdeps {wheel}",
+#     "DYLD_LIBRARY_PATH=$REPAIR_LIBRARY_PATH delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
+# ]
+
+# [tool.cibuildwheel.linux]
+# before-all = [
+#     'echo "deb http://archive.debian.org/debian stretch main" > /etc/apt/sources.list',
+#     "apt-get update",
+#     "apt-get install -y --allow-downgrades liblzma5=5.2.2-1.2+b1 liblzma-dev=5.2.2-1.2+b1 libtiff5-dev=4.0.8-2+deb9u5",
+#     "cp {project}/src/sdk/Linux/x86_64/lib/* /lib",
+# ]
