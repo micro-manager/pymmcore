@@ -15,18 +15,12 @@ concurrency:
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }} ${{ matrix.macos_arch }}
+    name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: ubuntu-22.04
-          - os: windows-2022
-          - os: macos-11
-            macos_arch: "x86_64"
-          - os: macos-11
-            macos_arch: "arm64"
+        os: [ubuntu-22.04, windows-2022, macos-11]
 
     steps:
       - uses: actions/checkout@v4
@@ -35,8 +29,6 @@ jobs:
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16
-        env:
-          CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
 
       - uses: actions/upload-artifact@v3
         with:
@@ -55,27 +47,29 @@ jobs:
         with:
           path: dist/*.tar.gz
 
-  # upload_pypi:
-  #   needs: [build_wheels, build_sdist]
-  #   if: success() && startsWith(github.ref, 'refs/tags/v')
-  #   runs-on: ubuntu-latest
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    # upload to PyPI on every tag
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
 
-  #   permissions:
-  #     id-token: write # for trusted publishing on PyPi
-  #     contents: write # allows writing releases
+    # https://docs.pypi.org/trusted-publishers/
+    permissions:
+      id-token: write # for trusted publishing on PyPi
+      contents: write # allows writing releases
 
-  #   steps:
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         # unpacks default artifact into dist/
-  #         # if `name: artifact` is omitted, the action will create extra parent dir
-  #         name: artifact
-  #         path: dist
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          # unpacks default artifact into dist/
+          # if `name: artifact` is omitted, the action will create extra parent dir
+          name: artifact
+          path: dist
 
-  #     - name: Publish to PyPI
-  #       uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 
-  #     - uses: softprops/action-gh-release@v1
-  #       with:
-  #         generate_release_notes: true
-  #         files: "./dist/*"
+      - uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          files: "./dist/*"
