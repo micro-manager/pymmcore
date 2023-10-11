@@ -59,6 +59,7 @@ skip = ["*-manylinux_i686", "*-musllinux*", "*-win32", "pp*"]
 build = ["cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*"]
 test-requires = "pytest"
 test-command = 'pytest "{project}/tests" -v'
+test-skip = "*-macosx_arm64"
 
 [tool.cibuildwheel.macos]
 # https://cibuildwheel.readthedocs.io/en/stable/faq/#apple-silicon
