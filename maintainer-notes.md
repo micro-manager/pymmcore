@@ -91,7 +91,8 @@ git push
 ```
 
 This triggers a build in [the ci.yml workflow](.github/workflows/ci.yml) and
-the presence of a tag starting with "v" triggers a deployment to PyPI.
+the presence of a tag starting with "v" triggers a deployment to PyPI (using
+[trusted publisher](https://docs.pypi.org/trusted-publishers/) authentication.)
 
 Pushing the tag also creates a GitHub release with auto-generated release notes
 and the binary wheels attached.
