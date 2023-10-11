@@ -24,7 +24,9 @@ import platform
 from pathlib import Path
 
 import numpy
-from setuptools import Extension, command, setup
+import setuptools.command.build_ext
+import setuptools.command.build_py
+from setuptools import Extension, setup
 
 PKG_NAME = "pymmcore"
 SWIG_MOD_NAME = "pymmcore_swig"
@@ -43,14 +45,14 @@ MMDevicePath = ROOT / "mmCoreAndDevices" / "MMDevice"
 
 # Customize 'build_py' to run 'build_ext' first; otherwise the SWIG-generated
 # .py file gets missed.
-class build_py(command.build_py.build_py):
+class build_py(setuptools.command.build_py):
     def run(self):
         self.run_command("build_ext")
         super().run()
 
 
 # Customize 'build_ext' to trigger 'build_clib' first.
-class build_ext(command.build_ext.build_ext):
+class build_ext(setuptools.command.build_ext):
     def run(self):
         self.run_command("build_clib")
         super().run()
