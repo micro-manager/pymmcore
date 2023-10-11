@@ -121,6 +121,7 @@ mmcore_extension = setuptools.Extension(
     include_dirs=[numpy.get_include()],
     libraries=mmcore_libraries,
     define_macros=windows_defines if IS_WINDOWS else [],
+    extra_compile_args=["-Wno-deprecated-declarations"],
 )
 
 setuptools.setup(
