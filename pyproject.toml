@@ -64,3 +64,6 @@ test-skip = "*-macosx_arm64"
 [tool.cibuildwheel.macos]
 # https://cibuildwheel.readthedocs.io/en/stable/faq/#apple-silicon
 archs = ["x86_64", "arm64"]
+
+[tool.check-manifest]
+ignore = [".editorconfig", "Dockerfile", "maintainer-notes.md", ".gitmodules"]

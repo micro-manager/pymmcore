@@ -14,6 +14,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # check that sdist contains all files and that extra files
+  # are explicitly ignored in manifest or pyproject
+  check-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          depth: 0
+          submodules: "recursive"
+      - name: Check manifest
+        run: pipx run check-manifest
+
   build_wheels:
     name: Build wheels on ${{ matrix.os }} ${{ matrix.macos_arch }}
     runs-on: ${{ matrix.os }}
@@ -51,7 +63,10 @@ jobs:
           submodules: "recursive"
 
       - name: Build sdist
-        run: pipx run build --sdist
+        run: |
+          pip install -U pip build check-manifest
+          check-manifest
+          python -m build --sdist
 
       - uses: actions/upload-artifact@v3
         with:
