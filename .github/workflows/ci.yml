@@ -46,6 +46,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          depth: 0
+          submodules: "recursive"
 
       - name: Build sdist
         run: pipx run build --sdist
