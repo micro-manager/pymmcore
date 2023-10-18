@@ -18,20 +18,23 @@
 #
 # Author: Mark A. Tsuchida
 
-import distutils.file_util
-import distutils.util
-import glob
-import numpy
 import os
 import os.path
-import setuptools
+import platform
+from pathlib import Path
+
+import numpy
 import setuptools.command.build_ext
 import setuptools.command.build_py
+from setuptools import Extension, setup
 
-pkg_name = 'pymmcore'
-swig_mod_name = 'pymmcore_swig'
-ext_mod_name = '.'.join((pkg_name, '_' + swig_mod_name))
-
+PKG_NAME = "pymmcore"
+SWIG_MOD_NAME = "pymmcore_swig"
+IS_WINDOWS = platform.system() == "Windows"
+IS_MACOS = platform.system() == "Darwin"
+ROOT = Path(__file__).parent
+MMCorePath = ROOT / "mmCoreAndDevices" / "MMCore"
+MMDevicePath = ROOT / "mmCoreAndDevices" / "MMDevice"
 
 # We build MMCore from sources, into the Python extension. MMCore depends on
 # MMDevice. However, we need to build MMDevice separately from MMCore, because
@@ -44,147 +47,83 @@ ext_mod_name = '.'.join((pkg_name, '_' + swig_mod_name))
 # .py file gets missed.
 class build_py(setuptools.command.build_py.build_py):
     def run(self):
-        self.run_command('build_ext')
+        self.run_command("build_ext")
         super().run()
 
 
 # Customize 'build_ext' to trigger 'build_clib' first.
 class build_ext(setuptools.command.build_ext.build_ext):
     def run(self):
-        self.run_command('build_clib')
+        self.run_command("build_clib")
         super().run()
 
 
-is_windows = distutils.util.get_platform().startswith('win')
-is_macos = distutils.util.get_platform().startswith('macosx')
-
-windows_defines = [
-    ('_CRT_SECURE_NO_WARNINGS', None),
-
-    # These would not be necessary if _WIN32 or _MSC_VER were used correctly.
-    ('WIN32', None),
-    ('_WINDOWS', None),
-
-    # See DeviceUtils.h
-    ('MMDEVICE_NO_GETTIMEOFDAY', None),
-]
-
-
 mmdevice_build_info = {
-    'sources': glob.glob('mmCoreAndDevices/MMDevice/*.cpp'),
-    'include_dirs': [
-        'mmCoreAndDevices/MMDevice',
-    ],
-    'macros': [
-        ('MODULE_EXPORTS', None),
-    ],
+    "sources": [str(x.relative_to(ROOT)) for x in MMDevicePath.glob("*.cpp")],
+    "include_dirs": ["mmCoreAndDevices/MMDevice"],
+    "macros": [("MODULE_EXPORTS", None)],
 }
 
-if is_windows:
-    mmdevice_build_info['macros'].extend(windows_defines)
-
-
-mmcore_source_globs = [
-    'mmCoreAndDevices/MMCore/*.cpp',
-    'mmCoreAndDevices/MMCore/Devices/*.cpp',
-    'mmCoreAndDevices/MMCore/LibraryInfo/*.cpp',
-    'mmCoreAndDevices/MMCore/LoadableModules/*.cpp',
-    'mmCoreAndDevices/MMCore/Logging/*.cpp',
-]
-
-mmcore_sources = []
-for g in mmcore_source_globs:
-    mmcore_sources += glob.glob(g)
-if is_windows:
-    mmcore_sources = [f for f in mmcore_sources if 'Unix' not in f]
-else:
-    mmcore_sources = [f for f in mmcore_sources if 'Windows' not in f]
-
-
-mmcore_libraries = [
-    'MMDevice',
-]
-if is_windows:
-    mmcore_libraries.extend([
-        'Iphlpapi',
-        'Advapi32',
-    ])
-else:
-    mmcore_libraries.extend([
-        'dl',
-    ])
-
-
-if not is_windows:
-    cflags = [
-        '-std=c++14',
+if IS_WINDOWS:
+    define_macros = [
+        ("_CRT_SECURE_NO_WARNINGS", None),
+        # These would not be necessary if _WIN32 or _MSC_VER were used correctly.
+        ("WIN32", None),
+        ("_WINDOWS", None),
+        # See DeviceUtils.h
+        ("MMDEVICE_NO_GETTIMEOFDAY", None),
     ]
-    if 'CFLAGS' in os.environ:
-        cflags.insert(0, os.environ['CFLAGS'])
-    os.environ['CFLAGS'] = ' '.join(cflags)
+    mmdevice_build_info["macros"].extend(define_macros)
+else:
+    define_macros = []
+
+omit = ["unittest"] + (["Unix"] if IS_WINDOWS else ["Windows"])
+mmcore_sources = [
+    str(x.relative_to(ROOT))
+    for x in MMCorePath.rglob("*.cpp")
+    if all(o not in str(x) for o in omit)
+]
+
+mmcore_libraries = ["MMDevice"]
+if IS_WINDOWS:
+    mmcore_libraries.extend(["Iphlpapi", "Advapi32"])
+else:
+    mmcore_libraries.extend(["dl"])
+
+if not IS_WINDOWS:
+    cflags = ["-std=c++14"]
+    if "CFLAGS" in os.environ:
+        cflags.insert(0, os.environ["CFLAGS"])
+    os.environ["CFLAGS"] = " ".join(cflags)
 
 
 # MMCore on macOS currently requires these frameworks (for a feature that
 # should be deprecated). Frameworks need to appear on the linker command line
 # before the object files, so extra_link_args doesn't work.
-if is_macos:
-    ldflags = [
-        '-framework', 'CoreFoundation',
-        '-framework', 'IOKit',
-    ]
-    if 'LDFLAGS' in os.environ:
-        ldflags.insert(0, os.environ['LDFLAGS'])
-    os.environ['LDFLAGS'] = ' '.join(ldflags)
+if IS_MACOS:
+    ldflags = ["-framework", "CoreFoundation", "-framework", "IOKit"]
+    if "LDFLAGS" in os.environ:
+        ldflags.insert(0, os.environ["LDFLAGS"])
+    os.environ["LDFLAGS"] = " ".join(ldflags)
 
 
-mmcore_defines = []
-if is_windows:
-    mmcore_defines.extend(windows_defines)
-
-
-mmcore_extension = setuptools.Extension(
-    ext_mod_name,
-    sources=mmcore_sources + [
-        os.path.join(pkg_name, swig_mod_name + '.i'),
-    ],
+mmcore_extension = Extension(
+    f"{PKG_NAME}._{SWIG_MOD_NAME}",
+    sources=mmcore_sources + [os.path.join(PKG_NAME, f"{SWIG_MOD_NAME}.i")],
     swig_opts=[
-        '-c++',
-        '-py3',
-        '-builtin',
-        '-I./mmCoreAndDevices/MMDevice',
-        '-I./mmCoreAndDevices/MMCore',
+        "-c++",
+        "-py3",
+        "-builtin",
+        "-I./mmCoreAndDevices/MMDevice",
+        "-I./mmCoreAndDevices/MMCore",
     ],
-    include_dirs=[
-        numpy.get_include(),
-    ],
+    include_dirs=[numpy.get_include()],
     libraries=mmcore_libraries,
-    define_macros=mmcore_defines,
+    define_macros=define_macros,
 )
 
-
-# See maintainer notes!
-python_req = '>=3.6'
-numpy_req = '>=1.12.0'
-
-
-setuptools.setup(
-    packages=setuptools.find_packages(include=(pkg_name + '*',)),
+setup(
     ext_modules=[mmcore_extension],
-    libraries=[
-        ('MMDevice', mmdevice_build_info),
-    ],
-    python_requires=python_req,
-    setup_requires=[
-        'numpy' + numpy_req,
-    ],
-    install_requires=[
-        'numpy' + numpy_req,
-    ],
-    cmdclass={
-        'build_ext': build_ext,
-        'build_py': build_py,
-    },
-    package_data={
-        'pymmcore': ['*.pyi', 'py.typed'],
-    },
+    libraries=[("MMDevice", mmdevice_build_info)],
+    cmdclass={"build_ext": build_ext, "build_py": build_py},
 )

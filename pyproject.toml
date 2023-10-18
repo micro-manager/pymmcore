@@ -1,3 +1,69 @@
+# https://peps.python.org/pep-0517/
 [build-system]
-requires = ["setuptools", "numpy>=1.12.0"]
+requires = [
+    "setuptools >=61.0.0",
+    "numpy==1.14.5; python_version=='3.7'",
+    "numpy==1.17.3; python_version=='3.8'",
+    "numpy==1.19.3; python_version=='3.9'",
+    "numpy==1.21.3; python_version=='3.10'",
+    "numpy==1.23.2; python_version=='3.11'",
+    "numpy==1.26.0; python_version=='3.12'",
+]
 build-backend = "setuptools.build_meta"
+
+
+# https://peps.python.org/pep-0621/
+[project]
+name = "pymmcore"
+description = "Python bindings for MMCore, Micro-Manager's device control layer"
+dynamic = ["version"]
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text = "BSD 3-Clause License" }
+authors = [{ name = "Micro-Manager Team" }]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering",
+    "Topic :: System :: Hardware :: Hardware Drivers",
+    "Typing :: Typed",
+]
+dependencies = ["numpy >=1.12.0"]
+
+[project.urls]
+homepage = "https://micro-manager.org"
+repository = "https://github.com/micro-manager/pymmcore"
+
+
+[tool.setuptools.dynamic]
+version = { attr = "pymmcore._version.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["pymmcore*"]
+
+[tool.setuptools.package-data]
+"*" = ["py.typed", ".pyi"]
+
+
+[tool.cibuildwheel]
+# Skip 32-bit builds, musllinux, and PyPy wheels on all platforms
+# Note: use of PTHREAD_MUTEX_RECURSIVE_NP in DeviceThreads.h
+# is specific to glibc and not available in musl-libc
+skip = ["*-manylinux_i686", "*-musllinux*", "*-win32", "pp*"]
+build = ["cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*"]
+test-requires = "pytest"
+test-command = 'pytest "{project}/tests" -v'
+test-skip = "*-macosx_arm64"
+
+[tool.cibuildwheel.macos]
+# https://cibuildwheel.readthedocs.io/en/stable/faq/#apple-silicon
+archs = ["x86_64", "arm64"]
+
+[tool.check-manifest]
+ignore = [".editorconfig", "Dockerfile", "maintainer-notes.md", ".gitmodules"]

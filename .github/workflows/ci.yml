@@ -1,0 +1,100 @@
+name: Build & deploy
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # check that sdist contains all files and that extra files
+  # are explicitly ignored in manifest or pyproject
+  check-manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: "recursive"
+      - name: Check manifest
+        run: pipx run check-manifest
+
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }} ${{ matrix.macos_arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, windows-2022]
+        include:
+          - os: macos-11
+            macos_arch: "x86_64"
+          - os: macos-11
+            macos_arch: "arm64"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.16
+        env:
+          CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ./wheelhouse/*.whl
+
+  build_sdist:
+    name: Build source distribution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: "recursive"
+
+      - name: Build sdist
+        run: |
+          pip install -U pip build check-manifest
+          check-manifest
+          python -m build --sdist
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: dist/*.tar.gz
+
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    # upload to PyPI on every tag
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+
+    # https://docs.pypi.org/trusted-publishers/
+    permissions:
+      id-token: write # for trusted publishing on PyPi
+      contents: write # allows writing releases
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          # unpacks default artifact into dist/
+          # if `name: artifact` is omitted, the action will create extra parent dir
+          name: artifact
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          files: "./dist/*"
