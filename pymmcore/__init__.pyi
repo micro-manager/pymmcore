@@ -195,6 +195,7 @@ DeviceType = int
 PropertyType = int
 FocusDirection = int
 DeviceDetectionStatus = int
+DeviceInitializationState = int
 
 class CMMCore:
     def __init__(self) -> None: ...
@@ -693,6 +694,8 @@ class CMMCore:
         """Initialize circular buffer based on the current camera settings."""
     def initializeDevice(self, label: str) -> None:
         """Initializes specific device."""
+    def getDeviceInitializationState(self, label: str) -> DeviceInitializationState:
+        """Queries the initialization state of the given device."""
     def isBufferOverflowed(self) -> bool:
         """Indicates whether the circular buffer is overflowed"""
     def isConfigDefined(self, groupName: str, configName: str) -> bool:
