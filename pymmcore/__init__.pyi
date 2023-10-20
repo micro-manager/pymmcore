@@ -694,7 +694,7 @@ class CMMCore:
         """Initialize circular buffer based on the current camera settings."""
     def initializeDevice(self, label: str) -> None:
         """Initializes specific device."""
-    def getDeviceInitializationState(self, label: str) -> bool:
+    def getDeviceInitializationState(self, label: str) -> DeviceInitializationState:
         """Queries the initialization state of the given device."""
     def isBufferOverflowed(self) -> bool:
         """Indicates whether the circular buffer is overflowed"""
