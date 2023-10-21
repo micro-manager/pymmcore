@@ -7,7 +7,6 @@
 # autogenerating "good" type hints. (along with a script that might help for anyone
 # so inclined)
 from __future__ import annotations
-from re import I, M
 from typing import Any, Final, List, Literal, overload, Sequence, Tuple, Union
 from typing_extensions import deprecated
 
