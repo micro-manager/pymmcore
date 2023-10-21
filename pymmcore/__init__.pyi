@@ -13,50 +13,68 @@ from typing_extensions import deprecated
 import numpy as np
 import numpy.typing as npt
 
-
-AfterLoadSequence: int
-AfterSet: int
-AnyType: int
-Attention: int
-AutoFocusDevice: int
-BeforeGet: int
-CameraDevice: int
-CanCommunicate: int
-CanNotCommunicate: int
-CoreDevice: int
-Done: int
-Float: int
-FocusDirectionAwayFromSample: int
-FocusDirectionTowardSample: int
-FocusDirectionUnknown: int
-GalvoDevice: int
-GenericDevice: int
-HIDPort: int
-HubDevice: int
-ImageProcessorDevice: int
-Integer: int
-InvalidPort: int
-IsSequenceable: int
-MagnifierDevice: int
 MaxStrLength: int
-Misconfigured: int
-NoAction: int
-SLMDevice: int
-SerialDevice: int
-SerialPort: int
-ShutterDevice: int
-SignalIODevice: int
-StageDevice: int
-StartSequence: int
-StateDevice: int
-StatusChanged: int
-StopSequence: int
-String: int
-USBPort: int
-Undef: int
-Unimplemented: int
-UnknownType: int
-XYStageDevice: int
+
+# ActionType
+NoAction: Final = 0
+BeforeGet: Final = 1
+AfterSet: Final = 2
+IsSequenceable: Final = 3
+AfterLoadSequence: Final = 4
+StartSequence: Final = 5
+StopSequence: Final = 6
+
+# DeviceType
+UnknownType: Final = 0
+AnyType: Final = 1
+CameraDevice: Final = 2
+ShutterDevice: Final = 3
+StateDevice: Final = 4
+StageDevice: Final = 5
+XYStageDevice: Final = 6
+SerialDevice: Final = 7
+GenericDevice: Final = 8
+AutoFocusDevice: Final = 9
+CoreDevice: Final = 10
+ImageProcessorDevice: Final = 11
+SignalIODevice: Final = 12
+MagnifierDevice: Final = 13
+SLMDevice: Final = 14
+HubDevice: Final = 15
+GalvoDevice: Final = 16
+
+# PropertyType
+Undef: Final = 0
+String: Final = 1
+Float: Final = 2
+Integer: Final = 3
+
+# PortType
+InvalidPort: Final = 0
+SerialPort: Final = 1
+USBPort: Final = 2
+HIDPort: Final = 3
+
+# FocusDirection
+FocusDirectionUnknown: Final = 0
+FocusDirectionTowardSample: Final = 1
+FocusDirectionAwayFromSample: Final = 2
+
+# DeviceNotification
+Attention: Final = 0
+Done: Final = 1
+StatusChanged: Final = 2
+
+# DeviceDetectionStatus
+Unimplemented: Final = -2
+Misconfigured: Final = -1
+CanNotCommunicate: Final = 0
+CanCommunicate: Final = 1
+
+# DeviceInitializationState
+Uninitialized: Final = 0
+InitializedSuccessfully: Final = 1
+InitializationFailed: Final = 2
 
 g_CFGCommand_ConfigGroup: Final[Literal["ConfigGroup"]]
 g_CFGCommand_ConfigPixelSize: Final[Literal["ConfigPixelSize"]]
@@ -1039,8 +1057,8 @@ class CMMCore:
     @overload
     def setSLMImage(self, slmLabel: str, pixels: Any) -> None:
         """Write a list of chars to the SLM.
-        
-        Length of the list must match the number of pixels (or 4 * number of 
+
+        Length of the list must match the number of pixels (or 4 * number of
         pixels to write an imgRGB32.)
         """
     @overload
