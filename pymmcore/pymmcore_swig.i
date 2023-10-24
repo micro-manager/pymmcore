@@ -226,7 +226,7 @@ import_array();
         // Check if the array has the correct shape
         long expectedWidth = self->getSLMWidth(slmLabel);
         long expectedHeight = self->getSLMHeight(slmLabel);
-        
+
         if (dims[0] != expectedHeight || dims[1] != expectedWidth) {
             std::ostringstream oss;
             oss << "Image dimensions are wrong for this SLM. Expected (" << expectedHeight << ", " << expectedWidth << "), but received (" << dims[0] << ", " << dims[1] << ")";
@@ -238,7 +238,7 @@ import_array();
             oss << "Pixel array type is wrong. Expected uint8.";
             throw CMMError(oss.str().c_str());
         }
-        
+
         npy_intp num_bytes = PyArray_NBYTES(np_pixels);
         long expectedBytes = expectedWidth * expectedHeight * self->getSLMBytesPerPixel(slmLabel);
         if (num_bytes > expectedBytes) {
@@ -282,12 +282,12 @@ import_array();
 
 %{
 #define SWIG_FILE_WITH_INIT
-#include "../mmCoreAndDevices/MMDevice/MMDeviceConstants.h"
-#include "../mmCoreAndDevices/MMCore/Error.h"
-#include "../mmCoreAndDevices/MMCore/Configuration.h"
-#include "../mmCoreAndDevices/MMDevice/ImageMetadata.h"
-#include "../mmCoreAndDevices/MMCore/MMEventCallback.h"
-#include "../mmCoreAndDevices/MMCore/MMCore.h"
+#include "MMDeviceConstants.h"
+#include "Error.h"
+#include "Configuration.h"
+#include "ImageMetadata.h"
+#include "MMEventCallback.h"
+#include "MMCore.h"
 %}
 
 // Exception handling. Tranditionally, MMCore uses exception specifications
@@ -395,9 +395,9 @@ namespace std {
 %apply int &OUTPUT { int &xSize };
 %apply int &OUTPUT { int &ySize };
 
-%include "../mmCoreAndDevices/MMDevice/MMDeviceConstants.h"
-%include "../mmCoreAndDevices/MMCore/Error.h"
-%include "../mmCoreAndDevices/MMCore/Configuration.h"
-%include "../mmCoreAndDevices/MMCore/MMCore.h"
-%include "../mmCoreAndDevices/MMDevice/ImageMetadata.h"
-%include "../mmCoreAndDevices/MMCore/MMEventCallback.h"
+%include "MMDeviceConstants.h"
+%include "Error.h"
+%include "Configuration.h"
+%include "MMCore.h"
+%include "ImageMetadata.h"
+%include "MMEventCallback.h"

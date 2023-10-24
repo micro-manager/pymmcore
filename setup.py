@@ -117,7 +117,11 @@ mmcore_extension = Extension(
         "-I./mmCoreAndDevices/MMDevice",
         "-I./mmCoreAndDevices/MMCore",
     ],
-    include_dirs=[numpy.get_include()],
+    include_dirs=[
+        numpy.get_include(),
+        "./mmCoreAndDevices/MMDevice",
+        "./mmCoreAndDevices/MMCore",
+    ],
     libraries=mmcore_libraries,
     define_macros=define_macros,
 )
