@@ -31,7 +31,6 @@ from setuptools import Extension, setup
 PKG_NAME = "pymmcore"
 SWIG_MOD_NAME = "pymmcore_swig"
 IS_WINDOWS = platform.system() == "Windows"
-IS_MACOS = platform.system() == "Darwin"
 ROOT = Path(__file__).parent
 MMCorePath = ROOT / "mmCoreAndDevices" / "MMCore"
 MMDevicePath = ROOT / "mmCoreAndDevices" / "MMDevice"
@@ -95,16 +94,6 @@ if not IS_WINDOWS:
     if "CFLAGS" in os.environ:
         cflags.insert(0, os.environ["CFLAGS"])
     os.environ["CFLAGS"] = " ".join(cflags)
-
-
-# MMCore on macOS currently requires these frameworks (for a feature that
-# should be deprecated). Frameworks need to appear on the linker command line
-# before the object files, so extra_link_args doesn't work.
-if IS_MACOS:
-    ldflags = ["-framework", "CoreFoundation", "-framework", "IOKit"]
-    if "LDFLAGS" in os.environ:
-        ldflags.insert(0, os.environ["LDFLAGS"])
-    os.environ["LDFLAGS"] = " ".join(ldflags)
 
 
 mmcore_extension = Extension(
