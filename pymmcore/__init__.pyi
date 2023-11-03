@@ -202,8 +202,6 @@ DEVICE_UNSUPPORTED_DATA_FORMAT: int
 MM_CODE_ERR: int
 MM_CODE_OK: int
 
-def CMMCore_addSearchPath(jarg1: str) -> None: ...
-def CMMCore_getDeviceLibraries() -> tuple: ...
 def CMMCore_noop() -> None: ...
 def MetadataTag_ReadLine(jarg: Any) -> str: ...
 def PropertySetting_generateKey(device: str, prop: str) -> str: ...
@@ -221,28 +219,6 @@ class CMMCore:
         self, galvoLabel: str, polygonIndex: int, x: float, y: float
     ) -> None:
         """Add a vertex to a galvo polygon."""
-    @deprecated("Use setDeviceAdapterSearchPaths() instead.")
-    def addSearchPath(self, path: str) -> None:
-        """Add a list of paths to the legacy device adapter search path list.
-
-        Do not use in new code. This adds to a global (static) fallback list that is
-        only searched when a device adapter is not located in any of the directories
-        set by setDeviceAdapterSearchPaths(). The list is initially empty.
-
-        !!! warning "Deprecated"
-
-            Use the non-static
-            [`setDeviceAdapterSearchPaths()`][pymmcore.CMMCore.setDeviceAdapterSearchPaths]
-            instead.
-        """
-    @deprecated("ImageSynchro will not be supported in the future.")
-    def assignImageSynchro(self, deviceLabel: str) -> None:
-        """Add device to the image-synchro list.
-
-        !!! warning "Deprecated"
-
-            ImageSynchro will not be supported in the future.
-        """
     def clearCircularBuffer(self) -> None:
         """Removes all images from the circular buffer."""
     def clearROI(self) -> None:
@@ -290,16 +266,6 @@ class CMMCore:
         If the pixel size was previously defined the new setting will be added to its
         list of property settings. The new setting will override previously defined ones
         if it refers to the same property name.
-        """
-    @deprecated("Property blocks will not be supported in the future.")
-    def definePropertyBlock(
-        self, blockName: str, propertyName: str, propertyValue: str
-    ) -> None:
-        """Defines a reference for the collection of property-value pairs.
-
-        !!! warning "Deprecated"
-
-            Property blocks will not be supported in the future.
         """
     def defineStateLabel(
         self, stateDeviceLabel: str, state: int, stateLabel: str
@@ -357,14 +323,6 @@ class CMMCore:
         """Get type information for available devices from the specified library."""
     def getAvailablePixelSizeConfigs(self) -> Tuple[str, ...]:
         """Returns all defined resolution preset names"""
-    @deprecated("Property blocks will not be supported in the future.")
-    def getAvailablePropertyBlocks(self) -> Tuple[str, ...]:
-        """Returns all defined property block identifiers.
-
-        !!! warning "Deprecated"
-
-            Property blocks will not be supported in the future.
-        """
     def getBufferFreeCapacity(self) -> int:
         """Returns the number of images that can be added to the buffer without
         overflowing.
@@ -407,14 +365,6 @@ class CMMCore:
     @overload
     def getCurrentPixelSizeConfig(self, cached: bool) -> str:
         """Get the current pixel configuration name"""
-    @deprecated("Property blocks will not be supported in the future.")
-    def getData(self, stateDeviceLabel: str) -> PropertyBlock:
-        """Returns the collection of property-value pairs defined for the current state.
-
-        !!! warning "Deprecated"
-
-            Property blocks will not be supported in the future.
-        """
     def getDeviceAdapterNames(self) -> Tuple[str, ...]:
         """Return the names of discoverable device adapters."""
     def getDeviceAdapterSearchPaths(self) -> Tuple[str, ...]:
@@ -424,17 +374,6 @@ class CMMCore:
     def getDeviceDescription(self, label: str) -> str:
         """Returns description text for a given device label. "Description" is determined
         by the library and is immutable."""
-    @deprecated("Use the non-static getDeviceAdapterNames() instead")
-    def getDeviceLibraries(self) -> Tuple[str]:
-        """Returns the list of device adapters available in the default search path(s).
-
-        Do not use in new code. For backward compatibility only.
-
-        !!! warning "Deprecated"
-
-            Use the non-static
-            [`getDeviceAdapterNames()`][pymmcore.CMMCore.getDeviceAdapterNames] instead.
-        """
     def getDeviceLibrary(self, label: str) -> str:
         """Returns device library (aka module, device adapter) name."""
     def getDeviceName(self, label: str) -> str:
@@ -474,8 +413,6 @@ class CMMCore:
         """Get the Galvo y minimum"""
     def getGalvoYRange(self, galvoLabel: str) -> float:
         """Get the Galvo y range"""
-    def getHostName(self) -> str:
-        """return current computer name."""
     @overload
     def getImage(self) -> np.ndarray:
         """Exposes the internal image buffer."""
@@ -513,11 +450,6 @@ class CMMCore:
         """Returns an array of labels for currently loaded devices of specific type."""
     def getLoadedPeripheralDevices(self, hubLabel: str) -> Tuple[str, ...]:
         """Return labels of all loaded peripherals of `hubLabel` device."""
-    def getMACAddresses(self) -> Tuple[str, ...]:
-        """Retrieve vector of MAC addresses for the Ethernet cards in the current computer.
-
-        formatted as `xx-xx-xx-xx-xx-xx`
-        """
     def getMagnificationFactor(self) -> float:
         """Returns the product of all Magnifiers in the system or 1.0 when none is found.
         This is used internally by GetPixelSizeUm"""
@@ -577,14 +509,6 @@ class CMMCore:
         """Return the name of the primary Core log file."""
     def getProperty(self, label: str, propName: str) -> str:
         """Returns the property value for the specified device."""
-    @deprecated("Property blocks will not be supported in the future.")
-    def getPropertyBlockData(self, blockName: str) -> PropertyBlock:
-        """Returns the collection of property-value pairs defined in this block.
-
-        !!! warning "Deprecated"
-
-            Property blocks will not be supported in the future.
-        """
     def getPropertyFromCache(self, deviceLabel: str, propName: str) -> str:
         """Returns the cached property value for the specified device."""
     def getPropertyLowerLimit(self, label: str, propName: str) -> float:
@@ -649,17 +573,6 @@ class CMMCore:
         """Obtain the state for a given label."""
     def getStateLabel(self, stateDeviceLabel: str) -> str:
         """Returns the current state as the label (string)."""
-    @deprecated("Property blocks will not be supported in the future.")
-    def getStateLabelData(
-        self, stateDeviceLabel: str, stateLabel: str
-    ) -> PropertyBlock:
-        """Returns the collection of property-value pairs defined for the specific
-        device and state label.
-
-        !!! warning "Deprecated"
-
-            Property blocks will not be supported in the future.
-        """
     def getStateLabels(self, stateDeviceLabel: str) -> Tuple[str, ...]:
         """Return labels for all states"""
     def getSystemState(self) -> Configuration:
@@ -671,8 +584,6 @@ class CMMCore:
 
         (Default is 5000 ms)
         """
-    def getUserId(self) -> str:
-        """Displays current user name."""
     def getVersionInfo(self) -> str:
         """Displays core version."""
     @overload
@@ -823,22 +734,6 @@ class CMMCore:
         """Reads the contents of the Rx buffer."""
     def registerCallback(self, cb: MMEventCallback) -> None:
         """Register a callback (listener class)."""
-    @deprecated("ImageSynchro will not be supported in the future.")
-    def removeImageSynchro(self, deviceLabel: str) -> None:
-        """Removes device from the image-synchro list.
-
-        !!! warning "Deprecated"
-
-            ImageSynchro will not be supported in the future.
-        """
-    @deprecated("ImageSynchro will not be supported in the future.")
-    def removeImageSynchroAll(self) -> None:
-        """Clears the image synchro device list.
-
-        !!! warning "Deprecated"
-
-            ImageSynchro will not be supported in the future.
-        """
     def renameConfig(
         self, groupName: str, oldConfigName: str, newConfigName: str
     ) -> None:
@@ -1185,14 +1080,6 @@ class CMMCore:
         """Waits (blocks the calling thread) until the specified device becomes non-busy."""
     def waitForDeviceType(self, devType: DeviceType) -> None:
         """Blocks until all devices of the specific type become ready (not-busy)."""
-    @deprecated("ImageSynchro will not be supported in the future.")
-    def waitForImageSynchro(self) -> None:
-        """Wait for the slowest device in the ImageSynchro list.
-
-        !!! warning "Deprecated"
-
-            will not be supported in the future.
-        """
     def waitForSystem(self) -> None:
         """Blocks until all devices in the system become ready (not-busy)."""
     def writeToSerialPort(self, portLabel: str, data: bytes) -> None:
@@ -1338,21 +1225,6 @@ class MMEventCallback:
         self,
     ) -> None: ...
     def onXYStagePositionChanged(self, name: str, xpos: float, ypos: float) -> None: ...
-
-class PropertyBlock:
-    def __init__(self) -> None: ...
-    def addPair(self, pair: PropertyPair) -> None: ...
-    def getPair(self, index: int) -> PropertyPair: ...
-    def getValue(self, key: str) -> str: ...
-    def size(self) -> int: ...
-
-class PropertyPair:
-    @overload
-    def __init__(self) -> None: ...
-    @overload
-    def __init__(self, prop: str, value: str) -> None: ...
-    def getPropertyName(self) -> str: ...
-    def getPropertyValue(self) -> str: ...
 
 class PropertySetting:
     """Property setting defined as triplet: device - property - value."""
