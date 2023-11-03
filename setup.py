@@ -84,9 +84,7 @@ mmcore_sources = [
 ]
 
 mmcore_libraries = ["MMDevice"]
-if IS_WINDOWS:
-    mmcore_libraries.extend(["Iphlpapi", "Advapi32"])
-else:
+if not IS_WINDOWS:
     mmcore_libraries.extend(["dl"])
 
 if not IS_WINDOWS:
