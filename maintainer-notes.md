@@ -101,6 +101,8 @@ and the binary wheels attached.
 
 - The minimum version of python supported is declared in `pypyproject.toml`,
   in the `[project.requires-python]` section.
+- SWIG 4.x is required and automatically fetched via `pyproject.toml` under
+  `[build-system.requires]`.
 - The build-time versions of numpy are in `pyproject.toml`, in the
   `[build-system.requires]` section.
 - The run-time numpy dependency is declared in `pyproject.toml`, in the
@@ -111,10 +113,6 @@ and the binary wheels attached.
 - _We_ should provide wheels for all Python versions we claim to support,
   built agains the oldest NumPy version that we claim to support. Thus, any
   issue with the build or our CI will limit the lowest supported versions.
-
-- Swig.
-  - Swig 4.x should be used.
-  - Swig 1.x generates code that is no longer compatible with Python 3.x.
 
 ## ABI Compatibility
 
