@@ -90,7 +90,7 @@ if not IS_WINDOWS:
 if not IS_WINDOWS:
     cflags = ["-std=c++14"]
     if "CFLAGS" in os.environ:
-        cflags.insert(0, os.environ["CFLAGS"])
+        cflags.append(os.environ["CFLAGS"])
     os.environ["CFLAGS"] = " ".join(cflags)
 
 
