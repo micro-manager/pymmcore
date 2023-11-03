@@ -88,7 +88,12 @@ if not IS_WINDOWS:
     mmcore_libraries.extend(["dl"])
 
 if not IS_WINDOWS:
-    cflags = ["-std=c++14"]
+    cflags = [
+        "-std=c++14",
+        "-fvisibility=hidden",
+        "-Wno-deprecated",       # Hide warnings for throw() specififiers
+        "-Wno-unused-variable",  # Hide warnings for SWIG-generated code
+    ]
     if "CFLAGS" in os.environ:
         cflags.append(os.environ["CFLAGS"])
     os.environ["CFLAGS"] = " ".join(cflags)
