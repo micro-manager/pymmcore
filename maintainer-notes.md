@@ -40,7 +40,7 @@ The package can be built in a few ways:
    This is the method used by the GitHub Actions CI workflow (configuration
    is in `pyproject.toml`). You can [run it locally](https://cibuildwheel.readthedocs.io/en/stable/setup/#local) as well
    if you have Docker installed:
-  
+
     ```sh
     pip install cibuildwheel
     # example
@@ -60,10 +60,10 @@ The package can be built in a few ways:
     python -m build
     ```
 
-    This will build wheel an sdist and wheel for the current platform and
-    Python version, and place them in the `dist` directory.
+    This will build an sdist and wheel for the current platform and Python
+    version, and place them in the `dist` directory.
 
-3. Use `pip install -e .`  
+3. Use `pip install -e .`
    This will build the extension module in-place and allow you to run tests,
    but will not build a wheel or sdist.  Note that if you do this, you will
    need to rerun it each time you change the extension module.
@@ -141,8 +141,8 @@ and the binary wheels attached.
 ## Building with debug symbols on Windows
 
 Since there is no easy way to pass compile and linker options to `build_clib`,
-the easiest hack is to edit the local Python installation's
-`Lib/distutils/_msvccompiler.py` to add the compiler flag `/Zi` and linker flag
+the easiest hack is to edit the local `setuptools` installation's
+`_distutils/_msvccompiler.py` to add the compiler flag `/Zi` and linker flag
 `/DEBUG:FULL` (see the method `initialize`). This produces `vc140.pdb`.
 
 (The "normal" method would be to run `setup.py build_clib` and `setup.py
