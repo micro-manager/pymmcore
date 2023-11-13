@@ -1,15 +1,6 @@
 # https://peps.python.org/pep-0517/
 [build-system]
-requires = [
-    "setuptools >=61.0.0",
-    "swig >=4",
-    "numpy==1.14.5; python_version=='3.7'",
-    "numpy==1.17.3; python_version=='3.8'",
-    "numpy==1.19.3; python_version=='3.9'",
-    "numpy==1.21.3; python_version=='3.10'",
-    "numpy==1.23.2; python_version=='3.11'",
-    "numpy==1.26.0; python_version=='3.12'",
-]
+requires = ["setuptools >=61.0.0", "swig >=4", "oldest-supported-numpy"]
 build-backend = "setuptools.build_meta"
 
 
