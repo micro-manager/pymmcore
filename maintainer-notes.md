@@ -121,20 +121,9 @@ and the binary wheels attached.
 
 - NumPy ABI compatibility needs to be maintained by building against a
   reasonably old version of NumPy when packaging for public distribution (cf.
-  https://github.com/numpy/numpy/issues/5888).
-
-  In practice, we should use the oldest NumPy for which wheels are available on
-  PyPI for the given Python version (and all 3 platforms):
-
-  - Python 3.8 - NumPy 1.17.3
-  - Python 3.9 - NumPy 1.19.3
-  - Python 3.10 - NumPy 1.21.3
-  - Python 3.11 - NumPy 1.23.2
-  - Python 3.12 - Numpy 1.26.0
-
-  Those versions are reflected in the `[build-system.requires]` section of
-  `pyproject.toml`, which takes care of creating the appropriate build
-  environment for the wheel.
+  https://github.com/numpy/numpy/issues/5888).  We do this by including
+  [`oldest-supported-numpy`](https://github.com/scipy/oldest-supported-numpy)
+  in our build requires.
 
 ## Building with debug symbols on Windows
 
