@@ -310,7 +310,6 @@ class CMMCore:
           attempted on a device that is not successfully initialized. When disabled,
           no exception is thrown and a warning is logged (and the operation may
           potentially cause incorrect behavior or a crash).
-
         """
     def enableStderrLog(self, enable: bool) -> None:
         """Enables or disables log message display on the standard console."""
