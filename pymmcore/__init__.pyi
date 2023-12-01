@@ -297,6 +297,21 @@ class CMMCore:
         """Enables or disables the operation of the continuous focusing hardware device."""
     def enableDebugLog(self, enable: bool) -> None:
         """Enable or disable logging of debug messages."""
+    def enableFeature(self, name: str, enable: bool) -> None:
+        """Enable or disable the given Core feature.
+
+        Core features control whether experimental functionality (which is subject
+        to breaking changes) is exposed, or whether stricter API usage is enforced.
+
+        Currently switchable features:
+
+        - "StrictInitializationChecks" (default: disabled) When enabled, an
+          exception is thrown when an operation requiring an initialized device is
+          attempted on a device that is not successfully initialized. When disabled,
+          no exception is thrown and a warning is logged (and the operation may
+          potentially cause incorrect behavior or a crash).
+
+        """
     def enableStderrLog(self, enable: bool) -> None:
         """Enables or disables log message display on the standard console."""
     def fullFocus(self) -> None:
@@ -639,6 +654,11 @@ class CMMCore:
         """Returns the lock-in status of the continuous focusing device."""
     def isExposureSequenceable(self, cameraLabel: str) -> bool:
         """Queries camera if exposure can be used in a sequence"""
+    def isFeatureEnabled(self, name: str) -> bool:
+        """Return whether the given Core feature is currently enabled.
+
+        See `enableFeature()` for the available features.
+        """
     def isGroupDefined(self, groupName: str) -> bool:
         """Checks if the group already exists."""
     def isMultiROIEnabled(self) -> bool:
