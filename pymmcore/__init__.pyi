@@ -607,12 +607,10 @@ class CMMCore:
     def getXPosition(self, xyStageLabel: str) -> float:
         """Obtains the current position of the X axis of the XY stage in microns."""
     @overload
-    def getXYPosition(self, x_stage: Sequence[float], y_stage: Sequence[float]) -> None:
+    def getXYPosition(self) -> Sequence[float]:  # always 2-element list, but not tuple
         """Obtains the current position of the XY stage in microns."""
     @overload
-    def getXYPosition(
-        self, xyStageLabel: str, x_stage: Sequence[float], y_stage: Sequence[float]
-    ) -> None: ...
+    def getXYPosition(self, xyStageLabel: str) -> Sequence[float]: ...
     def getXYStageDevice(self) -> str:
         """Returns the label of the currently selected XYStage device."""
     def getXYStageSequenceMaxLength(self, xyStageLabel: str) -> int:
