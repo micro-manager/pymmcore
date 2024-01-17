@@ -10,7 +10,7 @@ name = "pymmcore"
 description = "Python bindings for MMCore, Micro-Manager's device control layer"
 dynamic = ["version"]
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = { text = "BSD 3-Clause License" }
 authors = [{ name = "Micro-Manager Team" }]
 classifiers = [
