@@ -10,10 +10,10 @@ dist/
 
 wheelhouse/
 
-pymmcore/pymmcore_swig_wrap.h
-pymmcore/pymmcore_swig_wrap.cpp
-pymmcore/_pymmcore_swig.cpython*
-pymmcore/pymmcore_swig.py
+src/pymmcore/pymmcore_swig_wrap.h
+src/pymmcore/pymmcore_swig_wrap.cpp
+src/pymmcore/_pymmcore_swig.*
+src/pymmcore/pymmcore_swig.py
 pymmcore.egg-info
 .mypy_cache/
 
