@@ -101,7 +101,9 @@ if not IS_WINDOWS:
 
 mmcore_extension = Extension(
     f"{PKG_NAME}._{SWIG_MOD_NAME}",
-    sources=mmcore_sources + [os.path.join(PKG_NAME, f"{SWIG_MOD_NAME}.i")],
+    sources=mmcore_sources + [os.path.join(
+        "src", PKG_NAME, f"{SWIG_MOD_NAME}.i",
+    )],
     swig_opts=[
         "-c++",
         "-py3",

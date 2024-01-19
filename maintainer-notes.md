@@ -79,11 +79,11 @@ prefixed to the version:
 ```bash
 git checkout main
 
-vim pymmcore/_version.py  # Remove .dev0
+vim src/pymmcore/_version.py  # Remove .dev0
 git commit -a -m 'Version 1.2.3.42.4'
 git tag -a v1.2.3.42.4 -m Release
 
-vim pymmcore/_version.py  # Set version to 1.2.3.42.5.dev0
+vim src/pymmcore/_version.py  # Set version to 1.2.3.42.5.dev0
 git commit -a -m 'Version back to dev'
 
 git push upstream --follow-tags
