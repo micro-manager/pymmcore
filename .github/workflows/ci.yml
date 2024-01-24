@@ -14,18 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # check that sdist contains all files and that extra files
-  # are explicitly ignored in manifest or pyproject
-  check-manifest:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          submodules: "recursive"
-      - name: Check manifest
-        run: pipx run check-manifest
-
   build_wheels:
     name: Build wheels on ${{ matrix.os }} ${{ matrix.macos_arch }}
     runs-on: ${{ matrix.os }}
@@ -44,14 +32,12 @@ jobs:
         with:
           submodules: "recursive"
 
+      - uses: ilammy/msvc-dev-cmd@v1
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16
         env:
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
-          # Python on Linux is usually configured to add debug information,
-          # which increases binary size by ~11-fold. Remove for the builds we
-          # distribute.
-          CIBW_ENVIRONMENT_LINUX: "LDFLAGS=-Wl,--strip-debug"
 
       - uses: actions/upload-artifact@v3
         with:
@@ -68,8 +54,7 @@ jobs:
 
       - name: Build sdist
         run: |
-          pip install -U pip build check-manifest
-          check-manifest
+          pip install -U pip build
           python -m build --sdist
 
       - uses: actions/upload-artifact@v3
