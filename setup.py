@@ -100,7 +100,7 @@ mmcore_extension = Extension(
     )],
     swig_opts=[
         "-c++",
-        "-py3",
+        "-python",
         "-builtin",
         "-I./mmCoreAndDevices/MMDevice",
         "-I./mmCoreAndDevices/MMCore",
