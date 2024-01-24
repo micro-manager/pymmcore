@@ -57,24 +57,18 @@ class build_ext(setuptools.command.build_ext.build_ext):
         super().run()
 
 
+define_macros = [
+    ("MMDEVICE_CLIENT_BUILD", None),
+] + ([
+    ("NOMINMAX", None),
+    ("_CRT_SECURE_NO_WARNINGS", None),
+] if IS_WINDOWS else [])
+
 mmdevice_build_info = {
     "sources": [str(x.relative_to(ROOT)) for x in MMDevicePath.glob("*.cpp")],
     "include_dirs": ["mmCoreAndDevices/MMDevice"],
-    "macros": [("MODULE_EXPORTS", None)],
+    "macros": define_macros,
 }
-
-if IS_WINDOWS:
-    define_macros = [
-        ("_CRT_SECURE_NO_WARNINGS", None),
-        # These would not be necessary if _WIN32 or _MSC_VER were used correctly.
-        ("WIN32", None),
-        ("_WINDOWS", None),
-        # See DeviceUtils.h
-        ("MMDEVICE_NO_GETTIMEOFDAY", None),
-    ]
-    mmdevice_build_info["macros"].extend(define_macros)
-else:
-    define_macros = []
 
 omit = ["unittest"] + (["Unix"] if IS_WINDOWS else ["Windows"])
 mmcore_sources = [
