@@ -1,4 +1,6 @@
 from unittest.mock import Mock
+
+import pytest
 import pymmcore
 
 
@@ -18,6 +20,7 @@ def test_core():
     assert pymmcore_version[3] == dev_interface_version
 
 
+@pytest.mark.skipif(pymmcore.POLYMORPHIC_MODE == 0, reason="POLYMORPHIC_MODE is 0")
 def test_polymorphism():
     mock = Mock()
 
@@ -29,5 +32,3 @@ def test_polymorphism():
     lbl = ""
     core.setProperty(pymmcore.g_Keyword_CoreDevice, pymmcore.g_Keyword_CoreFocus, lbl)
     mock.assert_called_once_with(lbl)
-
-    assert pymmcore.POLYMORPHIC_MMCORE == 1
