@@ -18,17 +18,20 @@
 #
 # Author: Mark A. Tsuchida
 
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import os
 import os.path
 import platform
 from pathlib import Path
-from typing import Iterable
+from typing import TYPE_CHECKING
 
 import numpy
 import setuptools.command.build_ext
 import setuptools.command.build_py
 from setuptools import Extension, setup
+
+if TYPE_CHECKING:
+    from typing import ContextManager, Iterable
 
 PKG_NAME = "pymmcore"
 SWIG_MOD_NAME = "pymmcore_swig"
@@ -99,10 +102,7 @@ swig_opts = [
     "-I./mmCoreAndDevices/MMDevice",
     "-I./mmCoreAndDevices/MMCore",
 ]
-# Check if POLYMORPHIC_CMMCORE is set in the environment variables
-# this enables the director feature on the MMCore class
-if os.getenv("POLYMORPHIC_CMMCORE", "").lower() in ("true", "1", "yes"):
-    swig_opts.append("-DPOLYMORPHIC_CMMCORE")
+
 
 mmcore_extension = Extension(
     f"{PKG_NAME}._{SWIG_MOD_NAME}",
@@ -126,13 +126,14 @@ mmcore_extension = Extension(
 
 
 @contextmanager
-def virtual_methods(names: Iterable[str]):
+def add_virtual(method_names: Iterable[str]):
+    """Context in which the specified methods are declared virtual in MMCore.h."""
     MMCoreh = MMCorePath / "MMCore.h"
     original_text = MMCoreh.read_text()
-    new_lines = []
     modified = False
+    new_lines = []
     for line in original_text.splitlines():
-        if any(x + "(" in line for x in names):
+        if any(x + "(" in line for x in method_names):
             line = "   virtual " + line.lstrip()
             modified = True
         new_lines.append(line)
@@ -145,7 +146,18 @@ def virtual_methods(names: Iterable[str]):
             MMCoreh.write_text(original_text)
 
 
-with virtual_methods(['setFocusDevice']):
+# Check if POLYMORPHIC_CMMCORE is set in the environment variables
+# this enables the director feature on the MMCore class
+POLYMORPHIC = os.getenv("POLYMORPHIC_CMMCORE", "").lower() in ("true", "1", "yes")
+if POLYMORPHIC:
+    swig_opts.append("-DPOLYMORPHIC_CMMCORE")
+    virtual_methods = ["setFocusDevice"]
+    modified_headers: ContextManager = add_virtual(virtual_methods)
+else:
+    modified_headers = nullcontext()
+
+
+with modified_headers:
     setup(
         ext_modules=[mmcore_extension],
         libraries=[("MMDevice", mmdevice_build_info)],
