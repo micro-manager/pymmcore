@@ -27,12 +27,13 @@ jobs:
         run: pipx run check-manifest
 
   test:
-    name: Test on ${{ matrix.os }}
+    name: Test ${{ matrix.os }} py${{ matrix.python-version }} np${{ matrix.numpy }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.10', '3.12']
         numpy: ['~=1.23', '~=1.24', '~=1.26', '>=2.0.0b1']
 
     steps:
@@ -47,8 +48,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install .[test]
-          pip install numpy${{ matrix.numpy }}
+          python -m pip install --upgrade pip
+          python -m pip install .[test]
+          python -m pip install numpy${{ matrix.numpy }}
 
       - name: Run tests
         run: pytest -v
