@@ -18,10 +18,12 @@
 #
 # Author: Mark A. Tsuchida
 
+from contextlib import contextmanager
 import os
 import os.path
 import platform
 from pathlib import Path
+from typing import Iterable
 
 import numpy
 import setuptools.command.build_ext
@@ -83,7 +85,7 @@ if not IS_WINDOWS:
     cflags = [
         "-std=c++14",
         "-fvisibility=hidden",
-        "-Wno-deprecated",       # Hide warnings for throw() specififiers
+        "-Wno-deprecated",  # Hide warnings for throw() specififiers
         "-Wno-unused-variable",  # Hide warnings for SWIG-generated code
     ]
     if "CFLAGS" in os.environ:
@@ -97,16 +99,21 @@ swig_opts = [
     "-I./mmCoreAndDevices/MMDevice",
     "-I./mmCoreAndDevices/MMCore",
 ]
-# Check if POLYMORPHIC_MMCORE is set in the environment variables
+# Check if POLYMORPHIC_CMMCORE is set in the environment variables
 # this enables the director feature on the MMCore class
-if os.getenv("POLYMORPHIC_MMCORE", "").lower() in ("true", "1", "yes"):
-    swig_opts.append("-DPOLYMORPHIC_MMCORE")
+if os.getenv("POLYMORPHIC_CMMCORE", "").lower() in ("true", "1", "yes"):
+    swig_opts.append("-DPOLYMORPHIC_CMMCORE")
 
 mmcore_extension = Extension(
     f"{PKG_NAME}._{SWIG_MOD_NAME}",
-    sources=mmcore_sources + [os.path.join(
-        "src", PKG_NAME, f"{SWIG_MOD_NAME}.i",
-    )],
+    sources=mmcore_sources
+    + [
+        os.path.join(
+            "src",
+            PKG_NAME,
+            f"{SWIG_MOD_NAME}.i",
+        )
+    ],
     swig_opts=swig_opts,
     include_dirs=[
         numpy.get_include(),
@@ -117,8 +124,30 @@ mmcore_extension = Extension(
     define_macros=define_macros,
 )
 
-setup(
-    ext_modules=[mmcore_extension],
-    libraries=[("MMDevice", mmdevice_build_info)],
-    cmdclass={"build_ext": build_ext, "build_py": build_py},
-)
+
+@contextmanager
+def virtual_methods(names: Iterable[str]):
+    MMCoreh = MMCorePath / "MMCore.h"
+    original_text = MMCoreh.read_text()
+    new_lines = []
+    modified = False
+    for line in original_text.splitlines():
+        if any(x + "(" in line for x in names):
+            line = "   virtual " + line.lstrip()
+            modified = True
+        new_lines.append(line)
+    if modified:
+        MMCoreh.write_text("\n".join(new_lines))
+    try:
+        yield
+    finally:
+        if modified:
+            MMCoreh.write_text(original_text)
+
+
+with virtual_methods(['setFocusDevice']):
+    setup(
+        ext_modules=[mmcore_extension],
+        libraries=[("MMDevice", mmdevice_build_info)],
+        cmdclass={"build_ext": build_ext, "build_py": build_py},
+    )

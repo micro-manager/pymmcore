@@ -30,8 +30,8 @@
 %module (package="pymmcore", directors="1", threads="1") pymmcore_swig
 
 %feature("director") MMEventCallback;
-#ifdef POLYMORPHIC_MMCORE
-    %feature("director") MMCore;
+#ifdef POLYMORPHIC_CMMCORE
+    %feature("director") CMMCore;
 #endif
 %feature("autodoc", "3");
 
@@ -51,7 +51,7 @@ import_array();
 %}
 
 %{
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define NPY_NO_DEPRECATED_API NPY_1_23_API_VERSION
 #include "numpy/arrayobject.h"
 #include "string.h"
 %}
