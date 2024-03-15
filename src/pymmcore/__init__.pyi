@@ -13,6 +13,7 @@ from typing_extensions import deprecated
 import numpy as np
 import numpy.typing as npt
 
+POLYMORPHIC_MMCORE: Final[Literal[0, 1]]
 MaxStrLength: int
 
 # ActionType

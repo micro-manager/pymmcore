@@ -29,3 +29,5 @@ def test_polymorphism():
     lbl = ""
     core.setProperty(pymmcore.g_Keyword_CoreDevice, pymmcore.g_Keyword_CoreFocus, lbl)
     mock.assert_called_once_with(lbl)
+
+    assert pymmcore.POLYMORPHIC_MMCORE == 1

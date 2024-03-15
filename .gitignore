@@ -17,3 +17,4 @@ src/pymmcore/pymmcore_swig.py
 pymmcore.egg-info
 .mypy_cache/
 
+.vscode
