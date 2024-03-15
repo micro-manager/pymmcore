@@ -57,12 +57,10 @@ class build_ext(setuptools.command.build_ext.build_ext):
         super().run()
 
 
-define_macros = [
-    ("MMDEVICE_CLIENT_BUILD", None),
-] + ([
-    ("NOMINMAX", None),
-    ("_CRT_SECURE_NO_WARNINGS", None),
-] if IS_WINDOWS else [])
+define_macros = [("MMDEVICE_CLIENT_BUILD", None)]
+if IS_WINDOWS:
+    define_macros += [("NOMINMAX", None), ("_CRT_SECURE_NO_WARNINGS", None)]
+
 
 mmdevice_build_info = {
     "sources": [str(x.relative_to(ROOT)) for x in MMDevicePath.glob("*.cpp")],
@@ -92,19 +90,24 @@ if not IS_WINDOWS:
         cflags.append(os.environ["CFLAGS"])
     os.environ["CFLAGS"] = " ".join(cflags)
 
+swig_opts = [
+    "-c++",
+    "-python",
+    "-builtin",
+    "-I./mmCoreAndDevices/MMDevice",
+    "-I./mmCoreAndDevices/MMCore",
+]
+# Check if POLYMORPHIC_MMCORE is set in the environment variables
+# this enables the director feature on the MMCore class
+if os.getenv("POLYMORPHIC_MMCORE", "").lower() in ("true", "1", "yes"):
+    swig_opts.append("-DPOLYMORPHIC_MMCORE")
 
 mmcore_extension = Extension(
     f"{PKG_NAME}._{SWIG_MOD_NAME}",
     sources=mmcore_sources + [os.path.join(
         "src", PKG_NAME, f"{SWIG_MOD_NAME}.i",
     )],
-    swig_opts=[
-        "-c++",
-        "-python",
-        "-builtin",
-        "-I./mmCoreAndDevices/MMDevice",
-        "-I./mmCoreAndDevices/MMCore",
-    ],
+    swig_opts=swig_opts,
     include_dirs=[
         numpy.get_include(),
         "./mmCoreAndDevices/MMDevice",

@@ -30,6 +30,9 @@
 %module (package="pymmcore", directors="1", threads="1") pymmcore_swig
 
 %feature("director") MMEventCallback;
+#ifdef POLYMORPHIC_MMCORE
+    %feature("director") MMCore;
+#endif
 %feature("autodoc", "3");
 
 %include exception.i
