@@ -33,9 +33,9 @@
 %feature("autodoc", "3");
 #ifdef POLYMORPHIC_MMCORE
     %feature("director") CMMCore;
-    %constant int POLYMORPHIC_MMCORE = 1;
+    %constant int POLYMORPHIC_MODE = 1;
 #else
-    %constant int POLYMORPHIC_MMCORE = 0;
+    %constant int POLYMORPHIC_MODE = 0;
 #endif
 
 %include exception.i
