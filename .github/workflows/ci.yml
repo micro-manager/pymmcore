@@ -26,7 +26,49 @@ jobs:
       - name: Check manifest
         run: pipx run check-manifest
 
+  test:
+    name: Test ${{ matrix.os }} py${{ matrix.python-version }} np${{ matrix.numpy }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.10", "3.12"]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - python-version: "3.8"
+            os: ubuntu-latest
+            numpy: "==1.23.5"
+          - python-version: "3.10"
+            os: ubuntu-latest
+            numpy: "~=1.26"
+          - python-version: "3.9"
+            os: windows-latest
+            numpy: ">=2.0.0b1"
+          - python-version: "3.12"
+            os: ubuntu-latest
+            numpy: ">=2.0.0b1"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install .[test]
+          python -m pip install numpy${{ matrix.numpy }}
+
+      - name: Run tests
+        run: pytest -v
+
   build_wheels:
+    if: github.event_name != 'pull_request'
     name: Build wheels on ${{ matrix.os }} ${{ matrix.macos_arch }}
     runs-on: ${{ matrix.os }}
     strategy:
