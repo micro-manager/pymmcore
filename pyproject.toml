@@ -1,8 +1,8 @@
 # https://peps.python.org/pep-0517/
 [build-system]
-requires = ["setuptools >=61.0.0", "swig >=4.1", "oldest-supported-numpy"]
+# https://numpy.org/devdocs/dev/depending_on_numpy.html#adding-a-dependency-on-numpy
+requires = ["setuptools >=61.0.0", "swig >=4.1", "numpy>=2.0.0b1"]
 build-backend = "setuptools.build_meta"
-
 
 # https://peps.python.org/pep-0621/
 [project]
@@ -26,7 +26,10 @@ classifiers = [
     "Topic :: System :: Hardware :: Hardware Drivers",
     "Typing :: Typed",
 ]
-dependencies = ["numpy >=1.12.0"]
+dependencies = ["numpy>=1.23.5"]
+
+[project.optional-dependencies]
+test = ["pytest"]
 
 [project.urls]
 homepage = "https://micro-manager.org"
