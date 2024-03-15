@@ -31,6 +31,12 @@
 
 %feature("director") MMEventCallback;
 %feature("autodoc", "3");
+#ifdef POLYMORPHIC_MMCORE
+    %feature("director") CMMCore;
+    %constant int POLYMORPHIC_MODE = 1;
+#else
+    %constant int POLYMORPHIC_MODE = 0;
+#endif
 
 %include exception.i
 %include std_string.i
@@ -48,7 +54,7 @@ import_array();
 %}
 
 %{
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#define NPY_NO_DEPRECATED_API NPY_1_23_API_VERSION
 #include "numpy/arrayobject.h"
 #include "string.h"
 %}
