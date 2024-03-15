@@ -34,7 +34,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: ["3.8", "3.10", "3.12"]
-        numpy: ["==1.23.5", "<2.0", ">=2.0.0b1"]
+        numpy: ["==1.23.5", "~=1.26", ">=2.0.0b1"]
 
     steps:
       - uses: actions/checkout@v4
