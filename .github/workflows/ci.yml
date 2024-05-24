@@ -76,9 +76,9 @@ jobs:
       matrix:
         os: [ubuntu-22.04, windows-2022]
         include:
-          - os: macos-11
+          - os: macos-12
             macos_arch: "x86_64"
-          - os: macos-11
+          - os: macos-12
             macos_arch: "arm64"
 
     steps:
