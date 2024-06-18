@@ -228,9 +228,9 @@ AdapterName: TypeAlias = str
 ValidAdapterName = NewType("ValidAdapterName", str)
 """Guaranteed Name of a device adapter library (discovered in the adapter search path)."""
 DeviceLabel: TypeAlias = str
-"""User-specific device label."""
+"""User-defined device label."""
 ValidDeviceLabel = NewType("ValidDeviceLabel", str)
-"""Guaranteed User-specific device label."""
+"""Guaranteed User-defined device label."""
 DeviceName: TypeAlias = str
 """Name of a Device offered by a device adapter (defined by the device adapter)."""
 ValidDeviceName = NewType("ValidDeviceName", str)
