@@ -8,8 +8,7 @@
 # so inclined)
 from __future__ import annotations
 from typing import Any, Final, List, Literal, NewType, overload, Sequence, Tuple, Union
-from pymmcore_plus import ConfigGroup
-from typing_extensions import deprecated
+from typing_extensions import TypeAlias
 
 import numpy as np
 import numpy.typing as npt
@@ -217,34 +216,45 @@ DeviceDetectionStatus = int
 DeviceInitializationState = int
 AffineTuple = Tuple[float, float, float, float, float, float]
 
-# These are special types used throughout the API.
-# Using NewType helps to ensure that the correct type is used in the correct context.
-# It doesn't change anything at runtime, but helps static type checkers make sure that
-# the correct type is used in the correct context.
+# These are special string types used throughout the API.
+# We use NewType() and preface with "Valid" to indicate *return* values from core
+# (Values that are guaranteed to be valid inputs to other core functions with the same
+# type).  However, to remain flexible, we simply use a TypeAlias to `str` when
+# annotating function inputs.  The type aliases are still useful in that they help
+# keep track of the meaning of the string (beyond what parameter names can suggest).
 
-AdapterName = NewType("AdapterName", str)
+AdapterName: TypeAlias = str
 """Name of a device adapter library (discovered in the adapter search path)."""
-
-DeviceLabel = NewType("DeviceLabel", str)
+ValidAdapterName = NewType("ValidAdapterName", str)
+"""Guaranteed Name of a device adapter library (discovered in the adapter search path)."""
+DeviceLabel: TypeAlias = str
 """User-specific device label."""
-
-DeviceName = NewType("DeviceName", str)
+ValidDeviceLabel = NewType("ValidDeviceLabel", str)
+"""Guaranteed User-specific device label."""
+DeviceName: TypeAlias = str
 """Name of a Device offered by a device adapter (defined by the device adapter)."""
-
-PropertyName = NewType("PropertyName", str)
+ValidDeviceName = NewType("ValidDeviceName", str)
+"""Guaranteed Name of a Device offered by a device adapter (defined by the device adapter)."""
+PropertyName: TypeAlias = str
 """Name of a device property (defined by the device adapter)."""
-
-ConfigGroupName = NewType("ConfigGroupName", str)
+ValidPropertyName = NewType("ValidPropertyName", str)
+"""Guaranteed Name of a device property (defined by the device adapter)."""
+ConfigGroupName: TypeAlias = str
 """Name of a defined configuration group (name defined by user.)"""
-
-ConfigPresetName = NewType("ConfigPresetName", str)
+ValidConfigGroupName = NewType("ValidConfigGroupName", str)
+"""Guaranteed Name of a defined configuration group (name defined by user.)"""
+ConfigPresetName: TypeAlias = str
 """Name of a defined configuration preset in a group (name defined by user.)"""
-
-PixelSizeConfigName = NewType("PixelSizeConfigName", str)
+ValidConfigPresetName = NewType("ValidConfigPresetName", str)
+"""Guaranteed Name of a defined configuration preset in a group (name defined by user.)"""
+PixelSizeConfigName: TypeAlias = str
 """Name of a defined pixel size configuration preset (name defined by user.)"""
-
-StateLabel = NewType("StateLabel", str)
+ValidPixelSizeConfigName = NewType("ValidPixelSizeConfigName", str)
+"""Guaranteed Name of a defined pixel size configuration preset (name defined by user.)"""
+StateLabel: TypeAlias = str
 """Label for a specific state (name defined by user.)"""
+ValidStateLabel = NewType("ValidStateLabel", StateLabel)
+"""Guaranteed Label for a specific state (name defined by user.)"""
 
 class CMMCore:
     def __init__(self) -> None: ...
@@ -368,7 +378,7 @@ class CMMCore:
         """Returns all valid values for the specified property."""
     def getAPIVersionInfo(self) -> str:
         """Returns the module and device interface versions."""
-    def getAutoFocusDevice(self) -> DeviceLabel | Literal[""]:
+    def getAutoFocusDevice(self) -> ValidDeviceLabel | Literal[""]:
         """Returns the label of the currently selected auto-focus device.
 
         Returns empty string if no auto-focus device is selected.
@@ -377,15 +387,15 @@ class CMMCore:
         """Measures offset for the one-shot focusing device."""
     def getAutoShutter(self) -> bool:
         """Returns the current setting of the auto-shutter option."""
-    def getAvailableConfigGroups(self) -> Tuple[ConfigGroupName, ...]:
+    def getAvailableConfigGroups(self) -> Tuple[ValidConfigGroupName, ...]:
         """Returns the names of all defined configuration groups"""
     def getAvailableConfigs(
         self, configGroup: ConfigGroupName
-    ) -> Tuple[ConfigPresetName, ...]:
+    ) -> Tuple[ValidConfigPresetName, ...]:
         """Returns all defined configuration (preset) names in a given group"""
     def getAvailableDeviceDescriptions(self, library: AdapterName) -> Tuple[str, ...]:
         """Get descriptions for available devices from the specified library."""
-    def getAvailableDevices(self, library: AdapterName) -> Tuple[DeviceName, ...]:
+    def getAvailableDevices(self, library: AdapterName) -> Tuple[ValidDeviceName, ...]:
         """Get available devices from the specified device library."""
     def getAvailableDeviceTypes(self, library: AdapterName) -> Tuple[int, ...]:
         """Get type information for available devices from the specified library."""
@@ -401,12 +411,12 @@ class CMMCore:
         """How many bytes for each pixel."""
     def getCameraChannelName(self, channelNr: int) -> str:
         """Returns the name of the requested channel as known by the default camera"""
-    def getCameraDevice(self) -> DeviceLabel | Literal[""]:
+    def getCameraDevice(self) -> ValidDeviceLabel | Literal[""]:
         """Returns the label of the currently selected camera device.
 
         Returns empty string if no camera device is selected.
         """
-    def getChannelGroup(self) -> ConfigGroupName | Literal[""]:
+    def getChannelGroup(self) -> ValidConfigGroupName | Literal[""]:
         """Returns the group determining the channel selection.
 
         Returns empty string if no channel group is selected.
@@ -432,25 +442,25 @@ class CMMCore:
         """Returns a pre-defined error test with the given error code"""
     def getCurrentConfig(
         self, groupName: ConfigGroupName
-    ) -> ConfigPresetName | Literal[""]:
+    ) -> ValidConfigPresetName | Literal[""]:
         """Returns the current configuration (preset) for a given group.
 
         Returns empty string if no configuration is selected.
         """
     def getCurrentConfigFromCache(
         self, groupName: ConfigGroupName
-    ) -> ConfigPresetName | Literal[""]:
+    ) -> ValidConfigPresetName | Literal[""]:
         """Returns the configuration for a given group based on the data in the cache."""
     def getCurrentFocusScore(self) -> float:
         """Returns the focus score from the default focusing device measured at the
         current Z position."""
     @overload
-    def getCurrentPixelSizeConfig(self) -> PixelSizeConfigName:
+    def getCurrentPixelSizeConfig(self) -> ValidPixelSizeConfigName:
         """Get the current pixel configuration name"""
     @overload
-    def getCurrentPixelSizeConfig(self, cached: bool) -> PixelSizeConfigName:
+    def getCurrentPixelSizeConfig(self, cached: bool) -> ValidPixelSizeConfigName:
         """Get the current pixel configuration name"""
-    def getDeviceAdapterNames(self) -> Tuple[AdapterName, ...]:
+    def getDeviceAdapterNames(self) -> Tuple[ValidAdapterName, ...]:
         """Return the names of discoverable device adapters."""
     def getDeviceAdapterSearchPaths(self) -> Tuple[str, ...]:
         """Return the current device adapter search paths."""
@@ -459,11 +469,13 @@ class CMMCore:
     def getDeviceDescription(self, label: DeviceLabel) -> str:
         """Returns description text for a given device label. "Description" is determined
         by the library and is immutable."""
-    def getDeviceLibrary(self, label: DeviceLabel) -> AdapterName:
+    def getDeviceLibrary(self, label: DeviceLabel) -> ValidAdapterName:
         """Returns device library (aka module, device adapter) name."""
-    def getDeviceName(self, label: DeviceLabel) -> DeviceName:
+    def getDeviceName(self, label: DeviceLabel) -> ValidDeviceName:
         """Returns device name for a given device label."""
-    def getDevicePropertyNames(self, label: DeviceLabel) -> Tuple[PropertyName, ...]:
+    def getDevicePropertyNames(
+        self, label: DeviceLabel
+    ) -> Tuple[ValidPropertyName, ...]:
         """Returns all property names supported by the device."""
     def getDeviceType(self, label: DeviceLabel) -> DeviceType:
         """Returns device type."""
@@ -475,7 +487,7 @@ class CMMCore:
         """Returns the current exposure setting of the specified camera in milliseconds."""
     def getExposureSequenceMaxLength(self, cameraLabel: DeviceLabel) -> int:
         """Gets the maximum length of a camera's exposure sequence."""
-    def getFocusDevice(self) -> DeviceLabel | Literal[""]:
+    def getFocusDevice(self) -> ValidDeviceLabel | Literal[""]:
         """Returns the label of the currently selected focus device.
 
         Returns empty string if no focus device is selected.
@@ -484,7 +496,7 @@ class CMMCore:
         """Get the focus direction of a stage."""
     def getGalvoChannel(self, galvoLabel: DeviceLabel) -> str:
         """Get the name of the active galvo channel (for a multi-laser galvo device)."""
-    def getGalvoDevice(self) -> DeviceLabel | Literal[""]:
+    def getGalvoDevice(self) -> ValidDeviceLabel | Literal[""]:
         """Returns the label of the currently selected Galvo device.
 
         Returns empty string if no Galvo device is selected.
@@ -519,7 +531,7 @@ class CMMCore:
         """Returns the size of the internal image buffer."""
     def getImageHeight(self) -> int:
         """Vertical dimension of the image buffer in pixels."""
-    def getImageProcessorDevice(self) -> DeviceLabel | Literal[""]:
+    def getImageProcessorDevice(self) -> ValidDeviceLabel | Literal[""]:
         """Returns the label of the currently selected image processor device.
 
         Returns empty string if no image processor device is selected.
@@ -530,7 +542,7 @@ class CMMCore:
         self, hubLabel: DeviceLabel, peripheralLabel: DeviceName
     ) -> str:
         """Returns description from the specified peripheral on `hubLabel` device."""
-    def getInstalledDevices(self, hubLabel: DeviceLabel) -> Tuple[DeviceName, ...]:
+    def getInstalledDevices(self, hubLabel: DeviceLabel) -> Tuple[ValidDeviceName, ...]:
         """Performs auto-detection and loading of child devices that are attached to a
         Hub device.
 
@@ -546,13 +558,15 @@ class CMMCore:
     def getLastImageMD(self, md: Metadata) -> np.ndarray:
         """Returns a pointer to the pixels of the image that was last inserted into the
         circular buffer. Also provides all metadata associated with that image"""
-    def getLoadedDevices(self) -> Tuple[DeviceLabel, ...]:
+    def getLoadedDevices(self) -> Tuple[ValidDeviceLabel, ...]:
         """Returns an array of labels for currently loaded devices."""
-    def getLoadedDevicesOfType(self, devType: DeviceType) -> Tuple[DeviceLabel, ...]:
+    def getLoadedDevicesOfType(
+        self, devType: DeviceType
+    ) -> Tuple[ValidDeviceLabel, ...]:
         """Returns an array of labels for currently loaded devices of specific type."""
     def getLoadedPeripheralDevices(
         self, hubLabel: DeviceLabel
-    ) -> Tuple[DeviceLabel, ...]:
+    ) -> Tuple[ValidDeviceLabel, ...]:
         """Return labels of all loaded peripherals of `hubLabel` device.
 
         Returns empty tuple if hubLabel is not a hub device, or even if hubLabel is
@@ -583,7 +597,9 @@ class CMMCore:
         """Returns the number of components the default camera is returning."""
     def getNumberOfStates(self, stateDeviceLabel: DeviceLabel) -> int:
         """Returns the total number of available positions (states)."""
-    def getParentLabel(self, peripheralLabel: DeviceLabel) -> DeviceLabel | Literal[""]:
+    def getParentLabel(
+        self, peripheralLabel: DeviceLabel
+    ) -> ValidDeviceLabel | Literal[""]:
         """Returns parent device. Returns empty string if no parent is found."""
     @overload
     def getPixelSizeAffine(self) -> AffineTuple:
@@ -668,7 +684,7 @@ class CMMCore:
     def getSerialPortAnswer(self, portLabel: str, term: str) -> str:
         """Continuously read from the serial port until the terminating sequence is
         encountered."""
-    def getShutterDevice(self) -> DeviceLabel | Literal[""]:
+    def getShutterDevice(self) -> ValidDeviceLabel | Literal[""]:
         """Returns the label of the currently selected shutter device.
 
         Returns empty string if no shutter device is selected.
@@ -681,7 +697,7 @@ class CMMCore:
         """Returns the state of the specified shutter."""
     def getSLMBytesPerPixel(self, slmLabel: DeviceLabel) -> int:
         """Returns the number of bytes per SLM pixel"""
-    def getSLMDevice(self) -> DeviceLabel | Literal[""]:
+    def getSLMDevice(self) -> ValidDeviceLabel | Literal[""]:
         """Returns the label of the currently selected SLM device.
 
         Returns empty string if no SLM device is selected.
@@ -707,9 +723,11 @@ class CMMCore:
         self, stateDeviceLabel: DeviceLabel, stateLabel: StateLabel
     ) -> int:
         """Obtain the state for a given label."""
-    def getStateLabel(self, stateDeviceLabel: DeviceLabel) -> StateLabel:
+    def getStateLabel(self, stateDeviceLabel: DeviceLabel) -> ValidStateLabel:
         """Returns the current state as the label (string)."""
-    def getStateLabels(self, stateDeviceLabel: DeviceLabel) -> Tuple[StateLabel, ...]:
+    def getStateLabels(
+        self, stateDeviceLabel: DeviceLabel
+    ) -> Tuple[ValidStateLabel, ...]:
         """Return labels for all states"""
     def getSystemState(self) -> Configuration:
         """Returns the entire system state, i.e."""
@@ -733,7 +751,7 @@ class CMMCore:
         """Obtains the current position of the XY stage in microns."""
     @overload
     def getXYPosition(self, xyStageLabel: DeviceLabel) -> Sequence[float]: ...
-    def getXYStageDevice(self) -> DeviceLabel | Literal[""]:
+    def getXYStageDevice(self) -> ValidDeviceLabel | Literal[""]:
         """Returns the label of the currently selected XYStage device.
 
         Returns empty string if no XYStage device is selected.
@@ -1436,10 +1454,10 @@ class PropertySetting:
     @staticmethod
     def generateKey(self, device: str, prop: str) -> str:
         """Returns `{device}-{prop}`."""
-    def getDeviceLabel(self) -> str:
+    def getDeviceLabel(self) -> DeviceLabel:
         """Returns the device label."""
     def getKey(self) -> str: ...
-    def getPropertyName(self) -> str:
+    def getPropertyName(self) -> PropertyName:
         """Returns the property name."""
     def getPropertyValue(self) -> str:
         """Returns the property value."""
