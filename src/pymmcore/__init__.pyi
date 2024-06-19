@@ -8,7 +8,6 @@
 # so inclined)
 from __future__ import annotations
 from typing import Any, Final, List, Literal, NewType, overload, Sequence, Tuple, Union
-from typing_extensions import TypeAlias
 
 import numpy as np
 import numpy.typing as npt
