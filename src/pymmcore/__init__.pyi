@@ -217,44 +217,29 @@ DeviceInitializationState = int
 AffineTuple = Tuple[float, float, float, float, float, float]
 
 # These are special string types used throughout the API.
-# We use NewType() and preface with "Valid" to indicate *return* values from core
-# (Values that are guaranteed to be valid inputs to other core functions with the same
-# type).  However, to remain flexible, we simply use a TypeAlias to `str` when
-# annotating function inputs.  The type aliases are still useful in that they help
-# keep track of the meaning of the string (beyond what parameter names can suggest).
+# We use NewType() to annotatr *return* values from core (that are guaranteed to be
+# valid inputs to other core functions with the same
+# type).  However, to remain flexible, we use the fallback `NewType() | str` when
+# annotating function inputs.
 
-AdapterName: TypeAlias = str
+AdapterName = NewType("AdapterName", str)
 """Name of a device adapter library (discovered in the adapter search path)."""
-ValidAdapterName = NewType("ValidAdapterName", str)
-"""Guaranteed Name of a device adapter library (discovered in the adapter search path)."""
-DeviceLabel: TypeAlias = str
-"""User-defined device label."""
-ValidDeviceLabel = NewType("ValidDeviceLabel", str)
-"""Guaranteed User-defined device label."""
-DeviceName: TypeAlias = str
+DeviceLabel = NewType("DeviceLabel", str)
+"""User-defined label for a loaded device.
+Not to be confused with the `DeviceName`, which is defined by the device adapter.
+"""
+DeviceName = NewType("DeviceName", str)
 """Name of a Device offered by a device adapter (defined by the device adapter)."""
-ValidDeviceName = NewType("ValidDeviceName", str)
-"""Guaranteed Name of a Device offered by a device adapter (defined by the device adapter)."""
-PropertyName: TypeAlias = str
+PropertyName = NewType("PropertyName", str)
 """Name of a device property (defined by the device adapter)."""
-ValidPropertyName = NewType("ValidPropertyName", str)
-"""Guaranteed Name of a device property (defined by the device adapter)."""
-ConfigGroupName: TypeAlias = str
-"""Name of a defined configuration group (name defined by user.)"""
-ValidConfigGroupName = NewType("ValidConfigGroupName", str)
-"""Guaranteed Name of a defined configuration group (name defined by user.)"""
-ConfigPresetName: TypeAlias = str
-"""Name of a defined configuration preset in a group (name defined by user.)"""
-ValidConfigPresetName = NewType("ValidConfigPresetName", str)
-"""Guaranteed Name of a defined configuration preset in a group (name defined by user.)"""
-PixelSizeConfigName: TypeAlias = str
-"""Name of a defined pixel size configuration preset (name defined by user.)"""
-ValidPixelSizeConfigName = NewType("ValidPixelSizeConfigName", str)
-"""Guaranteed Name of a defined pixel size configuration preset (name defined by user.)"""
-StateLabel: TypeAlias = str
-"""Label for a specific state (name defined by user.)"""
-ValidStateLabel = NewType("ValidStateLabel", StateLabel)
-"""Guaranteed Label for a specific state (name defined by user.)"""
+ConfigGroupName = NewType("ConfigGroupName", str)
+"""User-defined name of a configuration group."""
+ConfigPresetName = NewType("ConfigPresetName", str)
+"""User-defined name of a preset in a configuration group."""
+PixelSizeConfigName = NewType("PixelSizeConfigName", str)
+"""User-defined name of a defined pixel size configuration preset"""
+StateLabel = NewType("StateLabel", str)
+"""User-defined label for a specific state in a state device."""
 
 class CMMCore:
     def __init__(self) -> None: ...
@@ -280,8 +265,8 @@ class CMMCore:
         self,
         groupName: str,
         configName: str,
-        deviceLabel: DeviceLabel,
-        propName: PropertyName,
+        deviceLabel: DeviceLabel | str,
+        propName: PropertyName | str,
         value: str,
     ) -> None:
         """Defines a single configuration entry (setting).
@@ -300,8 +285,8 @@ class CMMCore:
     def definePixelSizeConfig(
         self,
         resolutionID: str,
-        deviceLabel: DeviceLabel,
-        propName: PropertyName,
+        deviceLabel: DeviceLabel | str,
+        propName: PropertyName | str,
         value: str,
     ) -> None:
         """Defines a single pixel size entry (setting).
@@ -315,36 +300,36 @@ class CMMCore:
         if it refers to the same property name.
         """
     def defineStateLabel(
-        self, stateDeviceLabel: DeviceLabel, state: int, stateLabel: str
+        self, stateDeviceLabel: DeviceLabel | str, state: int, stateLabel: str
     ) -> None:
         """Defines a label for the specific state."""
     @overload
     def deleteConfig(
-        self, groupName: ConfigGroupName, configName: ConfigPresetName
+        self, groupName: ConfigGroupName | str, configName: ConfigPresetName | str
     ) -> None:
         """Deletes a configuration from a group."""
     @overload
     def deleteConfig(
         self,
-        groupName: ConfigGroupName,
-        configName: ConfigPresetName,
-        deviceLabel: DeviceLabel,
-        propName: PropertyName,
+        groupName: ConfigGroupName | str,
+        configName: ConfigPresetName | str,
+        deviceLabel: DeviceLabel | str,
+        propName: PropertyName | str,
     ) -> None: ...
-    def deleteConfigGroup(self, groupName: ConfigGroupName) -> None:
+    def deleteConfigGroup(self, groupName: ConfigGroupName | str) -> None:
         """Deletes an entire configuration group."""
-    def deleteGalvoPolygons(self, galvoLabel: DeviceLabel) -> None:
+    def deleteGalvoPolygons(self, galvoLabel: DeviceLabel | str) -> None:
         """Remove all added polygons"""
-    def deletePixelSizeConfig(self, configName: PixelSizeConfigName) -> None:
+    def deletePixelSizeConfig(self, configName: PixelSizeConfigName | str) -> None:
         """Deletes a pixel size configuration."""
-    def detectDevice(self, deviceLabel: DeviceLabel) -> DeviceDetectionStatus:
+    def detectDevice(self, deviceLabel: DeviceLabel | str) -> DeviceDetectionStatus:
         """Tries to communicate to a device through a given serial port Used to automate
         discovery of correct serial port. Also configures the serial port correctly."""
-    def deviceBusy(self, label: DeviceLabel) -> bool:
+    def deviceBusy(self, label: DeviceLabel | str) -> bool:
         """Checks the busy status of the specific device."""
     def deviceTypeBusy(self, devType: DeviceType) -> bool:
         """Checks the busy status for all devices of the specific type."""
-    def displaySLMImage(self, slmLabel: DeviceLabel) -> None:
+    def displaySLMImage(self, slmLabel: DeviceLabel | str) -> None:
         """Display the waiting image on the SLM."""
     def enableContinuousFocus(self, enable: bool) -> None:
         """Enables or disables the operation of the continuous focusing hardware device."""
@@ -373,12 +358,12 @@ class CMMCore:
     def fullFocus(self) -> None:
         """Performs focus acquisition and lock for the one-shot focusing device."""
     def getAllowedPropertyValues(
-        self, label: DeviceLabel, propName: PropertyName
+        self, label: DeviceLabel | str, propName: PropertyName | str
     ) -> Tuple[str, ...]:
         """Returns all valid values for the specified property."""
     def getAPIVersionInfo(self) -> str:
         """Returns the module and device interface versions."""
-    def getAutoFocusDevice(self) -> ValidDeviceLabel | Literal[""]:
+    def getAutoFocusDevice(self) -> DeviceLabel | Literal[""]:
         """Returns the label of the currently selected auto-focus device.
 
         Returns empty string if no auto-focus device is selected.
@@ -387,17 +372,19 @@ class CMMCore:
         """Measures offset for the one-shot focusing device."""
     def getAutoShutter(self) -> bool:
         """Returns the current setting of the auto-shutter option."""
-    def getAvailableConfigGroups(self) -> Tuple[ValidConfigGroupName, ...]:
+    def getAvailableConfigGroups(self) -> Tuple[ConfigGroupName, ...]:
         """Returns the names of all defined configuration groups"""
     def getAvailableConfigs(
-        self, configGroup: ConfigGroupName
-    ) -> Tuple[ValidConfigPresetName, ...]:
+        self, configGroup: ConfigGroupName | str
+    ) -> Tuple[ConfigPresetName, ...]:
         """Returns all defined configuration (preset) names in a given group"""
-    def getAvailableDeviceDescriptions(self, library: AdapterName) -> Tuple[str, ...]:
+    def getAvailableDeviceDescriptions(
+        self, library: AdapterName | str
+    ) -> Tuple[str, ...]:
         """Get descriptions for available devices from the specified library."""
-    def getAvailableDevices(self, library: AdapterName) -> Tuple[ValidDeviceName, ...]:
+    def getAvailableDevices(self, library: AdapterName | str) -> Tuple[DeviceName, ...]:
         """Get available devices from the specified device library."""
-    def getAvailableDeviceTypes(self, library: AdapterName) -> Tuple[int, ...]:
+    def getAvailableDeviceTypes(self, library: AdapterName | str) -> Tuple[int, ...]:
         """Get type information for available devices from the specified library."""
     def getAvailablePixelSizeConfigs(self) -> Tuple[PixelSizeConfigName, ...]:
         """Returns all defined resolution preset names"""
@@ -411,12 +398,12 @@ class CMMCore:
         """How many bytes for each pixel."""
     def getCameraChannelName(self, channelNr: int) -> str:
         """Returns the name of the requested channel as known by the default camera"""
-    def getCameraDevice(self) -> ValidDeviceLabel | Literal[""]:
+    def getCameraDevice(self) -> DeviceLabel | Literal[""]:
         """Returns the label of the currently selected camera device.
 
         Returns empty string if no camera device is selected.
         """
-    def getChannelGroup(self) -> ValidConfigGroupName | Literal[""]:
+    def getChannelGroup(self) -> ConfigGroupName | Literal[""]:
         """Returns the group determining the channel selection.
 
         Returns empty string if no channel group is selected.
@@ -424,100 +411,102 @@ class CMMCore:
     def getCircularBufferMemoryFootprint(self) -> int:
         """Returns the size of the Circular Buffer in MB"""
     def getConfigData(
-        self, configGroup: ConfigGroupName, configName: ConfigPresetName
+        self, configGroup: ConfigGroupName | str, configName: ConfigPresetName | str
     ) -> Configuration:
         """Returns the configuration object for a given group and name."""
-    def getConfigGroupState(self, group: ConfigGroupName) -> Configuration:
+    def getConfigGroupState(self, group: ConfigGroupName | str) -> Configuration:
         """Returns the partial state of the system, only for the devices included in the
         specified group."""
-    def getConfigGroupStateFromCache(self, group: ConfigGroupName) -> Configuration:
+    def getConfigGroupStateFromCache(
+        self, group: ConfigGroupName | str
+    ) -> Configuration:
         """Returns the partial state of the system cache, only for the devices included in
         the specified group."""
     def getConfigState(
-        self, group: ConfigGroupName, config: ConfigPresetName
+        self, group: ConfigGroupName | str, config: ConfigPresetName | str
     ) -> Configuration:
         """Returns a partial state of the system, only for devices included in the
         specified configuration."""
     def getCoreErrorText(self, code: int) -> str:
         """Returns a pre-defined error test with the given error code"""
     def getCurrentConfig(
-        self, groupName: ConfigGroupName
-    ) -> ValidConfigPresetName | Literal[""]:
+        self, groupName: ConfigGroupName | str
+    ) -> ConfigPresetName | Literal[""]:
         """Returns the current configuration (preset) for a given group.
 
         Returns empty string if no configuration is selected.
         """
     def getCurrentConfigFromCache(
-        self, groupName: ConfigGroupName
-    ) -> ValidConfigPresetName | Literal[""]:
+        self, groupName: ConfigGroupName | str
+    ) -> ConfigPresetName | Literal[""]:
         """Returns the configuration for a given group based on the data in the cache."""
     def getCurrentFocusScore(self) -> float:
         """Returns the focus score from the default focusing device measured at the
         current Z position."""
     @overload
-    def getCurrentPixelSizeConfig(self) -> ValidPixelSizeConfigName:
+    def getCurrentPixelSizeConfig(self) -> PixelSizeConfigName:
         """Get the current pixel configuration name"""
     @overload
-    def getCurrentPixelSizeConfig(self, cached: bool) -> ValidPixelSizeConfigName:
+    def getCurrentPixelSizeConfig(self, cached: bool) -> PixelSizeConfigName:
         """Get the current pixel configuration name"""
-    def getDeviceAdapterNames(self) -> Tuple[ValidAdapterName, ...]:
+    def getDeviceAdapterNames(self) -> Tuple[AdapterName, ...]:
         """Return the names of discoverable device adapters."""
     def getDeviceAdapterSearchPaths(self) -> Tuple[str, ...]:
         """Return the current device adapter search paths."""
-    def getDeviceDelayMs(self, label: DeviceLabel) -> float:
+    def getDeviceDelayMs(self, label: DeviceLabel | str) -> float:
         """Reports action delay in milliseconds for the specific device."""
-    def getDeviceDescription(self, label: DeviceLabel) -> str:
+    def getDeviceDescription(self, label: DeviceLabel | str) -> str:
         """Returns description text for a given device label. "Description" is determined
         by the library and is immutable."""
-    def getDeviceLibrary(self, label: DeviceLabel) -> ValidAdapterName:
+    def getDeviceLibrary(self, label: DeviceLabel | str) -> AdapterName:
         """Returns device library (aka module, device adapter) name."""
-    def getDeviceName(self, label: DeviceLabel) -> ValidDeviceName:
+    def getDeviceName(self, label: DeviceLabel | str) -> DeviceName:
         """Returns device name for a given device label."""
     def getDevicePropertyNames(
-        self, label: DeviceLabel
-    ) -> Tuple[ValidPropertyName, ...]:
+        self, label: DeviceLabel | str
+    ) -> Tuple[PropertyName, ...]:
         """Returns all property names supported by the device."""
-    def getDeviceType(self, label: DeviceLabel) -> DeviceType:
+    def getDeviceType(self, label: DeviceLabel | str) -> DeviceType:
         """Returns device type."""
     @overload
     def getExposure(self) -> float:
         """Returns the current exposure setting of the camera in milliseconds."""
     @overload
-    def getExposure(self, label: DeviceLabel) -> float:
+    def getExposure(self, label: DeviceLabel | str) -> float:
         """Returns the current exposure setting of the specified camera in milliseconds."""
-    def getExposureSequenceMaxLength(self, cameraLabel: DeviceLabel) -> int:
+    def getExposureSequenceMaxLength(self, cameraLabel: DeviceLabel | str) -> int:
         """Gets the maximum length of a camera's exposure sequence."""
-    def getFocusDevice(self) -> ValidDeviceLabel | Literal[""]:
+    def getFocusDevice(self) -> DeviceLabel | Literal[""]:
         """Returns the label of the currently selected focus device.
 
         Returns empty string if no focus device is selected.
         """
-    def getFocusDirection(self, stageLabel: DeviceLabel) -> FocusDirection:
+    def getFocusDirection(self, stageLabel: DeviceLabel | str) -> FocusDirection:
         """Get the focus direction of a stage."""
-    def getGalvoChannel(self, galvoLabel: DeviceLabel) -> str:
+    def getGalvoChannel(self, galvoLabel: DeviceLabel | str) -> str:
         """Get the name of the active galvo channel (for a multi-laser galvo device)."""
-    def getGalvoDevice(self) -> ValidDeviceLabel | Literal[""]:
+    def getGalvoDevice(self) -> DeviceLabel | Literal[""]:
         """Returns the label of the currently selected Galvo device.
 
         Returns empty string if no Galvo device is selected.
         """
     @overload
-    def getGalvoPosition(self, galvoDevice: DeviceLabel) -> List[float]:
+    def getGalvoPosition(self, galvoDevice: DeviceLabel | str) -> List[float]:
         """Get x,y position of the galvo device."""
     @overload
     def getGalvoPosition(
         self,
-        galvoLabel: DeviceLabel,
+        galvoLabel: DeviceLabel | str,
         x_stage: Sequence[float],
         y_stage: Sequence[float],
     ) -> None: ...
-    def getGalvoXMinimum(self, galvoLabel: DeviceLabel) -> float:
+    def getGalvoXMinimum(self, galvoLabel: DeviceLabel | str) -> float:
         """Get the Galvo x minimum"""
-    def getGalvoXRange(self, galvoLabel: DeviceLabel) -> float:
+    def getGalvoXRange(self, galvoLabel: DeviceLabel | str) -> float:
         """Get the Galvo x range"""
-    def getGalvoYMinimum(self, galvoLabel: DeviceLabel) -> float:
+    def getGalvoYMinimum(self, galvoLabel: DeviceLabel | str) -> float:
         """Get the Galvo y minimum"""
-    def getGalvoYRange(self, galvoLabel: DeviceLabel) -> float:
+    def getGalvoYRange(self, galvoLabel: DeviceLabel | str) -> float:
         """Get the Galvo y range"""
     @overload
     def getImage(self) -> np.ndarray:
@@ -531,7 +520,7 @@ class CMMCore:
         """Returns the size of the internal image buffer."""
     def getImageHeight(self) -> int:
         """Vertical dimension of the image buffer in pixels."""
-    def getImageProcessorDevice(self) -> ValidDeviceLabel | Literal[""]:
+    def getImageProcessorDevice(self) -> DeviceLabel | Literal[""]:
         """Returns the label of the currently selected image processor device.
 
         Returns empty string if no image processor device is selected.
@@ -539,10 +528,12 @@ class CMMCore:
     def getImageWidth(self) -> int:
         """Horizontal dimension of the image buffer in pixels."""
     def getInstalledDeviceDescription(
-        self, hubLabel: DeviceLabel, peripheralLabel: DeviceName
+        self, hubLabel: DeviceLabel | str, peripheralLabel: DeviceName | str
     ) -> str:
         """Returns description from the specified peripheral on `hubLabel` device."""
-    def getInstalledDevices(self, hubLabel: DeviceLabel) -> Tuple[ValidDeviceName, ...]:
+    def getInstalledDevices(
+        self, hubLabel: DeviceLabel | str
+    ) -> Tuple[DeviceName, ...]:
         """Performs auto-detection and loading of child devices that are attached to a
         Hub device.
 
@@ -558,15 +549,13 @@ class CMMCore:
     def getLastImageMD(self, md: Metadata) -> np.ndarray:
         """Returns a pointer to the pixels of the image that was last inserted into the
         circular buffer. Also provides all metadata associated with that image"""
-    def getLoadedDevices(self) -> Tuple[ValidDeviceLabel, ...]:
+    def getLoadedDevices(self) -> Tuple[DeviceLabel, ...]:
         """Returns an array of labels for currently loaded devices."""
-    def getLoadedDevicesOfType(
-        self, devType: DeviceType
-    ) -> Tuple[ValidDeviceLabel, ...]:
+    def getLoadedDevicesOfType(self, devType: DeviceType) -> Tuple[DeviceLabel, ...]:
         """Returns an array of labels for currently loaded devices of specific type."""
     def getLoadedPeripheralDevices(
-        self, hubLabel: DeviceLabel
-    ) -> Tuple[ValidDeviceLabel, ...]:
+        self, hubLabel: DeviceLabel | str
+    ) -> Tuple[DeviceLabel, ...]:
         """Return labels of all loaded peripherals of `hubLabel` device.
 
         Returns empty tuple if hubLabel is not a hub device, or even if hubLabel is
@@ -595,11 +584,11 @@ class CMMCore:
         """Returns the number of simultaneous channels the default camera is returning."""
     def getNumberOfComponents(self) -> int:
         """Returns the number of components the default camera is returning."""
-    def getNumberOfStates(self, stateDeviceLabel: DeviceLabel) -> int:
+    def getNumberOfStates(self, stateDeviceLabel: DeviceLabel | str) -> int:
         """Returns the total number of available positions (states)."""
     def getParentLabel(
-        self, peripheralLabel: DeviceLabel
-    ) -> ValidDeviceLabel | Literal[""]:
+        self, peripheralLabel: DeviceLabel | str
+    ) -> DeviceLabel | Literal[""]:
         """Returns parent device. Returns empty string if no parent is found."""
     @overload
     def getPixelSizeAffine(self) -> AffineTuple:
@@ -609,11 +598,15 @@ class CMMCore:
     def getPixelSizeAffine(self, cached: bool) -> AffineTuple:
         """Returns the current Affine Transform to related camera pixels with
         stage movement."""
-    def getPixelSizeAffineByID(self, resolutionID: PixelSizeConfigName) -> AffineTuple:
+    def getPixelSizeAffineByID(
+        self, resolutionID: PixelSizeConfigName | str
+    ) -> AffineTuple:
         """Returns the Affine Transform to related camera pixels with stage movement for
         the requested pixel size group. The raw affine transform without correction for
         binning and magnification will be returned."""
-    def getPixelSizeConfigData(self, configName: PixelSizeConfigName) -> Configuration:
+    def getPixelSizeConfigData(
+        self, configName: PixelSizeConfigName | str
+    ) -> Configuration:
         """Returns the configuration object for a give pixel size preset."""
     @overload
     def getPixelSizeUm(self) -> float:
@@ -621,42 +614,44 @@ class CMMCore:
     @overload
     def getPixelSizeUm(self, cached: bool) -> float:
         """Returns the current pixel size in microns."""
-    def getPixelSizeUmByID(self, resolutionID: PixelSizeConfigName) -> float:
+    def getPixelSizeUmByID(self, resolutionID: PixelSizeConfigName | str) -> float:
         """Returns the pixel size in um for the requested pixel size group"""
     @overload
     def getPosition(self) -> float:
         """Returns the current position of the current FocusDevice in microns."""
     @overload
-    def getPosition(self, stageLabel: DeviceLabel) -> float:
+    def getPosition(self, stageLabel: DeviceLabel | str) -> float:
         """Returns the current position of the stage in microns."""
     def getPrimaryLogFile(self) -> str:
         """Return the name of the primary Core log file."""
-    def getProperty(self, label: DeviceLabel, propName: PropertyName) -> str:
+    def getProperty(
+        self, label: DeviceLabel | str, propName: PropertyName | str
+    ) -> str:
         """Returns the property value for the specified device.
 
         The return value will always be a string.  Use getPropertyType to determine the
         correct type.
         """
     def getPropertyFromCache(
-        self, deviceLabel: DeviceLabel, propName: PropertyName
+        self, deviceLabel: DeviceLabel | str, propName: PropertyName | str
     ) -> str:
         """Returns the cached property value for the specified device."""
     def getPropertyLowerLimit(
-        self, label: DeviceLabel, propName: PropertyName
+        self, label: DeviceLabel | str, propName: PropertyName | str
     ) -> float:
         """Returns the property lower limit value, if the property has limits - 0
         otherwise."""
     def getPropertySequenceMaxLength(
-        self, label: DeviceLabel, propName: PropertyName
+        self, label: DeviceLabel | str, propName: PropertyName | str
     ) -> int:
         """Queries device property for the maximum number of events that can be put
         in a sequence"""
     def getPropertyType(
-        self, label: DeviceLabel, propName: PropertyName
+        self, label: DeviceLabel | str, propName: PropertyName | str
     ) -> PropertyType:
         """Returns the intrinsic property type."""
     def getPropertyUpperLimit(
-        self, label: DeviceLabel, propName: PropertyName
+        self, label: DeviceLabel | str, propName: PropertyName | str
     ) -> float:
         """Returns the property upper limit value, if the property has limits - 0
         otherwise."""
@@ -673,7 +668,7 @@ class CMMCore:
         Returns [0,0,0,0] if no camera is selected.
         """
     @overload
-    def getROI(self, label: DeviceLabel) -> Rectangle:
+    def getROI(self, label: DeviceLabel | str) -> Rectangle:
         """Return the current hardware region of interest for a specific camera.
 
         Raises RuntimeError if `label` is not a camera device or does not exist.
@@ -684,7 +679,7 @@ class CMMCore:
     def getSerialPortAnswer(self, portLabel: str, term: str) -> str:
         """Continuously read from the serial port until the terminating sequence is
         encountered."""
-    def getShutterDevice(self) -> ValidDeviceLabel | Literal[""]:
+    def getShutterDevice(self) -> DeviceLabel | Literal[""]:
         """Returns the label of the currently selected shutter device.
 
         Returns empty string if no shutter device is selected.
@@ -693,41 +688,41 @@ class CMMCore:
     def getShutterOpen(self) -> bool:
         """Returns the state of the currently selected (default) shutter."""
     @overload
-    def getShutterOpen(self, shutterLabel: DeviceLabel) -> bool:
+    def getShutterOpen(self, shutterLabel: DeviceLabel | str) -> bool:
         """Returns the state of the specified shutter."""
-    def getSLMBytesPerPixel(self, slmLabel: DeviceLabel) -> int:
+    def getSLMBytesPerPixel(self, slmLabel: DeviceLabel | str) -> int:
         """Returns the number of bytes per SLM pixel"""
-    def getSLMDevice(self) -> ValidDeviceLabel | Literal[""]:
+    def getSLMDevice(self) -> DeviceLabel | Literal[""]:
         """Returns the label of the currently selected SLM device.
 
         Returns empty string if no SLM device is selected.
         """
-    def getSLMExposure(self, slmLabel: DeviceLabel) -> float:
+    def getSLMExposure(self, slmLabel: DeviceLabel | str) -> float:
         """Returns the exposure time that will be used by the SLM for illumination"""
-    def getSLMHeight(self, slmLabel: DeviceLabel) -> int:
+    def getSLMHeight(self, slmLabel: DeviceLabel | str) -> int:
         """Returns the height (in "pixels") of the SLM"""
-    def getSLMNumberOfComponents(self, slmLabel: DeviceLabel) -> int:
+    def getSLMNumberOfComponents(self, slmLabel: DeviceLabel | str) -> int:
         """Returns the number of components (usually these depict colors) of the SLM.
 
         For instance, an RGB projector will return 3, but a grey scale SLM returns 1"""
-    def getSLMSequenceMaxLength(self, slmLabel: DeviceLabel) -> int:
+    def getSLMSequenceMaxLength(self, slmLabel: DeviceLabel | str) -> int:
         """For SLMs that support sequences, returns the maximum length of the sequence
         that can be uploaded to the device"""
-    def getSLMWidth(self, slmLabel: DeviceLabel) -> int:
+    def getSLMWidth(self, slmLabel: DeviceLabel | str) -> int:
         """Returns the width (in "pixels") of the SLM"""
-    def getStageSequenceMaxLength(self, stageLabel: DeviceLabel) -> int:
+    def getStageSequenceMaxLength(self, stageLabel: DeviceLabel | str) -> int:
         """Gets the maximum length of a stage's position sequence."""
-    def getState(self, stateDeviceLabel: DeviceLabel) -> int:
+    def getState(self, stateDeviceLabel: DeviceLabel | str) -> int:
         """Returns the current state (position) on the specific device."""
     def getStateFromLabel(
-        self, stateDeviceLabel: DeviceLabel, stateLabel: StateLabel
+        self, stateDeviceLabel: DeviceLabel | str, stateLabel: StateLabel | str
     ) -> int:
         """Obtain the state for a given label."""
-    def getStateLabel(self, stateDeviceLabel: DeviceLabel) -> ValidStateLabel:
+    def getStateLabel(self, stateDeviceLabel: DeviceLabel | str) -> StateLabel:
         """Returns the current state as the label (string)."""
     def getStateLabels(
-        self, stateDeviceLabel: DeviceLabel
-    ) -> Tuple[ValidStateLabel, ...]:
+        self, stateDeviceLabel: DeviceLabel | str
+    ) -> Tuple[StateLabel, ...]:
         """Return labels for all states"""
     def getSystemState(self) -> Configuration:
         """Returns the entire system state, i.e."""
@@ -744,31 +739,35 @@ class CMMCore:
     def getXPosition(self) -> float:
         """Obtains the current position of the X axis of the XY stage in microns."""
     @overload
-    def getXPosition(self, xyStageLabel: DeviceLabel) -> float:
+    def getXPosition(self, xyStageLabel: DeviceLabel | str) -> float:
         """Obtains the current position of the X axis of the XY stage in microns."""
     @overload
     def getXYPosition(self) -> Sequence[float]:  # always 2-element list, but not tuple
         """Obtains the current position of the XY stage in microns."""
     @overload
-    def getXYPosition(self, xyStageLabel: DeviceLabel) -> Sequence[float]: ...
-    def getXYStageDevice(self) -> ValidDeviceLabel | Literal[""]:
+    def getXYPosition(self, xyStageLabel: DeviceLabel | str) -> Sequence[float]: ...
+    def getXYStageDevice(self) -> DeviceLabel | Literal[""]:
         """Returns the label of the currently selected XYStage device.
 
         Returns empty string if no XYStage device is selected.
         """
-    def getXYStageSequenceMaxLength(self, xyStageLabel: DeviceLabel) -> int:
+    def getXYStageSequenceMaxLength(self, xyStageLabel: DeviceLabel | str) -> int:
         """Gets the maximum length of an XY stage's position sequence."""
     @overload
     def getYPosition(self) -> float:
         """Obtains the current position of the Y axis of the XY stage in microns."""
     @overload
-    def getYPosition(self, xyStageLabel: DeviceLabel) -> float:
+    def getYPosition(self, xyStageLabel: DeviceLabel | str) -> float:
         """Obtains the current position of the Y axis of the XY stage in microns."""
-    def hasProperty(self, label: DeviceLabel, propName: PropertyName) -> bool:
+    def hasProperty(
+        self, label: DeviceLabel | str, propName: PropertyName | str
+    ) -> bool:
         """Checks if device has a property with a specified name."""
-    def hasPropertyLimits(self, label: DeviceLabel, propName: PropertyName) -> bool:
+    def hasPropertyLimits(
+        self, label: DeviceLabel | str, propName: PropertyName | str
+    ) -> bool:
         """Queries device if the specific property has limits."""
-    def home(self, xyOrZStageLabel: DeviceLabel) -> None:
+    def home(self, xyOrZStageLabel: DeviceLabel | str) -> None:
         """Perform a hardware homing operation for an XY or focus/Z stage."""
     def incrementalFocus(self) -> None:
         """Performs incremental focus for the one-shot focusing device."""
@@ -776,10 +775,10 @@ class CMMCore:
         """Calls Initialize() method for each loaded device."""
     def initializeCircularBuffer(self) -> None:
         """Initialize circular buffer based on the current camera settings."""
-    def initializeDevice(self, label: DeviceLabel) -> None:
+    def initializeDevice(self, label: DeviceLabel | str) -> None:
         """Initializes specific device."""
     def getDeviceInitializationState(
-        self, label: DeviceLabel
+        self, label: DeviceLabel | str
     ) -> DeviceInitializationState:
         """Queries the initialization state of the given device."""
     def isBufferOverflowed(self) -> bool:
@@ -789,7 +788,7 @@ class CMMCore:
 
         If either the groupName or configName are not recognized, returns False.
         """
-    def isContinuousFocusDrive(self, stageLabel: DeviceLabel) -> bool:
+    def isContinuousFocusDrive(self, stageLabel: DeviceLabel | str) -> bool:
         """Check if a stage has continuous focusing capability.
 
         (positions can be set while continuous focus runs)."""
@@ -797,7 +796,7 @@ class CMMCore:
         """Checks if the continuous focusing hardware device is ON or OFF."""
     def isContinuousFocusLocked(self) -> bool:
         """Returns the lock-in status of the continuous focusing device."""
-    def isExposureSequenceable(self, cameraLabel: DeviceLabel) -> bool:
+    def isExposureSequenceable(self, cameraLabel: DeviceLabel | str) -> bool:
         """Queries camera if exposure can be used in a sequence"""
     def isFeatureEnabled(self, name: str) -> bool:
         """Return whether the given Core feature is currently enabled.
@@ -814,12 +813,16 @@ class CMMCore:
         """Queries the camera to determine if it supports multiple ROIs."""
     def isPixelSizeConfigDefined(self, resolutionID: str) -> bool:
         """Checks if the Pixel Size Resolution already exists"""
-    def isPropertyPreInit(self, label: DeviceLabel, propName: PropertyName) -> bool:
+    def isPropertyPreInit(
+        self, label: DeviceLabel | str, propName: PropertyName | str
+    ) -> bool:
         """Tells us whether the property must be defined prior to initialization."""
-    def isPropertyReadOnly(self, label: DeviceLabel, propName: PropertyName) -> bool:
+    def isPropertyReadOnly(
+        self, label: DeviceLabel | str, propName: PropertyName | str
+    ) -> bool:
         """Tells us whether the property can be modified."""
     def isPropertySequenceable(
-        self, label: DeviceLabel, propName: PropertyName
+        self, label: DeviceLabel | str, propName: PropertyName | str
     ) -> bool:
         """Queries device if the specified property can be used in a sequence"""
     @overload
@@ -828,41 +831,44 @@ class CMMCore:
 
         Returns false when the sequence is done"""
     @overload
-    def isSequenceRunning(self, cameraLabel: DeviceLabel) -> bool:
+    def isSequenceRunning(self, cameraLabel: DeviceLabel | str) -> bool:
         """Check if the specified camera is acquiring the sequence.
 
         Returns false when the sequence is done"""
-    def isStageLinearSequenceable(self, stageLabel: DeviceLabel) -> bool:
+    def isStageLinearSequenceable(self, stageLabel: DeviceLabel | str) -> bool:
         """Queries if the stage can be used in a linear sequence.
 
         A linear sequence is defined by a stepsize and number of slices"""
-    def isStageSequenceable(self, stageLabel: DeviceLabel) -> bool:
+    def isStageSequenceable(self, stageLabel: DeviceLabel | str) -> bool:
         """Queries stage if it can be used in a sequence"""
-    def isXYStageSequenceable(self, xyStageLabel: DeviceLabel) -> bool:
+    def isXYStageSequenceable(self, xyStageLabel: DeviceLabel | str) -> bool:
         """Queries XY stage if it can be used in a sequence"""
     def loadDevice(
-        self, label: str, moduleName: AdapterName, deviceName: DeviceName
+        self, label: str, moduleName: AdapterName | str, deviceName: DeviceName | str
     ) -> None:
         """Loads a device from the plugin library."""
     def loadExposureSequence(
-        self, cameraLabel: DeviceLabel, exposureSequence_ms: Sequence[float]
+        self, cameraLabel: DeviceLabel | str, exposureSequence_ms: Sequence[float]
     ) -> None:
         """Transfer a sequence of exposure times to the camera."""
-    def loadGalvoPolygons(self, galvoLabel: DeviceLabel) -> None:
+    def loadGalvoPolygons(self, galvoLabel: DeviceLabel | str) -> None:
         """Load a set of galvo polygons to the device"""
     def loadPropertySequence(
-        self, label: DeviceLabel, propName: PropertyName, eventSequence: Sequence[str]
+        self,
+        label: DeviceLabel | str,
+        propName: PropertyName | str,
+        eventSequence: Sequence[str],
     ) -> None:
         """Transfer a sequence of events/states/whatever to the device.
 
         This should only be called for device-properties that are sequenceable
         """
     def loadSLMSequence(
-        self, slmLabel: DeviceLabel, imageSequence: List[bytes]
+        self, slmLabel: DeviceLabel | str, imageSequence: List[bytes]
     ) -> None:
         """Load a sequence of images into the SLM"""
     def loadStageSequence(
-        self, stageLabel: DeviceLabel, positionSequence: Sequence[float]
+        self, stageLabel: DeviceLabel | str, positionSequence: Sequence[float]
     ) -> None:
         """Transfer a sequence of events/states/whatever to the device.
 
@@ -875,7 +881,7 @@ class CMMCore:
         MM specific format."""
     def loadXYStageSequence(
         self,
-        xyStageLabel: DeviceLabel,
+        xyStageLabel: DeviceLabel | str,
         xSequence: Sequence[float],
         ySequence: Sequence[float],
     ) -> None:
@@ -893,7 +899,7 @@ class CMMCore:
     def noop(self) -> None:
         """A static method that does nothing."""
     def pointGalvoAndFire(
-        self, galvoLabel: DeviceLabel, x: float, y: float, pulseTime_us: float
+        self, galvoLabel: DeviceLabel | str, x: float, y: float, pulseTime_us: float
     ) -> None:
         """Set the Galvo to an x,y position and fire the laser for a predetermined duration."""
     def popNextImage(self) -> np.ndarray:
@@ -903,7 +909,7 @@ class CMMCore:
     @overload
     def popNextImageMD(self, md: Metadata) -> np.ndarray:
         """Gets and removes the next image (and metadata) from the circular buffer"""
-    def prepareSequenceAcquisition(self, cameraLabel: DeviceLabel) -> None:
+    def prepareSequenceAcquisition(self, cameraLabel: DeviceLabel | str) -> None:
         """Prepare the camera for the sequence acquisition to save the time in the
 
         StartSequenceAcqusition() call which is supposed to come next."""
@@ -913,8 +919,8 @@ class CMMCore:
         """Register a callback (listener class)."""
     def renameConfig(
         self,
-        groupName: ConfigGroupName,
-        oldConfigName: ConfigPresetName,
+        groupName: ConfigGroupName | str,
+        oldConfigName: ConfigPresetName | str,
         newConfigName: str,
     ) -> None:
         """Renames a configuration within a specified group.
@@ -922,19 +928,19 @@ class CMMCore:
         The command will fail if the configuration was not previously defined.
         """
     def renameConfigGroup(
-        self, oldGroupName: ConfigGroupName, newGroupName: str
+        self, oldGroupName: ConfigGroupName | str, newGroupName: str
     ) -> None:
         """Renames a configuration group."""
     def renamePixelSizeConfig(
-        self, oldConfigName: PixelSizeConfigName, newConfigName: str
+        self, oldConfigName: PixelSizeConfigName | str, newConfigName: str
     ) -> None:
         """Renames a pixel size configuration."""
     def reset(self) -> None:
         """Unloads all devices from the core, clears all configuration data and property
         blocks."""
-    def runGalvoPolygons(self, galvoLabel: DeviceLabel) -> None:
+    def runGalvoPolygons(self, galvoLabel: DeviceLabel | str) -> None:
         """Run a loop of galvo polygons"""
-    def runGalvoSequence(self, galvoLabel: DeviceLabel) -> None:
+    def runGalvoSequence(self, galvoLabel: DeviceLabel | str) -> None:
         """Run a sequence of galvo positions"""
     def saveSystemConfiguration(self, fileName: str) -> None:
         """Saves the current system configuration to a text file of the MM specific format."""
@@ -944,7 +950,7 @@ class CMMCore:
     def setAdapterOrigin(self, newZUm: float) -> None:
         """Enable software translation of coordinates for the current focus/Z stage."""
     @overload
-    def setAdapterOrigin(self, stageLabel: DeviceLabel, newZUm: float) -> None:
+    def setAdapterOrigin(self, stageLabel: DeviceLabel | str, newZUm: float) -> None:
         """Enable software translation of coordinates for the given focus/Z stage."""
     @overload
     def setAdapterOriginXY(self, newXUm: float, newYUm: float) -> None:
@@ -954,54 +960,58 @@ class CMMCore:
         that setOriginXY() be used instead where available."""
     @overload
     def setAdapterOriginXY(
-        self, xyStageLabel: DeviceLabel, newXUm: float, newYUm: float
+        self, xyStageLabel: DeviceLabel | str, newXUm: float, newYUm: float
     ) -> None: ...
-    def setAutoFocusDevice(self, focusLabel: DeviceLabel) -> None:
+    def setAutoFocusDevice(self, focusLabel: DeviceLabel | str) -> None:
         """Sets the current auto-focus device."""
     def setAutoFocusOffset(self, offset: float) -> None:
         """Applies offset the one-shot focusing device."""
     def setAutoShutter(self, state: bool) -> None:
         """If this option is enabled Shutter automatically opens and closes when the
         image is acquired."""
-    def setCameraDevice(self, cameraLabel: DeviceLabel) -> None:
+    def setCameraDevice(self, cameraLabel: DeviceLabel | str) -> None:
         """Sets the current camera device."""
-    def setChannelGroup(self, channelGroup: ConfigGroupName) -> None:
+    def setChannelGroup(self, channelGroup: ConfigGroupName | str) -> None:
         """Specifies the group determining the channel selection."""
     def setCircularBufferMemoryFootprint(self, sizeMB: int) -> None:
         """Reserve memory for the circular buffer."""
     def setConfig(
-        self, groupName: ConfigGroupName, configName: ConfigPresetName
+        self, groupName: ConfigGroupName | str, configName: ConfigPresetName | str
     ) -> None:
         """Applies a configuration to a group."""
     def setDeviceAdapterSearchPaths(self, paths: Sequence[str]) -> None:
         """Set the device adapter search paths."""
-    def setDeviceDelayMs(self, label: DeviceLabel, delayMs: float) -> None:
+    def setDeviceDelayMs(self, label: DeviceLabel | str, delayMs: float) -> None:
         """Overrides the built-in value for the action delay."""
     @overload
     def setExposure(self, exp: float) -> None:
         """Sets the exposure setting of the current camera in milliseconds."""
     @overload
-    def setExposure(self, cameraLabel: DeviceLabel, dExp: float) -> None:
+    def setExposure(self, cameraLabel: DeviceLabel | str, dExp: float) -> None:
         """Sets the exposure setting of the specified camera in milliseconds."""
-    def setFocusDevice(self, focusLabel: DeviceLabel) -> None:
+    def setFocusDevice(self, focusLabel: DeviceLabel | str) -> None:
         """Sets the current focus device."""
-    def setFocusDirection(self, stageLabel: DeviceLabel, sign: int) -> None:
+    def setFocusDirection(self, stageLabel: DeviceLabel | str, sign: int) -> None:
         """Set the focus direction of a stage."""
-    def setGalvoDevice(self, galvoLabel: DeviceLabel) -> None:
+    def setGalvoDevice(self, galvoLabel: DeviceLabel | str) -> None:
         """Sets the current galvo device."""
-    def setGalvoIlluminationState(self, galvoLabel: DeviceLabel, on: bool) -> None:
+    def setGalvoIlluminationState(
+        self, galvoLabel: DeviceLabel | str, on: bool
+    ) -> None:
         """Set the galvo's illumination state to on or off"""
     def setGalvoPolygonRepetitions(
-        self, galvoLabel: DeviceLabel, repetitions: int
+        self, galvoLabel: DeviceLabel | str, repetitions: int
     ) -> None:
         """Set the number of times to loop galvo polygons"""
-    def setGalvoPosition(self, galvoLabel: DeviceLabel, x: float, y: float) -> None:
+    def setGalvoPosition(
+        self, galvoLabel: DeviceLabel | str, x: float, y: float
+    ) -> None:
         """Set the Galvo to an x,y position."""
     def setGalvoSpotInterval(
-        self, galvoLabel: DeviceLabel, pulseTime_us: float
+        self, galvoLabel: DeviceLabel | str, pulseTime_us: float
     ) -> None:
         """Set the SpotInterval for the specified galvo device."""
-    def setImageProcessorDevice(self, procLabel: DeviceLabel) -> None:
+    def setImageProcessorDevice(self, procLabel: DeviceLabel | str) -> None:
         """Sets the current image processor device."""
     # this overload does not appear to be present
     # @overload
@@ -1023,47 +1033,49 @@ class CMMCore:
     def setOrigin(self) -> None:
         """Zero the current focus/Z stage's coordinates at the current position."""
     @overload
-    def setOrigin(self, stageLabel: DeviceLabel) -> None:
+    def setOrigin(self, stageLabel: DeviceLabel | str) -> None:
         """Zero the given focus/Z stage's coordinates at the current position."""
     @overload
     def setOriginX(self) -> None:
         """Zero the given XY stage's X coordinate at the current position."""
     @overload
-    def setOriginX(self, xyStageLabel: DeviceLabel) -> None:
+    def setOriginX(self, xyStageLabel: DeviceLabel | str) -> None:
         """Zero the given XY stage's X coordinate at the current position."""
     @overload
     def setOriginXY(self) -> None:
         """Zero the current XY stage's coordinates at the current position."""
     @overload
-    def setOriginXY(self, xyStageLabel: DeviceLabel) -> None:
+    def setOriginXY(self, xyStageLabel: DeviceLabel | str) -> None:
         """Zero the given XY stage's coordinates at the current position."""
     @overload
     def setOriginY(self) -> None:
         """Zero the given XY stage's Y coordinate at the current position."""
     @overload
-    def setOriginY(self, xyStageLabel: DeviceLabel) -> None:
+    def setOriginY(self, xyStageLabel: DeviceLabel | str) -> None:
         """Zero the given XY stage's Y coordinate at the current position."""
     def setParentLabel(
-        self, deviceLabel: DeviceLabel, parentHubLabel: DeviceLabel
+        self, deviceLabel: DeviceLabel | str, parentHubLabel: DeviceLabel | str
     ) -> None:
         """Sets parent device label"""
     def setPixelSizeAffine(
-        self, resolutionID: PixelSizeConfigName, affine: Sequence[float]
+        self, resolutionID: PixelSizeConfigName | str, affine: Sequence[float]
     ) -> None:
         """Sets the raw affine transform for the specific pixel size configuration.
 
         The affine transform consists of the first two rows of a 3x3 matrix,
         the third row is alsways assumed to be 0.0 0.0 1.0."""
-    def setPixelSizeConfig(self, resolutionID: PixelSizeConfigName) -> None:
+    def setPixelSizeConfig(self, resolutionID: PixelSizeConfigName | str) -> None:
         """Applies a Pixel Size Configuration."""
-    def setPixelSizeUm(self, resolutionID: PixelSizeConfigName, pixSize: float) -> None:
+    def setPixelSizeUm(
+        self, resolutionID: PixelSizeConfigName | str, pixSize: float
+    ) -> None:
         """Sets pixel size in microns for the specified resolution sensing
         configuration preset."""
     @overload
     def setPosition(self, position: float) -> None:
         """Sets the position of the current FocusDevice in microns."""
     @overload
-    def setPosition(self, stageLabel: DeviceLabel, position: float) -> None:
+    def setPosition(self, stageLabel: DeviceLabel | str, position: float) -> None:
         """Sets the position of the stage in microns."""
     @overload
     def setPrimaryLogFile(self, filename: str) -> None: ...
@@ -1072,8 +1084,8 @@ class CMMCore:
         """Set the primary Core log file."""
     def setProperty(
         self,
-        label: DeviceLabel,
-        propName: PropertyName,
+        label: DeviceLabel | str,
+        propName: PropertyName | str,
         propValue: Union[bool, float, int, str],
     ) -> None:
         """Changes the value of the device property."""
@@ -1081,14 +1093,14 @@ class CMMCore:
     def setRelativePosition(self, d: float) -> None:
         """Sets the relative position of the stage in microns."""
     @overload
-    def setRelativePosition(self, stageLabel: DeviceLabel, d: float) -> None:
+    def setRelativePosition(self, stageLabel: DeviceLabel | str, d: float) -> None:
         """Sets the relative position of the stage in microns."""
     @overload
     def setRelativeXYPosition(self, dx: float, dy: float) -> None:
         """Sets the relative position of the XY stage in microns."""
     @overload
     def setRelativeXYPosition(
-        self, xyStageLabel: DeviceLabel, dx: float, dy: float
+        self, xyStageLabel: DeviceLabel | str, dx: float, dy: float
     ) -> None:
         """Sets the relative position of the XY stage in microns."""
     @overload
@@ -1106,7 +1118,7 @@ class CMMCore:
         """
     @overload
     def setROI(
-        self, label: DeviceLabel, x: int, y: int, xSize: int, ySize: int
+        self, label: DeviceLabel | str, x: int, y: int, xSize: int, ySize: int
     ) -> None:
         """Set the hardware region of interest for the current camera."""
     def setSerialPortCommand(self, portLabel: str, command: str, term: str) -> None:
@@ -1122,21 +1134,23 @@ class CMMCore:
         stopBits: str,
     ) -> None:
         """Sets all com port properties in a single call."""
-    def setShutterDevice(self, shutterLabel: DeviceLabel) -> None:
+    def setShutterDevice(self, shutterLabel: DeviceLabel | str) -> None:
         """the current shutter device."""
     @overload
     def setShutterOpen(self, state: bool) -> None:
         """Opens or closes the currently selected (default) shutter."""
     @overload
-    def setShutterOpen(self, shutterLabel: DeviceLabel, state: bool) -> None:
+    def setShutterOpen(self, shutterLabel: DeviceLabel | str, state: bool) -> None:
         """Opens or closes the specified shutter."""
-    def setSLMDevice(self, slmLabel: DeviceLabel) -> None:
+    def setSLMDevice(self, slmLabel: DeviceLabel | str) -> None:
         """Sets the current slm device."""
-    def setSLMExposure(self, slmLabel: DeviceLabel, exposure_ms: float) -> None:
+    def setSLMExposure(self, slmLabel: DeviceLabel | str, exposure_ms: float) -> None:
         """For SLM devices with build-in light source (such as projectors),
         this will set the exposure time, but not (yet) start the illumination"""
     @overload
-    def setSLMImage(self, slmLabel: DeviceLabel, pixels: npt.NDArray[np.uint8]) -> None:
+    def setSLMImage(
+        self, slmLabel: DeviceLabel | str, pixels: npt.NDArray[np.uint8]
+    ) -> None:
         """Write an image to the SLM .
 
         When passing a numpy array, `pixels` must be one of the following:
@@ -1154,28 +1168,28 @@ class CMMCore:
             SLM might convert grayscale to binary internally.
         """
     @overload
-    def setSLMImage(self, slmLabel: DeviceLabel, pixels: Any) -> None:
+    def setSLMImage(self, slmLabel: DeviceLabel | str, pixels: Any) -> None:
         """Write a list of chars to the SLM.
 
         Length of the list must match the number of pixels (or 4 * number of
         pixels to write an imgRGB32.)
         """
     @overload
-    def setSLMPixelsTo(self, slmLabel: DeviceLabel, intensity: int) -> None:
+    def setSLMPixelsTo(self, slmLabel: DeviceLabel | str, intensity: int) -> None:
         """Set all SLM pixels to a single 8-bit intensity."""
     @overload
     def setSLMPixelsTo(
-        self, slmLabel: DeviceLabel, red: int, green: int, blue: int
+        self, slmLabel: DeviceLabel | str, red: int, green: int, blue: int
     ) -> None:
         """Set all SLM pixels to an RGB color."""
     def setStageLinearSequence(
-        self, stageLabel: DeviceLabel, dZ_um: float, nSlices: int
+        self, stageLabel: DeviceLabel | str, dZ_um: float, nSlices: int
     ) -> None:
         """Loads a linear sequence (defined by stepsize and nr. of steps) into the device."""
-    def setState(self, stateDeviceLabel: DeviceLabel, state: int) -> None:
+    def setState(self, stateDeviceLabel: DeviceLabel | str, state: int) -> None:
         """Sets the state (position) on the specific device."""
     def setStateLabel(
-        self, stateDeviceLabel: DeviceLabel, stateLabel: StateLabel
+        self, stateDeviceLabel: DeviceLabel | str, stateLabel: StateLabel | str
     ) -> None:
         """Sets device state using the previously assigned label (string)."""
     def setSystemState(self, conf: Configuration) -> None:
@@ -1189,8 +1203,10 @@ class CMMCore:
     def setXYPosition(self, x: float, y: float) -> None:
         """Sets the position of the XY stage in microns."""
     @overload
-    def setXYPosition(self, xyStageLabel: DeviceLabel, x: float, y: float) -> None: ...
-    def setXYStageDevice(self, xyStageLabel: DeviceLabel) -> None:
+    def setXYPosition(
+        self, xyStageLabel: DeviceLabel | str, x: float, y: float
+    ) -> None: ...
+    def setXYStageDevice(self, xyStageLabel: DeviceLabel | str) -> None:
         """Sets the current XY device."""
     def sleep(self, intervalMs: float) -> None:
         """Waits (blocks the calling thread) for specified time in milliseconds."""
@@ -1198,11 +1214,13 @@ class CMMCore:
         """Acquires a single image with current settings."""
     def startContinuousSequenceAcquisition(self, intervalMs: float) -> None:
         """Starts the continuous camera sequence acquisition."""
-    def startExposureSequence(self, cameraLabel: DeviceLabel) -> None:
+    def startExposureSequence(self, cameraLabel: DeviceLabel | str) -> None:
         """Starts an ongoing sequence of triggered exposures in a camera.
 
         This should only be called for cameras where exposure time is sequenceable"""
-    def startPropertySequence(self, label: DeviceLabel, propName: PropertyName) -> None:
+    def startPropertySequence(
+        self, label: DeviceLabel | str, propName: PropertyName | str
+    ) -> None:
         """Starts an ongoing sequence of triggered events in a property of a device.
 
         This should only be called for device-properties that are sequenceable"""
@@ -1224,30 +1242,32 @@ class CMMCore:
     @overload
     def startSequenceAcquisition(
         self,
-        cameraLabel: DeviceLabel,
+        cameraLabel: DeviceLabel | str,
         numImages: int,
         intervalMs: float,
         stopOnOverflow: bool,
     ) -> None: ...
-    def startSLMSequence(self, slmLabel: DeviceLabel) -> None:
+    def startSLMSequence(self, slmLabel: DeviceLabel | str) -> None:
         """Starts the sequence previously uploaded to the SLM"""
-    def startStageSequence(self, stageLabel: DeviceLabel) -> None:
+    def startStageSequence(self, stageLabel: DeviceLabel | str) -> None:
         """Starts an ongoing sequence of triggered events in a stage.
 
         This should only be called for stages"""
-    def startXYStageSequence(self, xyStageLabel: DeviceLabel) -> None:
+    def startXYStageSequence(self, xyStageLabel: DeviceLabel | str) -> None:
         """Starts an ongoing sequence of triggered events in an XY stage.
 
         This should only be called for stages"""
     def stderrLogEnabled(self) -> bool:
         """Indicates whether logging output goes to stdErr"""
-    def stop(self, xyOrZStageLabel: DeviceLabel) -> None:
+    def stop(self, xyOrZStageLabel: DeviceLabel | str) -> None:
         """Stop the XY or focus/Z stage motors"""
-    def stopExposureSequence(self, cameraLabel: DeviceLabel) -> None:
+    def stopExposureSequence(self, cameraLabel: DeviceLabel | str) -> None:
         """Stops an ongoing sequence of triggered exposures in a camera.
 
         This should only be called for cameras where exposure time is sequenceable"""
-    def stopPropertySequence(self, label: DeviceLabel, propName: PropertyName) -> None:
+    def stopPropertySequence(
+        self, label: DeviceLabel | str, propName: PropertyName | str
+    ) -> None:
         """Stops an ongoing sequence of triggered events in a property of a device.
 
         This should only be called for device-properties that are sequenceable"""
@@ -1257,40 +1277,40 @@ class CMMCore:
     def stopSequenceAcquisition(self) -> None:
         """Stops streaming camera sequence acquisition."""
     @overload
-    def stopSequenceAcquisition(self, cameraLabel: DeviceLabel) -> None:
+    def stopSequenceAcquisition(self, cameraLabel: DeviceLabel | str) -> None:
         """Stops streaming camera sequence acquisition for a specified camera."""
-    def stopSLMSequence(self, slmLabel: DeviceLabel) -> None:
+    def stopSLMSequence(self, slmLabel: DeviceLabel | str) -> None:
         """Stops the SLM sequence if previously started"""
-    def stopStageSequence(self, stageLabel: DeviceLabel) -> None:
+    def stopStageSequence(self, stageLabel: DeviceLabel | str) -> None:
         """Stops an ongoing sequence of triggered events in a stage.
 
         This should only be called for stages that are sequenceable"""
-    def stopXYStageSequence(self, xyStageLabel: DeviceLabel) -> None:
+    def stopXYStageSequence(self, xyStageLabel: DeviceLabel | str) -> None:
         """Stops an ongoing sequence of triggered events in an XY stage.
 
         This should only be called for stages that are sequenceable"""
-    def supportsDeviceDetection(self, deviceLabel: DeviceLabel) -> bool:
+    def supportsDeviceDetection(self, deviceLabel: DeviceLabel | str) -> bool:
         """Return whether or not the device supports automatic device detection (i.e."""
     def systemBusy(self) -> bool:
         """Checks the busy status of the entire system."""
     def unloadAllDevices(self) -> None:
         """Unloads all devices from the core and resets all configuration data."""
-    def unloadDevice(self, label: DeviceLabel) -> None:
+    def unloadDevice(self, label: DeviceLabel | str) -> None:
         """Unloads the device from the core and adjusts all configuration data."""
-    def unloadLibrary(self, moduleName: AdapterName) -> None:
+    def unloadLibrary(self, moduleName: AdapterName | str) -> None:
         """Forcefully unload a library."""
     def updateCoreProperties(self) -> None:
         """Updates CoreProperties (currently all Core properties are devices types) with
         the loaded hardware."""
     def updateSystemStateCache(self) -> None:
         """Updates the state of the entire hardware."""
-    def usesDeviceDelay(self, label: DeviceLabel) -> bool:
+    def usesDeviceDelay(self, label: DeviceLabel | str) -> bool:
         """Signals if the device will use the delay setting or not."""
     def waitForConfig(
-        self, group: ConfigGroupName, configName: ConfigPresetName
+        self, group: ConfigGroupName | str, configName: ConfigPresetName | str
     ) -> None:
         """Blocks until all devices included in the configuration become ready."""
-    def waitForDevice(self, label: DeviceLabel) -> None:
+    def waitForDevice(self, label: DeviceLabel | str) -> None:
         """Waits (blocks the calling thread) until the specified device becomes non-busy."""
     def waitForDeviceType(self, devType: DeviceType) -> None:
         """Blocks until all devices of the specific type become ready (not-busy)."""
