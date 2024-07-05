@@ -86,6 +86,10 @@ jobs:
         with:
           submodules: "recursive"
 
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: "14.2"
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.16
         env:
