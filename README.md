@@ -29,7 +29,7 @@ Because pymmcore is distributed separately from Micro-Manager, it needs to be
 
 ## Installing
 
-Suports Python 3.8 or later and Windows, macOS, and Linux (all 64-bit).
+Suports Python 3.9 or later and Windows, macOS, and Linux (all 64-bit).
 
 ```
 pip install pymmcore

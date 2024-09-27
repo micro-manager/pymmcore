@@ -32,21 +32,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.10", "3.12", "3.13"]
+        python-version: ["3.9", "3.11", "3.13"]
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
-          - python-version: "3.8"
+          - python-version: "3.9"
             os: ubuntu-latest
-            numpy: "==1.23.5"
+            numpy: "~=1.25"
           - python-version: "3.10"
             os: ubuntu-latest
             numpy: "~=1.26"
-          - python-version: "3.9"
-            os: windows-latest
-            numpy: ">=2.0.0b1"
           - python-version: "3.12"
             os: ubuntu-latest
-            numpy: ">=2.0.0b1"
+            numpy: ">=2.0.0"
 
     steps:
       - uses: actions/checkout@v4
