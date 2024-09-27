@@ -61,7 +61,7 @@ version = { attr = "pymmcore._version.__version__" }
 # Note: use of PTHREAD_MUTEX_RECURSIVE_NP in DeviceThreads.h
 # is specific to glibc and not available in musl-libc
 skip = ["*-manylinux_i686", "*-musllinux*", "*-win32", "pp*"]
-build = ["cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*"]
+build = ["cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 test-requires = "pytest"
 test-command = 'pytest "{project}/tests" -v'
 test-skip = "*-macosx_arm64"
