@@ -1,18 +1,6 @@
 # https://peps.python.org/pep-0517/
 [build-system]
-requires = [
-    "setuptools ==72.1.0",
-    "swig >=4.1",
-    # https://github.com/scipy/oldest-supported-numpy/blob/main/setup.cfg
-    "numpy==1.19.3; python_version=='3.8' and platform_machine=='aarch64' and platform_python_implementation != 'PyPy'",
-    "numpy==1.21.0; python_version=='3.8' and platform_machine=='arm64' and platform_system=='Darwin' and platform_python_implementation!='PyPy'",
-    "numpy==1.17.5; python_version=='3.8' and platform_machine=='s390x' and platform_python_implementation != 'PyPy'",
-    "numpy==1.17.3; python_version=='3.8' and platform_machine=='arm64' and platform_system=='Windows' and platform_python_implementation != 'PyPy'",
-    "numpy==1.17.3; python_version=='3.8' and platform_machine not in 'arm64|aarch64|s390x|loongarch64' and platform_python_implementation != 'PyPy'",
-    "numpy==1.22.2; python_version=='3.8' and platform_machine!='loongarch64' and platform_python_implementation=='PyPy'",
-    # https://numpy.org/devdocs/dev/depending_on_numpy.html#adding-a-dependency-on-numpy
-    "numpy>=2.0.0b1; python_version>='3.9'",
-]
+requires = ["setuptools ==72.1.0", "swig >=4.1", "numpy>=2.0.0"]
 build-backend = "setuptools.build_meta"
 
 # https://peps.python.org/pep-0621/
@@ -21,7 +9,7 @@ name = "pymmcore"
 description = "Python bindings for MMCore, Micro-Manager's device control layer"
 dynamic = ["version"]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = { text = "LGPL-2.1-only" }
 authors = [{ name = "Micro-Manager Team" }]
 classifiers = [
@@ -37,7 +25,7 @@ classifiers = [
     "Topic :: System :: Hardware :: Hardware Drivers",
     "Typing :: Typed",
 ]
-dependencies = ["numpy>=1.23.5"]
+dependencies = ["numpy>=1.25"]
 
 [project.optional-dependencies]
 test = ["pytest"]
@@ -61,7 +49,7 @@ version = { attr = "pymmcore._version.__version__" }
 # Note: use of PTHREAD_MUTEX_RECURSIVE_NP in DeviceThreads.h
 # is specific to glibc and not available in musl-libc
 skip = ["*-manylinux_i686", "*-musllinux*", "*-win32", "pp*"]
-build = ["cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*", "cp313-*"]
+build = ["cp39-*", "cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 test-requires = "pytest"
 test-command = 'pytest "{project}/tests" -v'
 test-skip = "*-macosx_arm64"
