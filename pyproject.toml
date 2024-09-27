@@ -1,7 +1,7 @@
 # https://peps.python.org/pep-0517/
 [build-system]
 requires = [
-    "setuptools >=61.0.0",
+    "setuptools ==72.1.0",
     "swig >=4.1",
     # https://github.com/scipy/oldest-supported-numpy/blob/main/setup.cfg
     "numpy==1.19.3; python_version=='3.8' and platform_machine=='aarch64' and platform_python_implementation != 'PyPy'",
