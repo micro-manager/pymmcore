@@ -1,7 +1,12 @@
 # https://peps.python.org/pep-0517/
 [build-system]
-requires = ["setuptools ==72.1.0", "swig >=4.1", "numpy>=2.0.0"]
-build-backend = "setuptools.build_meta"
+requires = [
+    "meson-python",
+    "ninja",
+    "swig >=4.1",
+    "numpy >=2.0.0",
+]
+build-backend = "mesonpy"
 
 # https://peps.python.org/pep-0621/
 [project]
@@ -34,15 +39,10 @@ test = ["pytest"]
 homepage = "https://micro-manager.org"
 repository = "https://github.com/micro-manager/pymmcore"
 
-[tool.setuptools.dynamic]
-version = { attr = "pymmcore._version.__version__" }
-
-[tool.setuptools.package-dir]
-"" = "src"
-
-[tool.setuptools.package-data]
-"*" = ["py.typed", ".pyi"]
-
+[tool.meson-python.args]
+setup = ['-Dstrip=true']
+install = ['--tags=python-runtime,runtime']
+dist = ['--include-subprojects']
 
 [tool.cibuildwheel]
 # Skip 32-bit builds, musllinux, and PyPy wheels on all platforms

@@ -28,9 +28,10 @@ maintaining separate branches; this can ease transition when the device
 interface version changes. Such branches should be named `mmcore-x.y.z.w`.
 
 When upgrading the MMCore version (by bumping the mmCoreAndDevices submodule
-commit), the pymmcore version in `_version.py` should be updated in synchrony.
-The versioning for the python package is taken dynamically from that file
-in the `[tool.setuptools.dynamic]` table in `pyproject.toml`.
+commit), the pymmcore version in `meson.build` should be updated in synchrony.
+The versioning for the python package is taken dynamically from that file, via
+the generated `_version.py` and the `project.dynamic` field in
+`pyproject.toml`.
 
 ## Building Binary Wheels and Source Distributions
 
@@ -63,12 +64,14 @@ The package can be built in a few ways:
     This will build an sdist and wheel for the current platform and Python
     version, and place them in the `dist` directory.
 
-3. Use `pip install -e .`
+3. Use `pip install --no-build-isolation -e .`
    This will build the extension module in-place and allow you to run tests,
-   but will not build a wheel or sdist.  Note that if you do this, you will
-   need to rerun it each time you change the extension module.
-
-
+   but will not build a wheel or sdist. `meson-python` (the build backend) will
+   arrange to automatically rebuild the extension module each time it is
+   imported. This method requires that you first manually install all of the
+   build requirements listed in `pyproject.toml`. See the
+   [meson-python docs](https://meson-python.readthedocs.io/en/latest/how-to-guides/editable-installs.html)
+   for more information.
 
 ## Release procedure
 
@@ -79,11 +82,11 @@ prefixed to the version:
 ```bash
 git checkout main
 
-vim src/pymmcore/_version.py  # Remove .dev0
+vim meson.build  # Remove .dev0
 git commit -a -m 'Version 1.2.3.42.4'
 git tag -a v1.2.3.42.4 -m Release
 
-vim src/pymmcore/_version.py  # Set version to 1.2.3.42.5.dev0
+vim meson.build  # Set version to 1.2.3.42.5.dev0
 git commit -a -m 'Version back to dev'
 
 git push upstream --follow-tags
@@ -101,8 +104,9 @@ and the binary wheels attached.
 
 - The minimum version of python supported is declared in `pypyproject.toml`,
   in the `[project.requires-python]` section.
-- SWIG 4.x is required and automatically fetched via `pyproject.toml` under
-  `[build-system.requires]`.
+- Meson (via `meson-python`), Ninja, and SWIG 4.x are required and
+  automatically fetched via `pyproject.toml` under `[build-system.requires]`.
+- A C++ toolchain is required and must be available on your system.
 - The build-time versions of numpy are in `pyproject.toml`, in the
   `[build-system.requires]` section.
 - The run-time numpy dependency is declared in `pyproject.toml`, in the
@@ -111,7 +115,7 @@ and the binary wheels attached.
   determined by the settings in the `[tool.cibuildwheel]` section of
   `pyproject.toml`.
 - _We_ should provide wheels for all Python versions we claim to support,
-  built agains the oldest NumPy version that we claim to support. Thus, any
+  built against the oldest NumPy version that we claim to support. Thus, any
   issue with the build or our CI will limit the lowest supported versions.
 
 ## ABI Compatibility
@@ -124,18 +128,6 @@ and the binary wheels attached.
   https://github.com/numpy/numpy/issues/5888).  We do this by including
   [`oldest-supported-numpy`](https://github.com/scipy/oldest-supported-numpy)
   in our build requires.
-
-## Building with debug symbols on Windows
-
-Since there is no easy way to pass compile and linker options to `build_clib`,
-the easiest hack is to edit the local `setuptools` installation's
-`_distutils/_msvccompiler.py` to add the compiler flag `/Zi` and linker flag
-`/DEBUG:FULL` (see the method `initialize`). This produces `vc140.pdb`.
-
-(The "normal" method would be to run `setup.py build_clib` and `setup.py
-build_ext` with the `--debug` option, and run with `python_d.exe`. But then we
-would need a debug build of NumPy, which is hard to build on Windows.)
-
 
 ### Legacy Build Notes
 
