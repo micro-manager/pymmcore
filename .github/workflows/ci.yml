@@ -89,8 +89,9 @@ jobs:
           toolset: "14.2"
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.19
+        uses: pypa/cibuildwheel@v2.22
         env:
+          CIBW_VERBOSE: 1
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
           # Python on Linux is usually configured to add debug information,
           # which increases binary size by ~11-fold. Remove for the builds we
