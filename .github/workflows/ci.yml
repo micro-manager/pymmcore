@@ -66,7 +66,7 @@ jobs:
         run: pytest -v
 
   build_wheels:
-    if: github.event_name != 'pull_request'
+    # if: github.event_name != 'pull_request'
     name: Build wheels on ${{ matrix.os }} ${{ matrix.macos_arch }}
     runs-on: ${{ matrix.os }}
     strategy:
