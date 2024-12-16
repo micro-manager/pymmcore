@@ -1,6 +1,6 @@
 # https://peps.python.org/pep-0517/
 [build-system]
-requires = ["setuptools ==72.1.0", "swig >=4.1", "numpy>=2.0.0"]
+requires = ["setuptools ==72.1.0", "swig ==4.2.1", "numpy>=2.0.0"]
 build-backend = "setuptools.build_meta"
 
 # https://peps.python.org/pep-0621/
