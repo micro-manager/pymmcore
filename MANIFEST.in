@@ -3,6 +3,7 @@ recursive-include mmCoreAndDevices/MMDevice *.h *.cpp
 recursive-include mmCoreAndDevices/MMCore *.h *.cpp
 
 prune mmCoreAndDevices/MMDevice/unittest
+prunt mmCoreAndDevices/tools
 prune mmCoreAndDevices/MMCore/unittest
 prune mmCoreAndDevices/MMCoreJ_wrap
 prune mmCoreAndDevices/DeviceAdapters
