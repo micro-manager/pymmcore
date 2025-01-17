@@ -63,7 +63,7 @@ jobs:
           python -m pip install numpy${{ matrix.numpy }}
 
       - name: Run tests
-        run: pytest -v
+        run: pytest -v tests --color=yes
 
   build_wheels:
     if: github.event_name != 'pull_request'

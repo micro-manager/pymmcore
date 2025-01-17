@@ -240,6 +240,11 @@ PixelSizeConfigName = NewType("PixelSizeConfigName", str)
 StateLabel = NewType("StateLabel", str)
 """User-defined label for a specific state in a state device."""
 
+FeatureFlag = Literal[
+    "StrictInitializationChecks",
+    "ParallelDeviceInitialization",
+]
+
 class CMMCore:
     def __init__(self) -> None: ...
     def addGalvoPolygonVertex(
@@ -336,9 +341,7 @@ class CMMCore:
         """Enable or disable logging of debug messages."""
     # the Literal hint helps people know what the valid options are, but the fallback
     # to str makes it more future proof so that it's still valid to enter any string
-    def enableFeature(
-        self, name: Literal["StrictInitializationChecks"] | str, enable: bool
-    ) -> None:
+    def enableFeature(self, name: FeatureFlag | str, enable: bool) -> None:
         """Enable or disable the given Core feature.
 
         Core features control whether experimental functionality (which is subject
@@ -351,6 +354,11 @@ class CMMCore:
           attempted on a device that is not successfully initialized. When disabled,
           no exception is thrown and a warning is logged (and the operation may
           potentially cause incorrect behavior or a crash).
+        - "ParallelDeviceInitialization" (default: enabled) When enabled, serial ports
+          are initialized in serial order, and all other devices are in parallel, using
+          multiple threads, one per device module.  Early testing shows this to be
+          reliable, but switch this off when issues are encountered during
+          device initialization.
         """
     def enableStderrLog(self, enable: bool) -> None:
         """Enables or disables log message display on the standard console."""
@@ -771,7 +779,11 @@ class CMMCore:
     def incrementalFocus(self) -> None:
         """Performs incremental focus for the one-shot focusing device."""
     def initializeAllDevices(self) -> None:
-        """Calls Initialize() method for each loaded device."""
+        """Calls Initialize() method for each loaded device.
+
+        See `ParallelDeviceInitialization` feature flag for controlling the order of
+        initialization.
+        """
     def initializeCircularBuffer(self) -> None:
         """Initialize circular buffer based on the current camera settings."""
     def initializeDevice(self, label: DeviceLabel | str) -> None:
