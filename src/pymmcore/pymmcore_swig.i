@@ -56,32 +56,38 @@ import_array();
 %typemap(out) void*
 {
     npy_intp dims[2];
-    dims[0] = (arg1)->getImageHeight();
-    dims[1] = (arg1)->getImageWidth();
+    dims[0] = (arg1)->getImageHeight((const char*)result);
+    dims[1] = (arg1)->getImageWidth((const char*)result);
     npy_intp pixelCount = dims[0] * dims[1];
 
-    if ((arg1)->getBytesPerPixel() == 1)
+    unsigned bytesPerPixel = (arg1)->getBytesPerPixel((const char*)result);
+
+    if (bytesPerPixel == 1)
     {
         PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT8);
         memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount);
+        (arg1)->ReleaseReadAccess((const char*)result);
         $result = numpyArray;
     }
-    else if ((arg1)->getBytesPerPixel() == 2)
+    else if (bytesPerPixel == 2)
     {
         PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT16);
         memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 2);
+        (arg1)->ReleaseReadAccess((const char*)result);
         $result = numpyArray;
     }
-    else if ((arg1)->getBytesPerPixel() == 4)
+    else if (bytesPerPixel == 4)
     {
         PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT32);
         memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 4);
+        (arg1)->ReleaseReadAccess((const char*)result);
         $result = numpyArray;
     }
-    else if ((arg1)->getBytesPerPixel() == 8)
+    else if (bytesPerPixel == 8)
     {
         PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT64);
         memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 8);
+        (arg1)->ReleaseReadAccess((const char*)result);
         $result = numpyArray;
     }
     else
@@ -99,16 +105,15 @@ import_array();
 {
     //Here we assume we are getting RGBA (32 bits).
     npy_intp dims[3];
-    dims[0] = (arg1)->getImageHeight();
-    dims[1] = (arg1)->getImageWidth();
+    dims[0] = (arg1)->getImageHeight((const char*)result);
+    dims[1] = (arg1)->getImageWidth((const char*)result);
     dims[2] = 3; // RGB
-    unsigned numChannels = (arg1)->getNumberOfComponents();
+    unsigned numChannels = (arg1)->getNumberOfComponents((const char*)result);
     unsigned char * pyBuf;
     unsigned char * coreBuf = (unsigned char *) result;
 
-    if ((arg1)->getBytesPerPixel() == 4 && numChannels == 1)
+    if ((arg1)->getBytesPerPixel((const char*)result) == 4 && numChannels == 1)
     {
-
         // create new numpy array object
         PyObject * numpyArray = PyArray_SimpleNew(3, dims, NPY_UINT8);
 
@@ -116,7 +121,6 @@ import_array();
         pyBuf = (unsigned char *) PyArray_DATA((PyArrayObject *) numpyArray);
 
         // copy R,G,B but leave out A in RGBA to return a WxHx3-dimensional array
-
         long pixelCount = dims[0] * dims[1];
 
         for (long i=0; i<pixelCount; ++i)
@@ -124,20 +128,18 @@ import_array();
             *pyBuf++ = *coreBuf++; //R
             *pyBuf++ = *coreBuf++; //G
             *pyBuf++ = *coreBuf++; //B
-
             ++coreBuf; // Skip the empty byte
         }
 
-        // Return the numpy array object
+        // Release read access after copying
+        (arg1)->ReleaseReadAccess((const char*)result);
 
         $result = numpyArray;
-
     }
     else
     {
-        // don't know how to map
-        // TODO: thow exception?
-        $result = 0;
+        PyErr_SetString(PyExc_RuntimeError, "Unsupported image format");
+        return NULL;
     }
 }
 
