@@ -55,6 +55,7 @@ import_array();
 
 %typemap(out) void*
 {
+
     npy_intp dims[2];
     dims[0] = (arg1)->getImageHeight((const char*)result);
     dims[1] = (arg1)->getImageWidth((const char*)result);
@@ -97,49 +98,6 @@ import_array();
         // XXX Must do something, as returning NULL without setting error results
         // in an opaque error.
         $result = 0;
-    }
-}
-
-
-%typemap(out) unsigned int*
-{
-    //Here we assume we are getting RGBA (32 bits).
-    npy_intp dims[3];
-    dims[0] = (arg1)->getImageHeight((const char*)result);
-    dims[1] = (arg1)->getImageWidth((const char*)result);
-    dims[2] = 3; // RGB
-    unsigned numChannels = (arg1)->getNumberOfComponents((const char*)result);
-    unsigned char * pyBuf;
-    unsigned char * coreBuf = (unsigned char *) result;
-
-    if ((arg1)->getBytesPerPixel((const char*)result) == 4 && numChannels == 1)
-    {
-        // create new numpy array object
-        PyObject * numpyArray = PyArray_SimpleNew(3, dims, NPY_UINT8);
-
-        // get a pointer to the data buffer
-        pyBuf = (unsigned char *) PyArray_DATA((PyArrayObject *) numpyArray);
-
-        // copy R,G,B but leave out A in RGBA to return a WxHx3-dimensional array
-        long pixelCount = dims[0] * dims[1];
-
-        for (long i=0; i<pixelCount; ++i)
-        {
-            *pyBuf++ = *coreBuf++; //R
-            *pyBuf++ = *coreBuf++; //G
-            *pyBuf++ = *coreBuf++; //B
-            ++coreBuf; // Skip the empty byte
-        }
-
-        // Release read access after copying
-        (arg1)->ReleaseReadAccess((const char*)result);
-
-        $result = numpyArray;
-    }
-    else
-    {
-        PyErr_SetString(PyExc_RuntimeError, "Unsupported image format");
-        return NULL;
     }
 }
 
@@ -396,6 +354,11 @@ namespace std {
 %apply int &OUTPUT { int &y };
 %apply int &OUTPUT { int &xSize };
 %apply int &OUTPUT { int &ySize };
+
+%apply int &OUTPUT { int &width };
+%apply int &OUTPUT { int &height };
+%apply int &OUTPUT { int &byteDepth };
+%apply int &OUTPUT { int &nComponents };
 
 %include "MMDeviceConstants.h"
 %include "Error.h"
