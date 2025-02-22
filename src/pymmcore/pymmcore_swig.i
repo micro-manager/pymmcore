@@ -55,40 +55,45 @@ import_array();
 
 %typemap(out) void*
 {
+    // nullptr, return None
+    if (result == NULL) {
+        Py_INCREF(Py_None);
+        $result = Py_None;
+        return $result;
+    }
 
-    npy_intp dims[2];
-    dims[0] = (arg1)->getImageHeight((const char*)result);
-    dims[1] = (arg1)->getImageWidth((const char*)result);
-    npy_intp pixelCount = dims[0] * dims[1];
-
-    unsigned bytesPerPixel = (arg1)->getBytesPerPixel((const char*)result);
+    // TODO: need to all null check here?
+    int width, height, bytesPerPixel, numComponents;
+    (arg1)->getImageProperties(result, width, height, bytesPerPixel, numComponents);
+    int pixelCount = width * height;
+    npy_intp dims[2] = {height, width};
 
     if (bytesPerPixel == 1)
     {
         PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT8);
         memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount);
-        (arg1)->ReleaseReadAccess((const char*)result);
+        (arg1)->releaseReadAccess(result);
         $result = numpyArray;
     }
     else if (bytesPerPixel == 2)
     {
         PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT16);
         memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 2);
-        (arg1)->ReleaseReadAccess((const char*)result);
+        (arg1)->releaseReadAccess(result);
         $result = numpyArray;
     }
     else if (bytesPerPixel == 4)
     {
         PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT32);
         memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 4);
-        (arg1)->ReleaseReadAccess((const char*)result);
+        (arg1)->releaseReadAccess(result);
         $result = numpyArray;
     }
     else if (bytesPerPixel == 8)
     {
         PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT64);
         memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 8);
-        (arg1)->ReleaseReadAccess((const char*)result);
+        (arg1)->releaseReadAccess(result);
         $result = numpyArray;
     }
     else
@@ -100,6 +105,78 @@ import_array();
         $result = 0;
     }
 }
+
+// This is conceptually similar to the void* typemap above,
+// but requires slightly different calls because BufferDataPointer
+// is different from the data-returning void* methods of the Core.
+%typemap(out) BufferDataPointerVoidStar {
+
+    npy_intp numBytes = (arg1)->getSizeBytes();
+    // nullptr, return None
+    if (numBytes == 0) {
+        Py_INCREF(Py_None);
+        $result = Py_None;
+        return $result;
+    }
+
+    int width, height, bytesPerPixel, numComponents;
+    (arg1)->getImageProperties(width, height, bytesPerPixel, numComponents);
+    int pixelCount = width * height;
+    npy_intp dims[2] = {height, width};
+
+    if (bytesPerPixel == 1)
+    {
+        PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT8);
+        memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount);
+        // No realease here because that is done explicitly for BufferDataPointer
+        $result = numpyArray;
+    }
+    else if (bytesPerPixel == 2)
+    {
+        PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT16);
+        memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 2);
+        // No realease here because that is done explicitly for BufferDataPointer
+        $result = numpyArray;
+    }
+    else if (bytesPerPixel == 4)
+    {
+        PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT32);
+        memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 4);
+        // No realease here because that is done explicitly for BufferDataPointer
+        $result = numpyArray;
+    }
+    else if (bytesPerPixel == 8)
+    {
+        PyObject * numpyArray = PyArray_SimpleNew(2, dims, NPY_UINT64);
+        memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount * 8);
+        // No realease here because that is done explicitly for BufferDataPointer
+        $result = numpyArray;
+    }
+    else
+    {
+        // don't know how to map
+        // TODO: thow exception?
+        // XXX Must do something, as returning NULL without setting error results
+        // in an opaque error.
+        $result = 0;
+    } 
+}
+
+
+// Unlike void* above, this alias to void* is mapped to long so it can be used as a pointer
+// address instead of having the data it points to copied
+%typemap(out) DataPtr {
+    // Convert the DataPtr to a Python integer
+    $result = PyLong_FromVoidPtr((void *)$1);
+}
+
+%typemap(in) DataPtr {
+    // Convert the Python integer back to a DataPtr
+    $1 = (DataPtr)PyLong_AsVoidPtr($input);
+}
+
+
+
 
 /* tell SWIG to treat char ** as a list of strings */
 /* From https://stackoverflow.com/questions/3494598/passing-a-list-of-strings-to-from-python-ctypes-to-c-function-expecting-char */
@@ -248,6 +325,7 @@ import_array();
 #include "ImageMetadata.h"
 #include "MMEventCallback.h"
 #include "MMCore.h"
+#include "BufferDataPointer.h"
 %}
 
 // Exception handling. Tranditionally, MMCore uses exception specifications
@@ -360,9 +438,16 @@ namespace std {
 %apply int &OUTPUT { int &byteDepth };
 %apply int &OUTPUT { int &nComponents };
 
+// These are needed by the void* typemaps to copy pixels and then 
+// release them, but they shouldn't be needed by pymmcore
+// because their functionality is handled by the BufferDataPointer class
+%ignore CMMCore::getImageProperties(DataPtr, int&, int&, int&, int&);
+%ignore CMMCore::releaseReadAccess(DataPtr);
+
 %include "MMDeviceConstants.h"
 %include "Error.h"
 %include "Configuration.h"
 %include "MMCore.h"
 %include "ImageMetadata.h"
 %include "MMEventCallback.h"
+%include "BufferDataPointer.h"
