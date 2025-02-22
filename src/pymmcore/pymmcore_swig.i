@@ -62,7 +62,6 @@ import_array();
         return $result;
     }
 
-    // TODO: need to all null check here?
     int width, height, bytesPerPixel, numComponents;
     (arg1)->getImageProperties(result, width, height, bytesPerPixel, numComponents);
     int pixelCount = width * height;
