@@ -324,7 +324,7 @@ import_array();
 #include "ImageMetadata.h"
 #include "MMEventCallback.h"
 #include "MMCore.h"
-#include "BufferDataPointer.h"
+#include "NewBufferDataPointer.h"
 %}
 
 // Exception handling. Tranditionally, MMCore uses exception specifications
@@ -449,4 +449,4 @@ namespace std {
 %include "MMCore.h"
 %include "ImageMetadata.h"
 %include "MMEventCallback.h"
-%include "BufferDataPointer.h"
+%include "NewBufferDataPointer.h"
