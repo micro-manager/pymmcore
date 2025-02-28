@@ -119,7 +119,23 @@ import_array();
     }
 
     int width, height, bytesPerPixel, numComponents;
-    (arg1)->getImageProperties(width, height, bytesPerPixel, numComponents);
+    bool propertiesOK = (arg1)->getImageProperties(width, height, bytesPerPixel, numComponents);
+    
+    // If getImageProperties fails, its not image data. Assume 1 byte per pixel
+    // If more data types are supported in the future, could add other
+    // checks here to return other data types.
+    if (!propertiesOK) {
+        bytesPerPixel = 1;
+        numComponents = 1;
+        int pixelCount = numBytes;
+        npy_intp dims[1] = {pixelCount};
+        
+        PyObject * numpyArray = PyArray_SimpleNew(1, dims, NPY_UINT8);
+        memcpy(PyArray_DATA((PyArrayObject *) numpyArray), result, pixelCount);
+        $result = numpyArray;
+        return $result;
+    }
+    
     int pixelCount = width * height;
     npy_intp dims[2] = {height, width};
 
