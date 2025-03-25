@@ -639,43 +639,48 @@ class CMMCore:
         the requested pixel size group. The raw affine transform without correction for
         binning and magnification will be returned."""
 
-    #    double getPixelSizedxdz() throw (CMMError);
-    #    double getPixelSizedxdz(bool cached) throw (CMMError);
-    #    double getPixelSizedxdz(const char* resolutionID) throw (CMMError);
-    #    double getPixelSizedydz() throw (CMMError);
-    #    double getPixelSizedydz(bool cached) throw (CMMError);
-    #    double getPixelSizedydz(const char* resolutionID) throw (CMMError);
-    #    double getPixelSizeOptimalZUm() throw (CMMError);
-    #    double getPixelSizeOptimalZUm(bool cached) throw (CMMError);
-    #    double getPixelSizeOptimalZUm(const char* resolutionID) throw (CMMError);
     @overload
-    def getPixelSizedxdz(self) -> float:
-        """Returns the pixel size in the X direction in microns."""
+    def getPixelSizedxdz(self) -> float: ...
     @overload
-    def getPixelSizedxdz(self, cached: bool) -> float:
-        """Returns the pixel size in the X direction in microns."""
+    def getPixelSizedxdz(self, cached: bool) -> float: ...
     @overload
     def getPixelSizedxdz(self, resolutionID: PixelSizeConfigName | str) -> float:
-        """Returns the pixel size in the X direction in microns."""
+        """Returns the angle between the camera's x axis and the axis (direction) of the z drive.
+
+        This angle is dimensionless (i.e. the ratio of the translation in x caused by a
+        translation in z, i.e. dx / dz). This angle can be different for different z
+        drives (if there are multiple Z drives in the system, please add the Core-Focus
+        device to the pixel size configuration). See:
+        https://github.com/micro-manager/micro-manager/issues/1984
+
+        """
     @overload
-    def getPixelSizedydz(self) -> float:
-        """Returns the pixel size in the Y direction in microns."""
+    def getPixelSizedydz(self) -> float: ...
     @overload
-    def getPixelSizedydz(self, cached: bool) -> float:
-        """Returns the pixel size in the Y direction in microns."""
+    def getPixelSizedydz(self, cached: bool) -> float: ...
     @overload
     def getPixelSizedydz(self, resolutionID: PixelSizeConfigName | str) -> float:
-        """Returns the pixel size in the Y direction in microns."""
+        """Returns the angle between the camera's y axis and the axis (direction) of the z drive.
+
+        This angle is dimensionless (i.e. the ratio of the translation in x caused by a
+        translation in z, i.e. dy / dz). This angle can be different for different z
+        drives (if there are multiple Z drives in the system, please add the Core-Focus
+        device to the pixel size configuration). See:
+        https://github.com/micro-manager/micro-manager/issues/1984
+
+        """
     @overload
-    def getPixelSizeOptimalZUm(self) -> float:
-        """Returns the optimal Z pixel size in microns."""
+    def getPixelSizeOptimalZUm(self) -> float: ...
     @overload
-    def getPixelSizeOptimalZUm(self, cached: bool) -> float:
-        """Returns the optimal Z pixel size in microns."""
+    def getPixelSizeOptimalZUm(self, cached: bool) -> float: ...
     @overload
     def getPixelSizeOptimalZUm(self, resolutionID: PixelSizeConfigName | str) -> float:
-        """Returns the optimal Z pixel size in microns for the requested pixel size group"""
+        """Returns the optimal z step size in um, optionally using cached pixel configuration.
 
+        There is no magic to this number, but lets the system configuration
+        communicate to the end user what the optimal Z step size is for this 
+        pixel size configuration
+        """
     def setPixelSizedxdz(
         self, resolutionID: PixelSizeConfigName | str, dXdZ: float
     ) -> None:
@@ -1431,7 +1436,7 @@ class CMMCore:
         """Return True if pump direction needs to be inverted"""
     def setPumpVolume(self, pumpLabel: str, volume: float) -> None:
         """Sets the volume of fluid in the pump in uL.
-        
+
         Note it does not withdraw upto this amount. It is merely to inform MM
         of the volume in a prefilled pump.
         """
@@ -1447,7 +1452,7 @@ class CMMCore:
         """Return the flowrate of the pump in uL per second"""
     def pumpStart(self, pumpLabel: str) -> None:
         """Start dispensing until syringe is empty, or manually stopped.
-        
+
         (whichever occurs first).
         """
     def pumpDispenseDurationSeconds(self, pumpLabel: str, seconds: float) -> None:
