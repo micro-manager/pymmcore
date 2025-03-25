@@ -43,6 +43,8 @@ MagnifierDevice: Final = 13
 SLMDevice: Final = 14
 HubDevice: Final = 15
 GalvoDevice: Final = 16
+PressurePumpDevice: Final = 17
+VolumetricPumpDevice: Final = 18
 
 # PropertyType
 Undef: Final = 0
@@ -87,25 +89,31 @@ g_CFGCommand_FocusDirection: Final[Literal["FocusDirection"]]
 g_CFGCommand_ImageSynchro: Final[Literal["ImageSynchro"]]
 g_CFGCommand_Label: Final[Literal["Label"]]
 g_CFGCommand_ParentID: Final[Literal["Parent"]]
-g_CFGCommand_PixelSizeAffine: Final[Literal["PixelSizeAffine"]]
 g_CFGCommand_PixelSize_um: Final[Literal["PixelSize_um"]]
+g_CFGCommand_PixelSizeAffine: Final[Literal["PixelSizeAffine"]]
+g_CFGCommand_PixelSizedxdz: Final[Literal["PixelSizeAngle_dxdz"]]
+g_CFGCommand_PixelSizedydz: Final[Literal["PixelSizeAngle_dydz"]]
+g_CFGCommand_PixelSizeOptimalZUm: Final[Literal["PixelSizeOptimalZ_Um"]]
 g_CFGCommand_Property: Final[Literal["Property"]]
+
 g_CFGGroup_PixelSizeUm: Final[Literal["PixelSize_um"]]
 g_CFGGroup_System: Final[Literal["System"]]
 g_CFGGroup_System_Shutdown: Final[Literal["Shutdown"]]
 g_CFGGroup_System_Startup: Final[Literal["Startup"]]
+
 g_FieldDelimiters: Final[Literal[","]]
+
 g_Keyword_ActualExposure: Final[Literal["ActualExposure"]]
 g_Keyword_ActualInterval_ms: Final[Literal["ActualInterval-ms"]]
 g_Keyword_AnswerTimeout: Final[Literal["AnswerTimeout"]]
 g_Keyword_BaudRate: Final[Literal["BaudRate"]]
 g_Keyword_Binning: Final[Literal["Binning"]]
-g_Keyword_CCDTemperature: Final[Literal["CCDTemperature"]]
-g_Keyword_CCDTemperatureSetPoint: Final[Literal["CCDTemperatureSetPoint"]]
 g_Keyword_CameraChannelIndex: Final[Literal["CameraChannelIndex"]]
 g_Keyword_CameraChannelName: Final[Literal["CameraChannelName"]]
 g_Keyword_CameraID: Final[Literal["CameraID"]]
 g_Keyword_CameraName: Final[Literal["CameraName"]]
+g_Keyword_CCDTemperature: Final[Literal["CCDTemperature"]]
+g_Keyword_CCDTemperatureSetPoint: Final[Literal["CCDTemperatureSetPoint"]]
 g_Keyword_Channel: Final[Literal["Channel"]]
 g_Keyword_Closed_Position: Final[Literal["ClosedPosition"]]
 g_Keyword_ColorMode: Final[Literal["ColorMode"]]
@@ -118,34 +126,52 @@ g_Keyword_CoreFocus: Final[Literal["Focus"]]
 g_Keyword_CoreGalvo: Final[Literal["Galvo"]]
 g_Keyword_CoreImageProcessor: Final[Literal["ImageProcessor"]]
 g_Keyword_CoreInitialize: Final[Literal["Initialize"]]
-g_Keyword_CoreSLM: Final[Literal["SLM"]]
+g_Keyword_CorePressurePump: Final[Literal["PressurePump"]]
 g_Keyword_CoreShutter: Final[Literal["Shutter"]]
+g_Keyword_CoreSLM: Final[Literal["SLM"]]
 g_Keyword_CoreTimeoutMs: Final[Literal["TimeoutMs"]]
+g_Keyword_CoreVolumetricPump: Final[Literal["VolumetricPump"]]
 g_Keyword_CoreXYStage: Final[Literal["XYStage"]]
+g_Keyword_Current_Volume: Final[Literal["Volume_uL"]]
 g_Keyword_DataBits: Final[Literal["DataBits"]]
 g_Keyword_Delay: Final[Literal["Delay_ms"]]
 g_Keyword_DelayBetweenCharsMs: Final[Literal["DelayBetweenCharsMs"]]
 g_Keyword_Description: Final[Literal["Description"]]
-g_Keyword_EMGain: Final[Literal["EMGain"]]
 g_Keyword_Elapsed_Time_ms: Final[Literal["ElapsedTime-ms"]]
+g_Keyword_EMGain: Final[Literal["EMGain"]]
 g_Keyword_Exposure: Final[Literal["Exposure"]]
+g_Keyword_Flowrate: Final[Literal["Flowrate_uL_per_sec"]]
 g_Keyword_Gain: Final[Literal["Gain"]]
 g_Keyword_Handshaking: Final[Literal["Handshaking"]]
 g_Keyword_HubID: Final[Literal["HubID"]]
 g_Keyword_Interval_ms: Final[Literal["Interval-ms"]]
 g_Keyword_Label: Final[Literal["Label"]]
+g_Keyword_Max_Volume: Final[Literal["Max_Volume_uL"]]
 g_Keyword_Meatdata_Exposure: Final[Literal["Exposure-ms"]]
+g_Keyword_Metadata_CameraLabel: Final[Literal["Camera"]]
+g_Keyword_Metadata_Exposure: Final[Literal["Exposure-ms"]]
+g_Keyword_Metadata_Height: Final[Literal["Height"]]
 g_Keyword_Metadata_ImageNumber: Final[Literal["ImageNumber"]]
 g_Keyword_Metadata_ROI_X: Final[Literal["ROI-X-start"]]
 g_Keyword_Metadata_ROI_Y: Final[Literal["ROI-Y-start"]]
 g_Keyword_Metadata_Score: Final[Literal["Score"]]
 g_Keyword_Metadata_TimeInCore: Final[Literal["TimeReceivedByCore"]]
+g_Keyword_Metadata_Width: Final[Literal["Width"]]
+g_Keyword_Min_Volume: Final[Literal["Min_Volume_uL"]]
 g_Keyword_Name: Final[Literal["Name"]]
 g_Keyword_Offset: Final[Literal["Offset"]]
 g_Keyword_Parity: Final[Literal["Parity"]]
+g_Keyword_PixelType_GRAY16: Final[Literal["GRAY16"]]
+g_Keyword_PixelType_GRAY32: Final[Literal["GRAY32"]]
+g_Keyword_PixelType_GRAY8: Final[Literal["GRAY8"]]
+g_Keyword_PixelType_RGB32: Final[Literal["RGB32"]]
+g_Keyword_PixelType_RGB64: Final[Literal["RGB64"]]
+g_Keyword_PixelType_Unknown: Final[Literal["Unknown"]]
 g_Keyword_PixelType: Final[Literal["PixelType"]]
 g_Keyword_Port: Final[Literal["Port"]]
 g_Keyword_Position: Final[Literal["Position"]]
+g_Keyword_Pressure_Imposed: Final[Literal["Pressure Imposed"]]
+g_Keyword_Pressure_Measured: Final[Literal["Pressure Measured"]]
 g_Keyword_ReadoutMode: Final[Literal["ReadoutMode"]]
 g_Keyword_ReadoutTime: Final[Literal["ReadoutTime"]]
 g_Keyword_Speed: Final[Literal["Speed"]]
@@ -174,21 +200,22 @@ DEVICE_IMAGE_PARAMS_FAILED: int
 DEVICE_INCOMPATIBLE_IMAGE: int
 DEVICE_INTERNAL_INCONSISTENCY: int
 DEVICE_INVALID_INPUT_PARAM: int
-DEVICE_INVALID_PROPERTY: int
 DEVICE_INVALID_PROPERTY_LIMTS: int
 DEVICE_INVALID_PROPERTY_TYPE: int
 DEVICE_INVALID_PROPERTY_VALUE: int
+DEVICE_INVALID_PROPERTY: int
 DEVICE_LOCALLY_DEFINED_ERROR: int
 DEVICE_NATIVE_MODULE_FAILED: int
+DEVICE_NO_CALLBACK_REGISTERED: int
+DEVICE_NO_PROPERTY_DATA: int
 DEVICE_NONEXISTENT_CHANNEL: int
 DEVICE_NOT_CONNECTED: int
 DEVICE_NOT_SUPPORTED: int
 DEVICE_NOT_YET_IMPLEMENTED: int
-DEVICE_NO_CALLBACK_REGISTERED: int
-DEVICE_NO_PROPERTY_DATA: int
 DEVICE_OK: int
 DEVICE_OUT_OF_MEMORY: int
 DEVICE_PROPERTY_NOT_SEQUENCEABLE: int
+DEVICE_PUMP_IS_RUNNING: int
 DEVICE_SELF_REFERENCE: int
 DEVICE_SEQUENCE_TOO_LARGE: int
 DEVICE_SERIAL_BUFFER_OVERRUN: int
@@ -611,6 +638,57 @@ class CMMCore:
         """Returns the Affine Transform to related camera pixels with stage movement for
         the requested pixel size group. The raw affine transform without correction for
         binning and magnification will be returned."""
+
+    #    double getPixelSizedxdz() throw (CMMError);
+    #    double getPixelSizedxdz(bool cached) throw (CMMError);
+    #    double getPixelSizedxdz(const char* resolutionID) throw (CMMError);
+    #    double getPixelSizedydz() throw (CMMError);
+    #    double getPixelSizedydz(bool cached) throw (CMMError);
+    #    double getPixelSizedydz(const char* resolutionID) throw (CMMError);
+    #    double getPixelSizeOptimalZUm() throw (CMMError);
+    #    double getPixelSizeOptimalZUm(bool cached) throw (CMMError);
+    #    double getPixelSizeOptimalZUm(const char* resolutionID) throw (CMMError);
+    @overload
+    def getPixelSizedxdz(self) -> float:
+        """Returns the pixel size in the X direction in microns."""
+    @overload
+    def getPixelSizedxdz(self, cached: bool) -> float:
+        """Returns the pixel size in the X direction in microns."""
+    @overload
+    def getPixelSizedxdz(self, resolutionID: PixelSizeConfigName | str) -> float:
+        """Returns the pixel size in the X direction in microns."""
+    @overload
+    def getPixelSizedydz(self) -> float:
+        """Returns the pixel size in the Y direction in microns."""
+    @overload
+    def getPixelSizedydz(self, cached: bool) -> float:
+        """Returns the pixel size in the Y direction in microns."""
+    @overload
+    def getPixelSizedydz(self, resolutionID: PixelSizeConfigName | str) -> float:
+        """Returns the pixel size in the Y direction in microns."""
+    @overload
+    def getPixelSizeOptimalZUm(self) -> float:
+        """Returns the optimal Z pixel size in microns."""
+    @overload
+    def getPixelSizeOptimalZUm(self, cached: bool) -> float:
+        """Returns the optimal Z pixel size in microns."""
+    @overload
+    def getPixelSizeOptimalZUm(self, resolutionID: PixelSizeConfigName | str) -> float:
+        """Returns the optimal Z pixel size in microns for the requested pixel size group"""
+
+    def setPixelSizedxdz(
+        self, resolutionID: PixelSizeConfigName | str, dXdZ: float
+    ) -> None:
+        """Sets the pixel size in the X direction in microns."""
+    def setPixelSizedydz(
+        self, resolutionID: PixelSizeConfigName | str, dYdZ: float
+    ) -> None:
+        """Sets the pixel size in the Y direction in microns."""
+    def setPixelSizeOptimalZUm(
+        self, resolutionID: PixelSizeConfigName | str, optimalZ: float
+    ) -> None:
+        """Sets the pixel size in the Z direction in microns."""
+
     def getPixelSizeConfigData(
         self, configName: PixelSizeConfigName | str
     ) -> Configuration:
@@ -1329,6 +1407,54 @@ class CMMCore:
         """Blocks until all devices in the system become ready (not-busy)."""
     def writeToSerialPort(self, portLabel: str, data: bytes) -> None:
         """Sends an array of characters to the serial port and returns immediately."""
+
+    def pressurePumpStop(self, pumpLabel: str) -> None:
+        """Stops the pressure pump."""
+    def pressurePumpCalibrate(self, pumpLabel: str) -> None:
+        """Calibrates the pressure pump."""
+    def pressurePumpRequiresCalibration(self, pumpLabel: str) -> bool:
+        """Return True if pump requires calibration before operation."""
+    def setPumpPressureKPa(self, pumpLabel: str, pressure: float) -> None:
+        """Sets the pressure of the pump in kPa."""
+    def getPumpPressureKPa(self, pumpLabel: str) -> float:
+        """Return the pressure of the pump in kPa."""
+
+    def volumetricPumpStop(self, pumpLabel: str) -> None:
+        """Stops the volumetric pump."""
+    def volumetricPumpHome(self, pumpLabel: str) -> None:
+        """Homes the volumetric pump."""
+    def volumetricPumpRequiresHoming(self, pumpLabel: str) -> bool:
+        """Return True if the volumetric pump requires homing."""
+    def invertPumpDirection(self, pumpLabel: str, invert: bool) -> None:
+        """Sets whether the pump direction needs to be inverted"""
+    def isPumpDirectionInverted(self, pumpLabel: str) -> bool:
+        """Return True if pump direction needs to be inverted"""
+    def setPumpVolume(self, pumpLabel: str, volume: float) -> None:
+        """Sets the volume of fluid in the pump in uL.
+        
+        Note it does not withdraw upto this amount. It is merely to inform MM
+        of the volume in a prefilled pump.
+        """
+    def getPumpVolume(self, pumpLabel: str) -> float:
+        """Return the fluid volume in the pump in uL"""
+    def setPumpMaxVolume(self, pumpLabel: str, volume: float) -> None:
+        """Set the max volume of the pump in uL"""
+    def getPumpMaxVolume(self, pumpLabel: str) -> float:
+        """Return max volume of the pump in uL"""
+    def setPumpFlowrate(self, pumpLabel: str, volume: float) -> None:
+        """Set the flowrate of the pump in uL per second"""
+    def getPumpFlowrate(self, pumpLabel: str) -> float:
+        """Return the flowrate of the pump in uL per second"""
+    def pumpStart(self, pumpLabel: str) -> None:
+        """Start dispensing until syringe is empty, or manually stopped.
+        
+        (whichever occurs first).
+        """
+    def pumpDispenseDurationSeconds(self, pumpLabel: str, seconds: float) -> None:
+        """Dispenses for the provided duration (in seconds) at the set flowrate."""
+    def pumpDispenseVolumeUl(self, pumpLabel: str, microLiter: float) -> None:
+        """Dispenses the provided volume (in uL) at the set flowrate."""
+
     # These are in MMCoreJ, not pymmcore
     # def getTaggedImage(self) -> TaggedImage: ...
     # def getTaggedImage(self, cameraChannelIndex: int) -> TaggedImage: ...
