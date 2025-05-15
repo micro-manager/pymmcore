@@ -87,7 +87,6 @@ vim src/pymmcore/_version.py  # Set version to 1.2.3.42.5.dev0
 git commit -a -m 'Version back to dev'
 
 git push upstream --follow-tags
-git push
 ```
 
 This triggers a build in [the ci.yml workflow](.github/workflows/ci.yml) and
