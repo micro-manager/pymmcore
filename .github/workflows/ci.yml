@@ -65,6 +65,36 @@ jobs:
       - name: Run tests
         run: pytest -v tests --color=yes
 
+  test-pymmcore-plus:
+    name: test pymmcore-plus ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      UV_NO_SYNC: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: pymmcore-plus/pymmcore-plus
+      - uses: actions/checkout@v4
+        with:
+          path: pymmcore
+          submodules: "recursive"
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+      - name: Setup MM test adapters
+        uses: pymmcore-plus/setup-mm-test-adapters@main
+      - name: Install dependencies
+        run: |
+          uv sync --no-dev --group test
+          uv pip install ./pymmcore
+          uv pip list
+
+      - run: uv run pytest -v --color=yes -W ignore
+
   build_wheels:
     if: github.event_name != 'pull_request'
     name: Build wheels on ${{ matrix.os }} ${{ matrix.macos_arch }}
