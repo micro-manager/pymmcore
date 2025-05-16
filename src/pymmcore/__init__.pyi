@@ -1009,7 +1009,7 @@ class CMMCore:
         StartSequenceAcqusition() call which is supposed to come next."""
     def readFromSerialPort(self, portLabel: str) -> List[str]:  # charvector
         """Reads the contents of the Rx buffer."""
-    def registerCallback(self, cb: MMEventCallback) -> None:
+    def registerCallback(self, cb: MMEventCallback | None) -> None:
         """Register a callback (listener class)."""
     def renameConfig(
         self,
