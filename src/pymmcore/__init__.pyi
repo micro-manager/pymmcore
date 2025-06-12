@@ -1157,7 +1157,7 @@ class CMMCore:
         """Sets the raw affine transform for the specific pixel size configuration.
 
         The affine transform consists of the first two rows of a 3x3 matrix,
-        the third row is alsways assumed to be 0.0 0.0 1.0."""
+        the third row is always assumed to be 0.0 0.0 1.0."""
     def setPixelSizeConfig(self, resolutionID: PixelSizeConfigName | str) -> None:
         """Applies a Pixel Size Configuration."""
     def setPixelSizeUm(
