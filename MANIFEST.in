@@ -10,4 +10,5 @@ prune mmCoreAndDevices/DeviceAdapters
 prune mmCoreAndDevices/m4
 prune mmCoreAndDevices/.github
 recursive-exclude mmCoreAndDevices *.txt *.md *.am .project \
-    *.vcxproj* *.sln *.props *.cdt* secret-device-* meson.build *.wrap
+    *.vcxproj* *.sln *.props *.cdt* secret-device-* meson.build *.wrap \
+    justfile
