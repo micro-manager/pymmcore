@@ -19,7 +19,7 @@ project(
     'pymmcore',
     'cpp',
     version: '11.9.0.73.0.dev0',
-    meson_version: '>=1.3.0',
+    meson_version: '>=1.4.0',
     default_options: [
         'cpp_std=c++14',
         'warning_level=3',
@@ -52,14 +52,7 @@ python = import('python').find_installation(pure: false)
 
 threads_dep = dependency('threads')
 
-numpy_abs_incdir = run_command(
-    python, '-c', 'import numpy; print(numpy.get_include())',
-    check: true,
-).stdout().strip()
-# The "correct" way would be to "detect" NumPy as a dependency. Since we are
-# cutting corners, we need to use a relative path as if the NumPy headers are
-# part of this project.
-numpy_incdirs = include_directories(fs.relative_to(numpy_abs_incdir, '.'))
+numpy_dep = dependency('numpy')
 
 swig = find_program('swig', native: true)
 

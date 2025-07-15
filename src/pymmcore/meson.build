@@ -59,10 +59,8 @@ python.extension_module(
     swig_gen_cpp_sources,
     dependencies: [
         mmcore_dep,
+        numpy_dep,
         threads_dep,
-    ],
-    include_directories: [
-        numpy_incdirs,
     ],
     install: true,
     subdir: 'pymmcore',
