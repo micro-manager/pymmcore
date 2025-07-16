@@ -24,9 +24,6 @@ project(
         'cpp_std=c++14',
         'warning_level=3',
     ],
-    # Until MMDevice and MMCore are available individually, we need to use them
-    # from the same git submodule, so this is a bit of a hack:
-    subproject_dir: 'mmCoreAndDevices',
 )
 
 cxx = meson.get_compiler('cpp')
@@ -61,7 +58,7 @@ swig = find_program('swig', native: true)
 # support by Meson in order to get the SWIG include directories from the
 # dependency object.
 mmcore_proj = subproject(
-    'MMCore',
+    'mmcore',
     default_options: {
         'default_library': 'static',
         'tests': 'disabled',  # Avoid Catch2 subproject in sdist

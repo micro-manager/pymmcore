@@ -27,11 +27,11 @@ Note that we can support multiple MMCore versions, possibly retroactively, by
 maintaining separate branches; this can ease transition when the device
 interface version changes. Such branches should be named `mmcore-x.y.z.w`.
 
-When upgrading the MMCore version (by bumping the mmCoreAndDevices submodule
-commit), the pymmcore version in `meson.build` should be updated in synchrony.
-The versioning for the python package is taken dynamically from that file, via
-the generated `_version.py` and the `project.dynamic` field in
-`pyproject.toml`.
+When upgrading the MMCore version (by updating the commit hashes in
+`subprojects/mmdevice.wrap` and `subprojects/mmcore.wrap`), the pymmcore
+version in `meson.build` must be updated in synchrony. The versioning for the
+python package is taken dynamically from that file (by meson-python), and built
+into the package via the generated `_version.py`.
 
 ## Building Binary Wheels and Source Distributions
 
