@@ -34,7 +34,7 @@ jobs:
             numpy: ">=2.0.0"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: "recursive"
 
@@ -67,10 +67,10 @@ jobs:
     env:
       UV_NO_SYNC: "1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: pymmcore-plus/pymmcore-plus
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: pymmcore
           submodules: "recursive"
@@ -102,7 +102,7 @@ jobs:
             macos_arch: "arm64"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: "recursive"
 
@@ -125,7 +125,7 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: "recursive"
