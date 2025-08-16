@@ -60,8 +60,8 @@ HIDPort: Final = 3
 
 # FocusDirection
 FocusDirectionUnknown: Final = 0
-FocusDirectionTowardSample: Final = 1
-FocusDirectionAwayFromSample: Final = 2
+FocusDirectionTowardSample: Final = +1
+FocusDirectionAwayFromSample: Final = -1
 
 # DeviceNotification
 Attention: Final = 0
@@ -678,7 +678,7 @@ class CMMCore:
         """Returns the optimal z step size in um, optionally using cached pixel configuration.
 
         There is no magic to this number, but lets the system configuration
-        communicate to the end user what the optimal Z step size is for this 
+        communicate to the end user what the optimal Z step size is for this
         pixel size configuration
         """
     def setPixelSizedxdz(
@@ -1596,6 +1596,7 @@ class MMEventCallback:
     ) -> None: ...
     def onPropertyChanged(self, name: str, propName: str, propValue: str) -> None: ...
     def onSLMExposureChanged(self, name: str, newExposure: float) -> None: ...
+    def onShutterOpenChanged(self, name: str, open: bool) -> None: ...
     def onStagePositionChanged(self, name: str, pos: float) -> None: ...
     def onSystemConfigurationLoaded(
         self,
