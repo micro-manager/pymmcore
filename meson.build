@@ -18,7 +18,7 @@
 project(
     'pymmcore',
     'cpp',
-    version: '11.9.0.73.0.dev0',
+    version: '11.10.0.74.0.dev0',
     meson_version: '>=1.4.0',
     default_options: [
         'cpp_std=c++14',
