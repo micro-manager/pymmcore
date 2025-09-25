@@ -106,7 +106,7 @@ jobs:
           toolset: "14.2"
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.1
+        uses: pypa/cibuildwheel@v3.2
         env:
           CIBW_VERBOSE: 1
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
