@@ -20,16 +20,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.11", "3.13"]
+        python-version: ["3.10", "3.12", "3.14"]
         os: [ubuntu-latest, windows-latest, macos-latest]
         include:
-          - python-version: "3.9"
-            os: ubuntu-latest
-            numpy: "~=1.25"
-          - python-version: "3.10"
+          - python-version: "3.11"
             os: ubuntu-latest
             numpy: "~=1.26"
-          - python-version: "3.12"
+          - python-version: "3.13"
             os: ubuntu-latest
             numpy: ">=2.0.0"
 
