@@ -9,3 +9,4 @@ wheelhouse/
 
 .mypy_cache/
 
+.wraplock
