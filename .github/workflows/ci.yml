@@ -31,7 +31,7 @@ jobs:
             numpy: ">=2.0.0"
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -62,10 +62,10 @@ jobs:
     env:
       UV_NO_SYNC: "1"
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: pymmcore-plus/pymmcore-plus
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           path: pymmcore
       - uses: astral-sh/setup-uv@v7
@@ -96,7 +96,7 @@ jobs:
             macos_arch: "arm64"
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -117,7 +117,7 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
