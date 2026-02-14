@@ -18,7 +18,7 @@
 project(
     'pymmcore',
     'cpp',
-    version: '11.10.0.74.2.dev0',
+    version: '11.11.0.74.0.dev0',
     meson_version: '>=1.4.0',
     default_options: [
         'cpp_std=c++14',
@@ -64,7 +64,7 @@ mmcore_proj = subproject(
         'tests': 'disabled',  # Avoid Catch2 subproject in sdist
     },
 )
-mmcore_dep = mmcore_proj.get_variable('mmcore')
+mmcore_dep = mmcore_proj.get_variable('mmcore_dep')
 
 swig_include_dirs = mmcore_proj.get_variable('swig_include_dirs')
 
