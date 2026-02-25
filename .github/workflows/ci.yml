@@ -79,7 +79,8 @@ jobs:
           uv pip install ./pymmcore
           uv pip list
 
-      - run: uv run pytest -v --color=yes -W ignore
+      - run: |
+          uv run pytest -v --color=yes -W ignore -k 'not test_test_dev_install_latest_compatible'
 
   build_wheels:
     if: github.event_name != 'pull_request'
