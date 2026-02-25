@@ -1,3 +1,5 @@
+# pymmcore development/maintainer notes
+
 ## Versioning scheme
 
 Cf. PEP 440.
@@ -27,11 +29,24 @@ Note that we can support multiple MMCore versions, possibly retroactively, by
 maintaining separate branches; this can ease transition when the device
 interface version changes. Such branches should be named `mmcore-x.y.z.w`.
 
-When upgrading the MMCore version (by updating the commit hashes in
-`subprojects/mmdevice.wrap` and `subprojects/mmcore.wrap`), the pymmcore
-version in `meson.build` must be updated in synchrony. The versioning for the
-python package is taken dynamically from that file (by meson-python), and built
-into the package via the generated `_version.py`.
+## Updating the MMCore version
+
+1. Determine the target mmcore commit and the corresponding mmdevice commit
+   (they should come from the same mmCoreAndDevices commit while the official
+   source remains there).
+2. Update `subprojects/mmcore.wrap`: set `revision` to the new mmcore commit
+   hash.
+3. Update `subprojects/mmdevice.wrap`: set `revision` to the new mmdevice
+   commit hash.
+4. Update the project version in `meson.build` to reflect the new MMCore
+   version and device interface version (e.g., `11.14.0.75.0.dev0`). The
+   versioning for the python package is taken dynamically from this file (by
+   meson-python), and built into the package via the generated `_version.py`.
+5. If the MMCore C++ API has changed (new methods, changed signatures, new
+   enums or error codes), the SWIG interface (`src/pymmcore/pymmcore_swig.i`)
+   and type stub (`src/pymmcore/__init__.pyi`) may need corresponding updates.
+6. Build and run `tests/test_mmcore.py`, which validates that the pymmcore
+   version components match the embedded MMCore and device interface versions.
 
 ## Building Binary Wheels and Source Distributions
 
@@ -42,12 +57,14 @@ The package can be built in a few ways:
    is in `pyproject.toml`). You can [run it locally](https://cibuildwheel.readthedocs.io/en/stable/setup/#local) as well
    if you have Docker installed:
 
-    ```sh
-    pip install cibuildwheel
-    # example
-    cibuildwheel --platform macos
-    ```
+   ```sh
+   pip install cibuildwheel
+   # example
+   cibuildwheel --platform macos
+   ```
+
    Or, to build a specific platform/python version:
+
    ```sh
    cibuildwheel --only cp310-macosx_x86_64
    ```
@@ -56,13 +73,13 @@ The package can be built in a few ways:
 
 2. Use the [build](https://pypi.org/project/build/) package
 
-    ```sh
-    pip install build
-    python -m build
-    ```
+   ```sh
+   pip install build
+   python -m build
+   ```
 
-    This will build an sdist and wheel for the current platform and Python
-    version, and place them in the `dist` directory.
+   This will build an sdist and wheel for the current platform and Python
+   version, and place them in the `dist` directory.
 
 3. Use `pip install --no-build-isolation -e .`
    This will build the extension module in-place and allow you to run tests,
@@ -128,83 +145,3 @@ and the binary wheels attached.
   https://github.com/numpy/numpy/issues/5888).  We do this by including
   [`oldest-supported-numpy`](https://github.com/scipy/oldest-supported-numpy)
   in our build requires.
-
-### Legacy Build Notes
-
-Many of these notes are probably obviated by the use of cibuildwheel... but
-are kept for reference.
-
-<details>
-
-### Windows
-
-- MSVC version. Python 3.5 and later are built with MSVC 14.x (i.e. Visual
-  Studio 2015 to 2019). However, the official Python installer ships with its
-  own copy of the VC runtime (in particular, `vcruntime140.dll`). This means
-  that (in theory) our extension module must be built with an MSVC version that
-  is not newer than the runtime shipped with Python. I say "in theory" because
-  it is not clear if this actually results in problems, but let's play it safe.
-
-  Python prints the MSVC version used to build itself when started. This
-  version may change with the patch version of Python. Here are a few examples:
-
-  - Python 3.8.1 (64-bit): MSC v.1916 = VS2017
-  - Python 3.9.1 (64-bit): MSC v.1927 = VS2019
-  - Python 3.8.7 (64-bit): MSC v.1928 = VS2019
-  - Python 3.10.0 (64-bit): MSC v.1929 = VS2019
-  - Python 3.11.0 (64-bit): MSC v.1933 = VS2022
-
-  In general, it is probably safest to always build with VS2015 (older patch
-  versions of Python 3.8 may be built with VS2015). This can be done by
-  running `setup.py` inside the VS2015 Native Tools Command Prompt (this works
-  because we use `setuptools`; with `distutils` extra environment variables are
-  needed).
-
-  It should also be noted that some Python package wheels (e.g. SciPy) ship a
-  copy of `msvcp140.dll` (the C++ runtime) and other "140" DLLs. If they are
-  loaded first, the version is pinned.
-
-  We might want to pay attention to all this if/when Micro-Manager starts
-  shipping with device adapters built with newer MSVC versions in the future.
-
-- Should we ship `msvcp140.dll` as part of the wheel? Given how the Python.org
-  Windows installers are designed for non-admin installation, we technically
-  should.
-
-### macOS
-
-- `MACOSX_DEPLOYMENT_TARGET` should be set to match the Python.org Python we
-  are building for, as much as reasonably possible. Currently, `10.9` is the
-  best value for Python 3.5-3.10.
-- Our extension will still work if our deployment target is newer than
-  Python's, so long as it is not newer than the host macOS version.
-- In the not-so-likely event that our extension uses symbols only available in
-  macOS SDKs newer than the deployment target, those symbols will appear as
-  'weak' in `nm -mu`.
-  - Not all weak symbols are a problem. There will always be a few from the C++
-    standard library that are harmless.
-- The built extension should be checked for undefined symbols (`nm -mu`) that
-  are "dynamically looked up", other than those starting with `_Py` or `__Py`.
-  There should be none if the build is correct.
-
-### Linux
-
-- The manylinux docker images appear to solve all our problems.
-
-
-### Resources
-
-- [Windows Compilers](https://wiki.python.org/moin/WindowsCompilers) on Python Wiki
-- [MacPython: Spinning wheels](https://github.com/MacPython/wiki/wiki/Spinning-wheels) (macOS ABI)
-- [manylinux](https://github.com/pypa/manylinux) Docker images; [PEP
-  513](https://python.org/dev/peps/pep-0513),
-  [571](https://python.org/dev/peps/pep-0571), and
-  [599](https://python.org/dev/peps/pep-0599)
-
-- Windows [DLL search order](https://docs.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order)
-- Unmaintained Apple [tech
-  note](https://developer.apple.com/library/archive/technotes/tn2064/_index.html)
-  describing `MACOSX_DEPLOYMENT_TARGET`
-
-
-</details>
