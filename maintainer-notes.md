@@ -29,11 +29,24 @@ Note that we can support multiple MMCore versions, possibly retroactively, by
 maintaining separate branches; this can ease transition when the device
 interface version changes. Such branches should be named `mmcore-x.y.z.w`.
 
-When upgrading the MMCore version (by updating the commit hashes in
-`subprojects/mmdevice.wrap` and `subprojects/mmcore.wrap`), the pymmcore
-version in `meson.build` must be updated in synchrony. The versioning for the
-python package is taken dynamically from that file (by meson-python), and built
-into the package via the generated `_version.py`.
+## Updating the MMCore version
+
+1. Determine the target mmcore commit and the corresponding mmdevice commit
+   (they should come from the same mmCoreAndDevices commit while the official
+   source remains there).
+2. Update `subprojects/mmcore.wrap`: set `revision` to the new mmcore commit
+   hash.
+3. Update `subprojects/mmdevice.wrap`: set `revision` to the new mmdevice
+   commit hash.
+4. Update the project version in `meson.build` to reflect the new MMCore
+   version and device interface version (e.g., `11.14.0.75.0.dev0`). The
+   versioning for the python package is taken dynamically from this file (by
+   meson-python), and built into the package via the generated `_version.py`.
+5. If the MMCore C++ API has changed (new methods, changed signatures, new
+   enums or error codes), the SWIG interface (`src/pymmcore/pymmcore_swig.i`)
+   and type stub (`src/pymmcore/__init__.pyi`) may need corresponding updates.
+6. Build and run `tests/test_mmcore.py`, which validates that the pymmcore
+   version components match the embedded MMCore and device interface versions.
 
 ## Building Binary Wheels and Source Distributions
 
