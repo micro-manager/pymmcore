@@ -395,6 +395,8 @@ namespace std {
 %apply int &OUTPUT { int &xSize };
 %apply int &OUTPUT { int &ySize };
 
+%import "CoreDeclHelpers.h"
+
 %include "MMDeviceConstants.h"
 %include "Error.h"
 %include "Configuration.h"
