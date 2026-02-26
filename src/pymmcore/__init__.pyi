@@ -9,6 +9,7 @@
 from __future__ import annotations
 from typing import Any, Final, List, Literal, NewType, overload, Sequence, Tuple, Union
 
+from typing_extensions import deprecated
 import numpy as np
 import numpy.typing as npt
 
@@ -64,9 +65,9 @@ FocusDirectionTowardSample: Final = +1
 FocusDirectionAwayFromSample: Final = -1
 
 # DeviceNotification
-Attention: Final = 0
-Done: Final = 1
-StatusChanged: Final = 2
+Attention: Final = 0  # deprecated
+Done: Final = 1  # deprecated
+StatusChanged: Final = 2  # deprecated
 
 # DeviceDetectionStatus
 Unimplemented: Final = -2
@@ -227,8 +228,8 @@ DEVICE_UNKNOWN_LABEL: int
 DEVICE_UNKNOWN_POSITION: int
 DEVICE_UNSUPPORTED_COMMAND: int
 DEVICE_UNSUPPORTED_DATA_FORMAT: int
-MM_CODE_ERR: int
-MM_CODE_OK: int
+MM_CODE_ERR: int  # deprecated
+MM_CODE_OK: int  # deprecated
 
 def CMMCore_noop() -> None: ...
 def MetadataTag_ReadLine(jarg: Any) -> str: ...
@@ -406,6 +407,12 @@ class CMMCore:
         """Measures offset for the one-shot focusing device."""
     def getAutoShutter(self) -> bool:
         """Returns the current setting of the auto-shutter option."""
+    @overload
+    def getAllowedBinningValues(self) -> Tuple[int, ...]:
+        """Returns allowed binning values for the current camera."""
+    @overload
+    def getAllowedBinningValues(self, label: DeviceLabel | str) -> Tuple[int, ...]:
+        """Returns allowed binning values for the specified camera."""
     def getAvailableConfigGroups(self) -> Tuple[ConfigGroupName, ...]:
         """Returns the names of all defined configuration groups"""
     def getAvailableConfigs(
@@ -428,6 +435,12 @@ class CMMCore:
         """
     def getBufferTotalCapacity(self) -> int:
         """Returns the total number of images that can be stored in the buffer"""
+    @overload
+    def getBinning(self) -> int:
+        """Returns the current binning factor of the camera."""
+    @overload
+    def getBinning(self, label: DeviceLabel | str) -> int:
+        """Returns the current binning factor of the specified camera."""
     def getBytesPerPixel(self) -> int:
         """How many bytes for each pixel."""
     def getCameraChannelName(self, channelNr: int) -> str:
@@ -935,8 +948,12 @@ class CMMCore:
         A linear sequence is defined by a stepsize and number of slices"""
     def isStageSequenceable(self, stageLabel: DeviceLabel | str) -> bool:
         """Queries stage if it can be used in a sequence"""
+    def isStageUsingCallbacks(self, stageLabel: DeviceLabel | str) -> bool:
+        """Queries whether the stage uses callbacks to signal position changes."""
     def isXYStageSequenceable(self, xyStageLabel: DeviceLabel | str) -> bool:
         """Queries XY stage if it can be used in a sequence"""
+    def isXYStageUsingCallbacks(self, xyStageLabel: DeviceLabel | str) -> bool:
+        """Queries whether the XY stage uses callbacks to signal position changes."""
     def loadDevice(
         self, label: str, moduleName: AdapterName | str, deviceName: DeviceName | str
     ) -> None:
@@ -1003,6 +1020,7 @@ class CMMCore:
     @overload
     def popNextImageMD(self, md: Metadata) -> np.ndarray:
         """Gets and removes the next image (and metadata) from the circular buffer"""
+    @deprecated("No-op since MMCore 11.13.0.")
     def prepareSequenceAcquisition(self, cameraLabel: DeviceLabel | str) -> None:
         """Prepare the camera for the sequence acquisition to save the time in the
 
@@ -1063,6 +1081,12 @@ class CMMCore:
     def setAutoShutter(self, state: bool) -> None:
         """If this option is enabled Shutter automatically opens and closes when the
         image is acquired."""
+    @overload
+    def setBinning(self, binning: int) -> None:
+        """Sets the binning factor of the current camera."""
+    @overload
+    def setBinning(self, label: DeviceLabel | str, binning: int) -> None:
+        """Sets the binning factor of the specified camera."""
     def setCameraDevice(self, cameraLabel: DeviceLabel | str) -> None:
         """Sets the current camera device."""
     def setChannelGroup(self, channelGroup: ConfigGroupName | str) -> None:
