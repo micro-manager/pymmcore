@@ -35,7 +35,7 @@ jobs:
 
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          toolset: "14.2"
+          toolset: "14.4"
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
@@ -70,7 +70,7 @@ jobs:
           path: pymmcore
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          toolset: "14.2"
+          toolset: "14.4"
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.13"
@@ -103,7 +103,7 @@ jobs:
 
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          toolset: "14.2"
+          toolset: "14.4"
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.2
