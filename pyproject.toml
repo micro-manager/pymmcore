@@ -55,8 +55,7 @@ test-skip = "*-macosx_arm64"
 [tool.cibuildwheel.macos]
 # https://cibuildwheel.readthedocs.io/en/stable/faq/#apple-silicon
 archs = ["x86_64", "arm64"]
-# Needed for C++17 support on macOS
-environment = { MACOSX_DEPLOYMENT_TARGET = "10.14" }
+environment = { MACOSX_DEPLOYMENT_TARGET = "11.0" }
 
 [tool.check-manifest]
 ignore = [".editorconfig", "Dockerfile", "maintainer-notes.md"]
