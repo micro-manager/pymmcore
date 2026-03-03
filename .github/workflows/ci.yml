@@ -111,7 +111,7 @@ jobs:
           CIBW_VERBOSE: 1
           CIBW_ARCHS_MACOS: "${{ matrix.macos_arch }}"
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: artifact-wheels-${{ matrix.os }}${{ matrix.macos_arch }}
           path: ./wheelhouse/*.whl
@@ -129,7 +129,7 @@ jobs:
           pip install -U pip build
           python -m build --sdist
 
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: artifact-sdist
           path: dist/*.tar.gz
