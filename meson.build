@@ -18,10 +18,10 @@
 project(
     'pymmcore',
     'cpp',
-    version: '11.14.0.75.1.dev0',
+    version: '12.0.0.75.0.dev0',
     meson_version: '>=1.4.0',
     default_options: [
-        'cpp_std=c++14',
+        'cpp_std=c++17',
         'warning_level=3',
     ],
 )
