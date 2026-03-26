@@ -80,6 +80,14 @@ Uninitialized: Final = 0
 InitializedSuccessfully: Final = 1
 InitializationFailed: Final = 2
 
+# LogLevel
+LogLevelTrace: Final = 0
+LogLevelDebug: Final = 1
+LogLevelInfo: Final = 2
+LogLevelWarning: Final = 3
+LogLevelError: Final = 4
+LogLevelCritical: Final = 5
+
 g_CFGCommand_ConfigGroup: Final[Literal["ConfigGroup"]]
 g_CFGCommand_ConfigPixelSize: Final[Literal["ConfigPixelSize"]]
 g_CFGCommand_Configuration: Final[Literal["Config"]]
@@ -241,6 +249,7 @@ PropertyType = int
 FocusDirection = int
 DeviceDetectionStatus = int
 DeviceInitializationState = int
+LogLevel = int
 AffineTuple = Tuple[float, float, float, float, float, float]
 
 # These are special string types used throughout the API.
@@ -727,6 +736,8 @@ class CMMCore:
         """Returns the current position of the stage in microns."""
     def getPrimaryLogFile(self) -> str:
         """Return the name of the primary Core log file."""
+    def getPrimaryLogLevel(self) -> LogLevel:
+        """Return the current primary log level."""
     def getProperty(
         self, label: DeviceLabel | str, propName: PropertyName | str
     ) -> str:
@@ -1002,6 +1013,11 @@ class CMMCore:
         for XY stages that are sequenceable
         """
     @overload
+    def log(self, msg: str, level: LogLevel) -> None: ...
+    @overload
+    def log(self, msg: str, level: LogLevel, loggerName: str) -> None:
+        """Log a message at the given level."""
+    @overload
     def logMessage(self, msg: str) -> None:
         """Record text message in the log file."""
     @overload
@@ -1200,6 +1216,12 @@ class CMMCore:
     @overload
     def setPrimaryLogFile(self, filename: str, truncate: bool) -> None:
         """Set the primary Core log file."""
+    def setPrimaryLogFileRotation(
+        self, maxFileSize: int, maxBackupCount: int
+    ) -> None:
+        """Set the primary log file rotation parameters."""
+    def setPrimaryLogLevel(self, level: LogLevel) -> None:
+        """Set the primary log level."""
     def setProperty(
         self,
         label: DeviceLabel | str,
