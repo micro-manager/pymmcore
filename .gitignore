@@ -10,3 +10,8 @@ wheelhouse/
 .mypy_cache/
 
 .wraplock
+__pycache__/
+*.so
+uv.lock
+src/pymmcore/_version.py
+src/pymmcore/pymmcore_swig.py
