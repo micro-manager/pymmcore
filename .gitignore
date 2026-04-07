@@ -11,3 +11,8 @@ __pycache__/
 .mypy_cache/
 
 .wraplock
+
+*.so
+uv.lock
+src/pymmcore/_version.py
+src/pymmcore/pymmcore_swig.py
