@@ -6,11 +6,12 @@ venv/
 build/
 dist/
 wheelhouse/
+__pycache__/
 
 .mypy_cache/
 
 .wraplock
-__pycache__/
+
 *.so
 uv.lock
 src/pymmcore/_version.py

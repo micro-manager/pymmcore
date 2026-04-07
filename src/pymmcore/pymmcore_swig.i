@@ -287,7 +287,6 @@ import_array();
 #include "Configuration.h"
 #include "ImageMetadata.h"
 #include "MMEventCallback.h"
-#include "LogLevel.h"
 #include "MMCore.h"
 %}
 
@@ -398,32 +397,10 @@ namespace std {
 
 %import "CoreDeclHelpers.h"
 
+%include "LogLevel.h"
 %include "MMDeviceConstants.h"
 %include "Error.h"
 %include "Configuration.h"
-// Make SWIG treat mmcore::LogLevel as an int so that the enum values
-// can be passed directly as Python integers.
-%typemap(in) mmcore::LogLevel {
-    $1 = static_cast<mmcore::LogLevel>(PyLong_AsLong($input));
-    if (PyErr_Occurred()) SWIG_fail;
-}
-%typemap(out) mmcore::LogLevel {
-    $result = PyLong_FromLong(static_cast<long>($1));
-}
-%typemap(typecheck, precedence=SWIG_TYPECHECK_INTEGER) mmcore::LogLevel {
-    $1 = PyLong_Check($input) ? 1 : 0;
-}
-
-%{
-#include "LogLevel.h"
-%}
-%constant int LogLevelTrace    = mmcore::LogLevelTrace;
-%constant int LogLevelDebug    = mmcore::LogLevelDebug;
-%constant int LogLevelInfo     = mmcore::LogLevelInfo;
-%constant int LogLevelWarning  = mmcore::LogLevelWarning;
-%constant int LogLevelError    = mmcore::LogLevelError;
-%constant int LogLevelCritical = mmcore::LogLevelCritical;
-
 %include "MMCore.h"
 %include "ImageMetadata.h"
 %include "MMEventCallback.h"
