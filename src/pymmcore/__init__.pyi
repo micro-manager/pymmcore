@@ -737,7 +737,9 @@ class CMMCore:
     def getPrimaryLogFile(self) -> str:
         """Return the name of the primary Core log file."""
     def getPrimaryLogLevel(self) -> LogLevel:
-        """Return the current primary log level."""
+        """Return the current primary log file level."""
+    def getStderrLogLevel(self) -> LogLevel:
+        """Return the current stderr log level."""
     def getProperty(
         self, label: DeviceLabel | str, propName: PropertyName | str
     ) -> str:
@@ -1221,7 +1223,9 @@ class CMMCore:
     ) -> None:
         """Set the primary log file rotation parameters."""
     def setPrimaryLogLevel(self, level: LogLevel) -> None:
-        """Set the primary log level."""
+        """Set the log level for the primary log file."""
+    def setStderrLogLevel(self, level: LogLevel) -> None:
+        """Set the stderr log level."""
     def setProperty(
         self,
         label: DeviceLabel | str,
