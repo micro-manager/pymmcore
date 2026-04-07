@@ -397,6 +397,7 @@ namespace std {
 
 %import "CoreDeclHelpers.h"
 
+%include "LogLevel.h"
 %include "MMDeviceConstants.h"
 %include "Error.h"
 %include "Configuration.h"

@@ -6,6 +6,7 @@ venv/
 build/
 dist/
 wheelhouse/
+__pycache__/
 
 .mypy_cache/
 

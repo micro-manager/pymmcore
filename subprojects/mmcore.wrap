@@ -1,6 +1,6 @@
 [wrap-git]
 url = https://github.com/micro-manager/mmcore.git
-revision = 4c0413041d1c2144276b11a39f66f81853cd4010
+revision = 29e7de3344988e4b5886c4d7368f72fd61366e42
 depth = 1
 
 [provide]
