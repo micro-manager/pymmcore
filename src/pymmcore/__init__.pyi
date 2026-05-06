@@ -522,6 +522,8 @@ class CMMCore:
         self, label: DeviceLabel | str
     ) -> Tuple[PropertyName, ...]:
         """Returns all property names supported by the device."""
+    def getDeviceTimeoutMs(self, label: DeviceLabel | str) -> int:
+        """Returns the per-device timeout in milliseconds, or the default if not set."""
     def getDeviceType(self, label: DeviceLabel | str) -> DeviceType:
         """Returns device type."""
     @overload
@@ -620,6 +622,16 @@ class CMMCore:
     def getMagnificationFactor(self) -> float:
         """Returns the product of all Magnifiers in the system or 1.0 when none is found.
         This is used internally by GetPixelSizeUm"""
+    @staticmethod
+    def getMMCoreVersionMajor() -> int: ...
+    @staticmethod
+    def getMMCoreVersionMinor() -> int: ...
+    @staticmethod
+    def getMMCoreVersionPatch() -> int: ...
+    @staticmethod
+    def getMMDeviceDeviceInterfaceVersion() -> int: ...
+    @staticmethod
+    def getMMDeviceModuleInterfaceVersion() -> int: ...
     # def getMultiROI(self) -> List[Any]: ...  # this overload doesn't seem to be present
     def getMultiROI(
         self,
@@ -875,6 +887,8 @@ class CMMCore:
     @overload
     def getYPosition(self, xyStageLabel: DeviceLabel | str) -> float:
         """Obtains the current position of the Y axis of the XY stage in microns."""
+    def hasDeviceTimeout(self, label: DeviceLabel | str) -> bool:
+        """Returns True if a per-device timeout has been set for the given device."""
     def hasProperty(
         self, label: DeviceLabel | str, propName: PropertyName | str
     ) -> bool:
@@ -1119,6 +1133,8 @@ class CMMCore:
         """Set the device adapter search paths."""
     def setDeviceDelayMs(self, label: DeviceLabel | str, delayMs: float) -> None:
         """Overrides the built-in value for the action delay."""
+    def setDeviceTimeoutMs(self, label: DeviceLabel | str, timeoutMs: int) -> None:
+        """Sets a per-device timeout in milliseconds."""
     @overload
     def setExposure(self, exp: float) -> None:
         """Sets the exposure setting of the current camera in milliseconds."""
@@ -1381,14 +1397,14 @@ class CMMCore:
     ) -> int: ...
     @overload
     def startSequenceAcquisition(
-        self, numImages: int, intervalMs: float, stopOnOverflow: bool
+        self, numImages: int, unused: float, stopOnOverflow: bool
     ) -> None: ...
     @overload
     def startSequenceAcquisition(
         self,
         cameraLabel: DeviceLabel | str,
         numImages: int,
-        intervalMs: float,
+        unused: float,
         stopOnOverflow: bool,
     ) -> None: ...
     def startSLMSequence(self, slmLabel: DeviceLabel | str) -> None:
@@ -1443,6 +1459,8 @@ class CMMCore:
         """Unloads the device from the core and adjusts all configuration data."""
     def unloadLibrary(self, moduleName: AdapterName | str) -> None:
         """Forcefully unload a library."""
+    def unsetDeviceTimeout(self, label: DeviceLabel | str) -> None:
+        """Removes any per-device timeout, restoring the default."""
     def updateCoreProperties(self) -> None:
         """Updates CoreProperties (currently all Core properties are devices types) with
         the loaded hardware."""
