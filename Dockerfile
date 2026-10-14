@@ -46,6 +46,6 @@ RUN rm Miniconda3-latest-Linux-x86_64.sh
 ENV PATH=/miniconda/bin:${PATH}
 
 RUN conda update -y conda && \
-    conda install -y python=3.10 numpy && \
+    conda install -y python=3.11 numpy && \
     pip install --upgrade pip && \
     pip install pymmcore

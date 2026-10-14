@@ -66,7 +66,7 @@ The package can be built in a few ways:
    Or, to build a specific platform/python version:
 
    ```sh
-   cibuildwheel --only cp310-macosx_x86_64
+   cibuildwheel --only cp311-macosx_x86_64
    ```
 
    The wheels will be placed in the `wheelhouse` directory.
@@ -119,7 +119,7 @@ and the binary wheels attached.
 
 ## Dependency and tool versions
 
-- The minimum version of python supported is declared in `pypyproject.toml`,
+- The minimum version of python supported is declared in `pyproject.toml`,
   in the `[project.requires-python]` section.
 - Meson (via `meson-python`), Ninja, and SWIG 4.x are required and
   automatically fetched via `pyproject.toml` under `[build-system.requires]`.
